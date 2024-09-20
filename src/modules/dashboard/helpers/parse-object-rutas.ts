@@ -1,46 +1,33 @@
 import { type Router } from 'vue-router';
-import type { RutaInterface } from '../dto/menu-rutas-response.dto';
-import { addEstudiante } from '../../../indexed-db/estudiantes-db';
-import { useApi } from '@/composables/use-api';
-import {
-  personalDb,
-  type GlobalEstudianteResponse,
-  type GlobalPersonalResponse,
-  estudiantesDb,
-} from '@/indexed-db';
+import type { RutaDto } from '@/modules/autenticacion/dto/login-response.dto';
 
-export const parseObjectRutas = (rutas: RutaInterface[], router: Router) => {
-  rutas = [
-    {
-      id: 4,
-      nombre: 'Perfiles',
-      path: '/perfiles',
-      ruta: 'perfiles',
-      component: '/modules/perfiles/pages/PerfilesPage.vue',
-      indexeddb: 1,
-      privilegio: 0,
-      padre: 0,
-    },
-    // {
-    //   "id": 9,
-    //   "nombre": "Currículum",
-    //   "path": "/curriculum",
-    //   "ruta": "curriculum",
-    //   "component": "/modules/curriculum/pages/CurriculumPage.vue",
-    //   "indexeddb": 3,
-    //   "privilegio": 1,
-    //   "padre": 0
-    // },
-  ];
-  
-  loadIndexedData(rutas);
+// Función para obtener las rutas del localStorage
+const obtenerRutasDesdeLocalStorage = () => {
+  const rutasJSON = localStorage.getItem('rutas');
+  if (rutasJSON) {
+    return JSON.parse(rutasJSON) as RutaDto[];
+  }
+  return [];
+};
+
+export const parseObjectRutas = async (router: Router) => {
+  if (!router) {
+    throw new Error('El objeto router no está definido.');
+  }
+
+  const rutas: RutaDto[] = obtenerRutasDesdeLocalStorage();
+  console.log('Rutas desde LocalStorage:', rutas); // Debugging
+  // Obtener las rutas existentes en el enrutador
   const existingRoutes = router.getRoutes().map((route) => route.name);
-  rutas.map((ruta) => {
-    if (!existingRoutes.includes(ruta.nombre)) {
+  console.log('Rutas existentes:', existingRoutes); // Debugging
+
+  // Añadir rutas nuevas al enrutador
+  rutas.forEach((ruta) => {
+    if (!existingRoutes.includes(ruta.ruta_ruta)) {
       router.addRoute({
-        path: ruta.path,
-        name: ruta.ruta,
-        component: () => import(/* @vite-ignore */ `../../../${ruta.component}`),
+        path: ruta.ruta_url,
+        name: ruta.ruta_ruta,
+        component: () => import(`../../../${ruta.ruta_component}`), // Importar dinámicamente el componente
         meta: {
           requiresAuth: true,
           transition: 'fade',
@@ -49,71 +36,22 @@ export const parseObjectRutas = (rutas: RutaInterface[], router: Router) => {
     }
   });
 
-  const rutasPadre = rutas.filter((ruta) => ruta.padre === 0);
-  const rutasHijas = rutas.filter((ruta) => ruta.padre !== 0);
+  
+
+  // Procesar rutas padre e hija
+  const rutasPadre = rutas.filter((ruta) => ruta.ruta_padre === 0);
+  const rutasHijas = rutas.filter((ruta) => ruta.ruta_padre !== 0);
   const rutasParseadas = rutasPadre.map((rutaPadre) => {
-    const rutasHijasParseadas = rutasHijas.filter((rutaHija) => rutaHija.padre === rutaPadre.id);
+    const rutasHijasParseadas = rutasHijas.filter((rutaHija) => rutaHija.ruta_padre === rutaPadre.ruta_id);
     return {
       ...rutaPadre,
       rutasHijas: rutasHijasParseadas,
     };
   });
+
   return rutasParseadas;
 };
 
-const loadIndexedData = async (rutas: RutaInterface[]) => {
-  const arrNumber = rutas.map((r) => r.indexeddb);
-
-  const dataString = JSON.stringify(rutas.map((r) => r.indexeddb));
-  const currentHash = await hashData(dataString);
-
-  // Obtener el hash almacenado
-  const storedHash = localStorage.getItem('indexedDataHash');
-
-  // Si los hashes coinciden, salir de la función
-  if (storedHash === currentHash) {
-    return;
-  }
-  localStorage.setItem('indexedDataHash', currentHash);
-
-  const setIndexed = new Set(arrNumber);
-  const arrIndexed = [...setIndexed];
-
-  if (arrIndexed.includes(3)) {
-    // const responseEstudiante = await useApi.get<GlobalEstudianteResponse[]>('global_estudiantes')
-    // responseEstudiante.data.map((estudiante) => {
-    //     estudiantesDb.addEstudiante(estudiante)
-    // })
-
-    useApi
-      .get<GlobalEstudianteResponse[]>('global_estudiantes')
-      .then((estudiantes) => estudiantesDb.addAllEstudiantes(estudiantes.data));
-
-    // const responsePersonal = await useApi.get<GlobalPersonalResponse[]>('global_personal')
-    // responsePersonal.data.map((personal) => {
-    //     personalDb.addPersonal(personal)
-    // })
-    useApi
-      .get<GlobalPersonalResponse[]>('global_personal')
-      .then((personals) => personalDb.addAllPersonal(personals.data));
-
-    return;
-  }
-
-  if (arrIndexed.includes(2)) {
-    const response = await useApi.get<GlobalPersonalResponse[]>('global_personal');
-    response.data.map((personal) => {
-      personalDb.addPersonal(personal);
-    });
-  }
-
-  if (arrIndexed.includes(1)) {
-    const response = await useApi.get<GlobalEstudianteResponse[]>('global_estudiantes');
-    response.data.map((estudiante) => {
-      addEstudiante(estudiante);
-    });
-  }
-};
 
 export const removeRoutesOnLogout = (router: Router) => {
   router.getRoutes().forEach((route) => {
@@ -126,11 +64,3 @@ export const removeRoutesOnLogout = (router: Router) => {
   });
 };
 
-const hashData = async (data: string): Promise<string> => {
-  const encoder = new TextEncoder();
-  const dataBuffer = encoder.encode(data);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
-  return hashHex;
-};

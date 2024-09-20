@@ -29,6 +29,7 @@ export interface RutaDto {
     ruta_actualizada: string;
     ruta_padre: number;
     ruta_estado: boolean;
+    rutasHijas?: RutaDto[]; 
 }
 
 export interface LoginResponseDto {
@@ -36,4 +37,8 @@ export interface LoginResponseDto {
     rol: RolDto;
     rutas: RutaDto[];
     token: string;
+    message?: string;  
+    error?: string;    
+    statusCode?: number;  
+
 }

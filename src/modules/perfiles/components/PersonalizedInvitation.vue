@@ -1,7 +1,6 @@
-<!-- src/components/PersonalizedInvitationModal.vue -->
 <template>
-  <div v-if="mostrarModal" class="fixed inset-0 bg-black bg-opacity-30 z-40 flex items-center justify-center">
-    <div class="bg-white rounded-lg w-full max-w-3xl p-6 relative shadow-lg">
+  <div v-if="mostrarModal" class="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg w-full max-w-3xl p-6 relative shadow-lg z-60">
       <h3 class="text-xl font-semibold mb-4">Plantilla de correo electrónico</h3>
       <p class="mb-4">Vista previa del correo electrónico</p>
 
@@ -44,7 +43,10 @@ const cerrarModal = () => {
 
 // Función para guardar la invitación
 const guardarInvitacion = () => {
-  emit('save', localTextoInvitacion.value);
+  // Puedes colocar aquí la lógica para manejar el clic en el botón "Aceptar"
+  console.log('Botón Aceptar clickeado');
+  // Ejemplo: cerrar el modal
+  cerrarModal();
 };
 </script>
 

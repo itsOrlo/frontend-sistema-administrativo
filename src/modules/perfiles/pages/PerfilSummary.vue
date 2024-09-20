@@ -56,8 +56,10 @@
         <div class="flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 mr-3" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 8l9 6 9-6M3 8v11a2 2 0 002 2h14a2 2 0 002-2V8m-9 4l-4 4m4-4l4 4" />
           </svg>
+
           <p class="text-gray-700 font-semibold">Personaliza la invitación</p>
         </div>
       </div>
@@ -74,21 +76,19 @@
           </svg>
           <p class="text-gray-700 font-semibold">Invita a candidatos</p>
         </div>
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24"
+        <!-- <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24"
           stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
+        </svg> -->
       </div>
     </div>
 
     <!-- Modal de Personalizar Invitación -->
-    <PersonalizedInvitation :mostrarModal="mostrarModalPersonalizada" 
-      @close="cerrarModalPersonalizada" @save="guardarInvitacion" />
+    <PersonalizedInvitation :mostrarModal="mostrarModalPersonalizada" @close="cerrarModalPersonalizada"
+      @save="guardarInvitacion" />
 
     <!-- Modal de Invitar a Candidatos -->
-    <InvitationToCandidates
-      :mostrarModalCandidatos="mostrarModalCandidatos"
-      @close="cerrarModalCandidatos" />
+    <InvitationToCandidates :mostrarModalCandidatos="mostrarModalCandidatos" @close="cerrarModalCandidatos" />
 
 
 
@@ -168,7 +168,27 @@ const componentes = ref([
 
 // Duración del proceso (dinámico, viene de la página anterior)
 const fechaInicio = ref('16 de julio 2024 - 11:23');
-const fechaFin = ref('19 de julio 2024 - 11:23');
+
+// Crear una instancia de la fecha actual
+const fecha = new Date();
+
+// Definir los nombres de los meses
+const meses = [
+  'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+  'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+];
+
+// Obtener el día, mes y año
+const dia = fecha.getDate();
+const mes = meses[fecha.getMonth()]; // Obtener el nombre del mes
+const anio = fecha.getFullYear();
+
+// Obtener la hora y minutos
+const hora = String(fecha.getHours()).padStart(2, '0'); // Asegura 2 dígitos
+const minutos = String(fecha.getMinutes()).padStart(2, '0'); // Asegura 2 dígitos
+
+// Crear la variable reactiva con la fecha formateada
+const fechaFin = ref(`${dia} de ${mes} ${anio} - ${hora}:${minutos}`);
 </script>
 
 <style scoped>

@@ -6,8 +6,8 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
   const loginStatus = ref(false);
   const nombre = ref('');
   const rolId = ref(-1);
-  const rutas = ref<RutaDto[]>([])
-  const token = ref(''); 
+  const rutas = ref<RutaDto[]>([]);
+  const token = ref('');
 
   const showModal = ref(false);
   const messageError = ref('');
@@ -18,8 +18,8 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
     nombreParam?: string,
     rolIdParam?: number,
     message?: string,
-    rutasParam?: any[], 
-    tokenParam?: string, 
+    rutasParam?: any[],
+    tokenParam?: string,
   ) => {
     if (success === true) {
       loginStatus.value = true;
@@ -29,8 +29,11 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
       titleError.value = '';
       showModal.value = false;
 
-      
-      rutas.value = rutasParam || []
+      console.log('Rutas asignadas al store:', rutas.value); // Debugging
+      console.log('Rutas desde el API:', rutasParam);
+      console.log('Estado del store después de asignar rutas:', rutas.value);
+
+      rutas.value = rutasParam || [];
       token.value = tokenParam || '';
     } else {
       showModal.value = true;
@@ -55,7 +58,7 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
     loginStatus.value = false;
     nombre.value = '';
     rolId.value = -1;
-    rutas.value = []; 
+    rutas.value = [];
     token.value = '';
 
     localStorage.removeItem('usuarioId');
@@ -72,8 +75,8 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
     loginStatus,
     nombre,
     rolId,
-    rutas, 
-    token, 
+    rutas,
+    token,
     showModal,
     messageError,
     titleError,

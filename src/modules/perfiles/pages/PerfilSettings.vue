@@ -148,27 +148,27 @@
 
       <!-- Modal -->
       <transition name="fade">
-        <div v-if="mostrarModal" @click.self="cerrarModal"
-          class="fixed inset-0 bg-black bg-opacity-30 z-40 flex items-center justify-center">
-          <div class="bg-white rounded-lg p-6 relative shadow-lg w-96 text-center">
-            <h3 class="text-lg font-semibold mb-4">¿Qué deseas hacer con tu nuevo perfil?</h3>
-            <p class="text-gray-600 mb-6">Puedes lanzar un proceso con este perfil o ver todos los perfiles.</p>
+    <div v-if="mostrarModal" @click.self="cerrarModal"
+      class="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
+      <div class="bg-white rounded-lg p-6 relative shadow-lg w-96 text-center z-60">
+        <h3 class="text-lg font-semibold mb-4">¿Qué deseas hacer con tu nuevo perfil?</h3>
+        <p class="text-gray-600 mb-6">Puedes lanzar un proceso con este perfil o ver todos los perfiles.</p>
 
-            <div class="flex justify-center space-x-6">
-              <button @click="cerrarModal" class="text-blue-600 hover:underline">Permanecer</button>
-              <button @click="irAPerfiles" class="text-blue-600 hover:underline">Perfiles</button>
-              <button @click="irAProceso" class="text-blue-600 hover:underline">Lanzar proceso</button>
-            </div>
-
-            <button @click="cerrarModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
+        <div class="flex justify-center space-x-6">
+          <button @click="cerrarModal" class="text-blue-600 hover:underline">Permanecer</button>
+          <button @click="irAPerfiles" class="text-blue-600 hover:underline">Perfiles</button>
+          <button @click="irAProceso" class="text-blue-600 hover:underline">Lanzar proceso</button>
         </div>
-      </transition>
+
+        <button @click="cerrarModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 z-70">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+            stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </transition>
     </div>
   </DashboardLayout>
 </template>
