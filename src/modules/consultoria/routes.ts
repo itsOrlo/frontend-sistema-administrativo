@@ -12,7 +12,7 @@ const routes: Array<RouteRecordRaw> = [
         
         path: '/crear-clientes',
         name: 'crearlistadoCliente',
-        component: () => import('./pages/CrearCliente.vue'),
+        component: () => import('./components/ModalWrapperRegistroClientes.vue'),
         meta: { requiresAuth: true }, 
     },
     

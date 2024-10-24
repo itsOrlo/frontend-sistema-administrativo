@@ -2,7 +2,15 @@
   <DashboardLayout>
     <div class="p-6">
       <h2 class="text-2xl font-bold mb-4">Clientes</h2>
+      <div class="flex justify-end mb-4">
+        <button
+          @click="abrirModalCrearCliente"
+          class="bg-blue-800 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded"
+        >
+          + Nuevo Cliente
+        </button>
 
+      </div>
       <!-- Elemento Búsqueda -->
       <input
         type="text"
@@ -122,6 +130,10 @@
       </div>
       <!-- End Pagination -->
     </div>
+    <CrearCliente 
+    v-if="mostrarModalCrear" 
+    @cerrarModal="cerrarModalCrearCliente"
+  />
   </DashboardLayout>
 </template>
 <!-- Start Script -->
@@ -129,13 +141,51 @@
 import { onMounted, ref, computed, watch } from 'vue';
 import { useApi } from '@/composables/use-api';
 import DashboardLayout from '@/modules/dashboard/layouts/DashboardLayout.vue';
+import Swal from 'sweetalert2';
+import CrearCliente from '../components/CrearCliente.vue';
+
+const mostrarModalCrear = ref(false);
+
+const abrirModalCrearCliente = () => {
+  mostrarModalCrear.value = true;
+};
+
+const cerrarModalCrearCliente = () => {
+  mostrarModalCrear.value = false;
+};
+
+const crearCliente = async (nuevoCliente) => {
+  try {
+    await useApi.post('/api/v1/consultoria/consultoria-empresa', nuevoCliente);
+
+    // Mostrar mensaje de éxito y cerrar el modal
+    Swal.fire({
+      icon: 'success',
+      title: '¡Cliente registrado!',
+      showConfirmButton: false,
+      timer: 3000,
+    });
+
+    // Recargar la lista de clientes después de crear uno nuevo
+    onMounted(); 
+
+    cerrarModalCrearCliente();
+  } catch (error) {
+    console.error(error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error al registrar el cliente',
+      text: 'Por favor, inténtalo de nuevo más tarde.',
+    });
+  }
+};
 
 const clientes = ref([]);
 const searchTerm = ref('');
 const currentPage = ref(1);
 const pageSize = ref(10); // Número de elementos por página
 
-// Obtener los nombres de tipo de empresa y acción
+// Obtener los nombres de tipo de empresa
 const obtenerNombreTipoEmpresa = (tipoId) => {
   const tiposEmpresa = {
     1: 'Tipo 1',
@@ -145,14 +195,6 @@ const obtenerNombreTipoEmpresa = (tipoId) => {
   return tiposEmpresa[tipoId] || 'Desconocido';
 };
 
-const obtenerNombreAccion = (accionId) => {
-  const acciones = {
-    1: 'Acción 1',
-    2: 'Acción 2',
-    // ...
-  };
-  return acciones[accionId] || 'Desconocida';
-};
 
 const editarCliente = (id) => {
   // Redirigir a la página de edición con el ID del cliente
@@ -169,8 +211,7 @@ const eliminarCliente = (id) => {
   }
 };
 
-/* Start Filtro  de búsqueda */
-
+/* Start Filtro  de búsqueda */
 const clientesFiltrados = computed(() => {
   if (!searchTerm.value) {
     return clientes.value;
@@ -209,6 +250,11 @@ onMounted(async () => {
     clientes.value = response.data;
   } catch (error) {
     console.error(error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'No se pudo cargar la lista de clientes.'
+    });
   }
 });
 </script>
