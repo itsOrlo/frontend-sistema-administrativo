@@ -8,7 +8,9 @@
     <!-- Modal content -->
     <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
       <!-- Modal header -->
-      <div class="px-6 py-4 bg-blue-700 rounded-t-lg flex items-center text-center justify-between">
+      <div
+        class="pl-32 pr-4 pt-6 pb-2 bg-blue-700 rounded-t-lg flex items-center text-center justify-between"
+      >
         <h2 class="text-lg font-bold text-center text-white">Registrar Nuevo Cliente</h2>
         <button
           @click="emit('cerrarModal')"
@@ -86,6 +88,7 @@
               class="border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             >
+              <option value="" selected>Seleccione una</option>
               <option value="1">Tipo 1</option>
               <option value="2">Tipo 2</option>
             </select>
@@ -102,7 +105,7 @@
             </button>
             <button
               type="submit"
-              class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="px-4 py-2 bg-blue-700 text-white rounded-md hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               Crear Cliente
             </button>
@@ -131,7 +134,7 @@ const cliente = ref({
   ccli_contacto_nombre: '',
   ccli_contacto_correo: '',
   ccli_contacto_telefono: '',
-  ctemp_id: null,
+  ctemp_id: '',
 });
 
 const emit = defineEmits(['cerrarModal']);
