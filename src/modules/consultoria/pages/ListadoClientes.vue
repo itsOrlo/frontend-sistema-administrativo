@@ -9,8 +9,8 @@
         >
           + Nuevo Cliente
         </button>
-
       </div>
+
       <!-- Elemento Búsqueda -->
       <input
         type="text"
@@ -19,131 +19,32 @@
         class="mb-4 p-2 border rounded"
       />
 
-      <!-- Start Table -->
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Empresa
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                RUC
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Contacto
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Correo
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Teléfono
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Tipo de empresa
-              </th>
-
-              <!-- ID -->
-              <!-- <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Acción
-              </th> -->
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Acciones
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="cliente in clientesPaginados" :key="cliente.Ruc">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ cliente.Empresa }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ cliente.Ruc }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ cliente.Contacto }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-500">{{ cliente.Correo }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-500">{{ cliente.Teléfono }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ obtenerNombreTipoEmpresa(cliente['Tipo de empresa']) }}
-              </td>
-
-              <!-- ID -->
-              <!-- <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ (cliente.Acción) }}
-              </td> -->
-
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                <button
-                  class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded mr-2"
-                  @click="editarCliente(cliente.Ruc)"
-                >
-                  Editar
-                </button>
-                <button
-                  class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
-                  @click="eliminarCliente(cliente.Ruc)"
-                >
-                  Eliminar
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <!-- End Table -->
-
-      <!-- Start  Pagination -->
-      <div class="mt-4">
-        <button @click="currentPage--" :disabled="currentPage === 1">Anterior</button>
-        <span>{{ currentPage }} de {{ totalPages }}</span>
-        <button @click="currentPage++" :disabled="currentPage === totalPages">Siguiente</button>
-      </div>
-      <!-- End Pagination -->
+      <!-- Tabla de Clientes Component -->
+      <ClienteTable
+        :clientes="clientesPaginados"
+        :current-page="currentPage"
+        :total-pages="totalPages"
+        @editar="editarCliente"
+        @eliminar="confirmarEliminarCliente"
+        @cambiar-pagina="cambiarPagina"
+      />
     </div>
-    <CrearCliente 
-    v-if="mostrarModalCrear" 
-    @cerrarModal="cerrarModalCrearCliente"
-  />
+    <CrearCliente v-if="mostrarModalCrear" @cerrarModal="cerrarModalCrearCliente" />
   </DashboardLayout>
 </template>
-<!-- Start Script -->
+
 <script setup lang="ts">
 import { onMounted, ref, computed, watch } from 'vue';
 import { useApi } from '@/composables/use-api';
 import DashboardLayout from '@/modules/dashboard/layouts/DashboardLayout.vue';
-import Swal from 'sweetalert2';
+import ClienteTable from '../components/ClienteTable.vue';
 import CrearCliente from '../components/CrearCliente.vue';
+import Swal from 'sweetalert2';
 
+const clientes = ref([]);
+const searchTerm = ref('');
+const currentPage = ref(1);
+const pageSize = ref(10);
 const mostrarModalCrear = ref(false);
 
 const abrirModalCrearCliente = () => {
@@ -154,64 +55,85 @@ const cerrarModalCrearCliente = () => {
   mostrarModalCrear.value = false;
 };
 
-const crearCliente = async (nuevoCliente) => {
-  try {
-    await useApi.post('/api/v1/consultoria/consultoria-empresa', nuevoCliente);
+const cambiarPagina = (nuevaPagina) => {
+  currentPage.value = nuevaPagina;
+};
 
-    // Mostrar mensaje de éxito y cerrar el modal
-    Swal.fire({
-      icon: 'success',
-      title: '¡Cliente registrado!',
-      showConfirmButton: false,
-      timer: 3000,
+const confirmarEliminarCliente = async (cliente) => {
+  try {
+    console.log('Cliente a eliminar:', cliente);
+
+    const result = await Swal.fire({
+      title: '¿Estás seguro?',
+      html: `
+        <p>¿Deseas eliminar el cliente <strong>${cliente.Empresa}</strong>?</p>
+        <p class="mt-2 text-sm text-gray-500">Esta acción no se puede deshacer.</p>
+      `,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#EF4444',
+      cancelButtonColor: '#6B7280',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true,
     });
 
-    // Recargar la lista de clientes después de crear uno nuevo
-    onMounted(); 
-
-    cerrarModalCrearCliente();
+    if (result.isConfirmed) {
+      await eliminarCliente(cliente);
+    }
   } catch (error) {
-    console.error(error);
-    Swal.fire({
+    console.error('Error al mostrar el modal de confirmación:', error);
+  }
+};
+
+const eliminarCliente = async (cliente) => {
+  try {
+    const clienteId = parseInt(cliente.Acción);
+
+    if (!clienteId) {
+      console.error('ID de cliente no válido:', cliente);
+      throw new Error('ID de cliente no válido');
+    }
+
+    const requestBody = {
+      ccli_id: clienteId,
+    };
+
+    console.log('Request body:', requestBody);
+
+    const response = await useApi.put('/api/v1/consultoria/eliminar-consultoria', requestBody);
+
+    console.log('Respuesta del servidor:', response);
+
+    if (response.status === 200) {
+      clientes.value = clientes.value.filter((c) => c.Acción !== clienteId);
+
+      await Swal.fire({
+        title: '¡Eliminado!',
+        text: 'El cliente ha sido eliminado correctamente.',
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false,
+      });
+
+      const refreshResponse = await useApi.get('/api/v1/consultoria/consultoria-empresa');
+      clientes.value = refreshResponse.data;
+    }
+  } catch (error) {
+    console.error('Error al eliminar el cliente:', error);
+    await Swal.fire({
+      title: 'Error',
+      text: 'No se pudo eliminar el cliente. Por favor, inténtalo de nuevo.',
       icon: 'error',
-      title: 'Error al registrar el cliente',
-      text: 'Por favor, inténtalo de nuevo más tarde.',
     });
   }
 };
 
-const clientes = ref([]);
-const searchTerm = ref('');
-const currentPage = ref(1);
-const pageSize = ref(10); // Número de elementos por página
-
-// Obtener los nombres de tipo de empresa
-const obtenerNombreTipoEmpresa = (tipoId) => {
-  const tiposEmpresa = {
-    1: 'Tipo 1',
-    2: 'Tipo 2',
-    // ...
-  };
-  return tiposEmpresa[tipoId] || 'Desconocido';
-};
-
-
 const editarCliente = (id) => {
-  // Redirigir a la página de edición con el ID del cliente
-  // Por ejemplo: this.$router.push(`/clientes/${id}/editar`);
   console.log('Editar cliente con ID:', id);
 };
 
-const eliminarCliente = (id) => {
-  // Mostrar una confirmación y eliminar el cliente con el ID
-  if (confirm('¿Estás seguro de que quieres eliminar este cliente?')) {
-    // Llamar a la API para eliminar el cliente
-    // Por ejemplo: useApi.delete(`/clientes/${id}`)
-    console.log('Eliminar cliente con ID:', id);
-  }
-};
-
-/* Start Filtro  de búsqueda */
+/* Filtro de búsqueda */
 const clientesFiltrados = computed(() => {
   if (!searchTerm.value) {
     return clientes.value;
@@ -223,12 +145,10 @@ const clientesFiltrados = computed(() => {
       cliente.Ruc.toLowerCase().includes(term) ||
       cliente.Contacto.toLowerCase().includes(term) ||
       cliente.Correo.toLowerCase().includes(term) ||
-      cliente.Teléfono.toLowerCase().includes(term) ||
-      obtenerNombreTipoEmpresa(cliente['Tipo de empresa']).toLowerCase().includes(term)
+      cliente.Teléfono.toLowerCase().includes(term)
     );
   });
 });
-/* End Filtro de búsqueda */
 
 const totalPages = computed(() => Math.ceil(clientesFiltrados.value.length / pageSize.value));
 
@@ -238,10 +158,8 @@ const clientesPaginados = computed(() => {
   return clientesFiltrados.value.slice(startIndex, endIndex);
 });
 
-watch(currentPage, () => {});
-
 watch(searchTerm, () => {
-  currentPage.value = 1; // Reiniciar la página al cambiar el término de búsqueda
+  currentPage.value = 1;
 });
 
 onMounted(async () => {
@@ -253,9 +171,8 @@ onMounted(async () => {
     Swal.fire({
       icon: 'error',
       title: 'Error',
-      text: 'No se pudo cargar la lista de clientes.'
+      text: 'No se pudo cargar la lista de clientes.',
     });
   }
 });
 </script>
-<!-- End Script -->

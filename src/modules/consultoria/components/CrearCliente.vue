@@ -156,7 +156,7 @@ const onSubmit = async () => {
         ccli_contacto_nombre: '',
         ccli_contacto_correo: '',
         ccli_contacto_telefono: '',
-        ctemp_id: null,
+        ctemp_id: '',
       };
 
       emit('cerrarModal');

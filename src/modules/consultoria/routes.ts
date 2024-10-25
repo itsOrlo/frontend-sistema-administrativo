@@ -8,13 +8,13 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('./pages/ListadoClientes.vue'),
         meta: { requiresAuth: true }, 
     },
-    {
+    /* {
         
         path: '/crear-clientes',
         name: 'crearlistadoCliente',
         component: () => import('./components/ModalWrapperRegistroClientes.vue'),
         meta: { requiresAuth: true }, 
-    },
+    }, */
     
 ];
 
