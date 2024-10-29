@@ -26,14 +26,14 @@
 
       <!-- Clients Table -->
       <ClienteTable
-        v-else
-        :clientes="clientesPaginados"
-        :current-page="currentPage"
-        :total-pages="totalPages"
-        @editar="editarCliente"
-        @eliminar="deleteClient"
-        @cambiar-pagina="setPage"
-      />
+  v-else
+  :clientes="clientesPaginados"
+  :current-page="currentPage"
+  :total-pages="totalPages"
+  :cabecerasTabla="cabecerasTabla"  @editar="editarCliente"
+  @eliminar="deleteClient"
+  @cambiar-pagina="setPage"
+/>
     </div>
 
     <!-- Create Modal -->
@@ -53,6 +53,8 @@ import ClienteTable from '../components/ClienteTable.vue'
 import CrearCliente from '../components/CrearCliente.vue'
 
 const {
+
+  cabecerasTabla,
   // Estado
   searchTerm,
   currentPage,

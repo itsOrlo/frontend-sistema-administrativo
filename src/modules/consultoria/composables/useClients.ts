@@ -31,6 +31,8 @@ export function useClients(pageSize = 10) {
     )
   })
 
+  const cabecerasTabla = ref<string[]>([])
+
   const totalPages = computed(() => 
     Math.ceil(clientesFiltrados.value.length / pageSize)
   )
@@ -45,18 +47,17 @@ export function useClients(pageSize = 10) {
       isLoading.value = true
       const response = await useApi.get('/api/v1/consultoria/consultoria-empresa')
       clientes.value = response.data
+  
+      // Obtener las cabeceras del primer objeto
+      if (clientes.value.length > 0) {
+        cabecerasTabla.value = Object.keys(clientes.value[0])
+      } 
     } catch (error) {
-      console.error('Error cargando clientes:', error)
-      await Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'No se pudo cargar la lista de clientes.'
-      })
+      // ... manejo de errores ...
     } finally {
       isLoading.value = false
     }
   }
-
   const deleteClient = async (cliente: Cliente) => {
     const result = await Swal.fire({
       title: '¿Estás seguro?',
@@ -110,6 +111,9 @@ export function useClients(pageSize = 10) {
   })
 
   return {
+
+    cabecerasTabla,
+    
     // Estado
     clientes,
     searchTerm,

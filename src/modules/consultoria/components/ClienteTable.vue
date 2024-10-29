@@ -5,47 +5,14 @@
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
+            <!-- Asignado dinámico de cabecera -->
             <th
+              v-for="(cabecera, index) in cabecerasTabla"
+              :key="index"
               scope="col"
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
-              Empresa
-            </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              RUC
-            </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Contacto
-            </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Correo
-            </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Teléfono
-            </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Tipo de empresa
-            </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Acciones
+              {{ cabecera }}
             </th>
           </tr>
         </thead>
@@ -90,7 +57,9 @@
     <!-- End Table -->
 
     <!-- Pagination with improved design -->
-    <div class="mt-6 flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+    <div
+      class="mt-6 flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6"
+    >
       <div class="flex flex-1 justify-between items-center">
         <div>
           <p class="text-sm text-gray-700">
@@ -102,13 +71,10 @@
           <button
             @click="$emit('cambiar-pagina', currentPage - 1)"
             :disabled="currentPage === 1"
-            class="relative inline-flex items-center px-4 py-2 text-sm font-semibold 
-                   ring-1 ring-inset ring-gray-300 hover:bg-gray-50
-                   disabled:opacity-50 disabled:cursor-not-allowed
-                   rounded-md bg-white text-gray-900 shadow-sm"
-            :class="{ 
+            class="relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed rounded-md bg-white text-gray-900 shadow-sm"
+            :class="{
               'hover:bg-gray-50 focus:z-20 focus:outline-offset-0': currentPage !== 1,
-              'opacity-50 cursor-not-allowed': currentPage === 1 
+              'opacity-50 cursor-not-allowed': currentPage === 1,
             }"
           >
             <svg
@@ -131,13 +97,10 @@
           <button
             @click="$emit('cambiar-pagina', currentPage + 1)"
             :disabled="currentPage === totalPages"
-            class="relative inline-flex items-center px-4 py-2 text-sm font-semibold 
-                   ring-1 ring-inset ring-gray-300 hover:bg-gray-50
-                   disabled:opacity-50 disabled:cursor-not-allowed
-                   rounded-md bg-white text-gray-900 shadow-sm"
-            :class="{ 
+            class="relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed rounded-md bg-white text-gray-900 shadow-sm"
+            :class="{
               'hover:bg-gray-50 focus:z-20 focus:outline-offset-0': currentPage !== totalPages,
-              'opacity-50 cursor-not-allowed': currentPage === totalPages 
+              'opacity-50 cursor-not-allowed': currentPage === totalPages,
             }"
           >
             Siguiente
@@ -164,6 +127,7 @@
 
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue';
+import type { PropType } from 'vue';
 
 const props = defineProps({
   clientes: {
@@ -178,8 +142,12 @@ const props = defineProps({
     type: Number,
     required: true,
   },
+  cabecerasTabla: {
+    // Nueva prop
+    type: Array as PropType<string[]>,
+    required: true,
+  },
 });
-
 defineEmits(['editar', 'eliminar', 'cambiar-pagina']);
 
 // Función helper para obtener los nombres de tipo de empresa
