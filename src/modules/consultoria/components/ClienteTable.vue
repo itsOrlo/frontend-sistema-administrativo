@@ -34,12 +34,12 @@
               <div class="text-sm text-gray-500">{{ cliente.Teléfono }}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              {{ obtenerNombreTipoEmpresa(cliente['Tipo de empresa']) }}
+              {{ tiposEmpresa[cliente['Tipo de empresa']] || 'Desconocido' }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
               <button
                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded mr-2"
-                @click="$emit('editar', cliente.Ruc)"
+                @click="$emit('editar', cliente)"
               >
                 Editar
               </button>
@@ -143,20 +143,13 @@ const props = defineProps({
     required: true,
   },
   cabecerasTabla: {
-    // Nueva prop
     type: Array as PropType<string[]>,
+    required: true,
+  },
+  tiposEmpresa: {
+    type: Object as PropType<{ [key: number]: string }>,
     required: true,
   },
 });
 defineEmits(['editar', 'eliminar', 'cambiar-pagina']);
-
-// Función helper para obtener los nombres de tipo de empresa
-const obtenerNombreTipoEmpresa = (tipoId) => {
-  const tiposEmpresa = {
-    1: 'Tipo 1',
-    2: 'Tipo 2',
-    // ...
-  };
-  return tiposEmpresa[tipoId] || 'Desconocido';
-};
 </script>

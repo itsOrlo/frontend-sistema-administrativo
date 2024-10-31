@@ -2,7 +2,7 @@
   <DashboardLayout>
     <div class="p-6">
       <h2 class="text-2xl font-bold mb-4">Clientes</h2>
-      
+
       <!-- Header Actions -->
       <div class="flex justify-between mb-4">
         <input
@@ -26,56 +26,75 @@
 
       <!-- Clients Table -->
       <ClienteTable
-  v-else
-  :clientes="clientesPaginados"
-  :current-page="currentPage"
-  :total-pages="totalPages"
-  :cabecerasTabla="cabecerasTabla"  @editar="editarCliente"
-  @eliminar="deleteClient"
-  @cambiar-pagina="setPage"
-/>
+        v-else
+        :clientes="clientesPaginados"
+        :current-page="currentPage"
+        :tiposEmpresa="tiposEmpresa"
+        :total-pages="totalPages"
+        :cabecerasTabla="cabecerasTabla"
+        @editar="editarCliente" 
+        @eliminar="deleteClient"
+        @cambiar-pagina="setPage"
+      />
     </div>
 
     <!-- Create Modal -->
-    <CrearCliente 
-      v-if="mostrarModalCrear" 
+    <CrearCliente
+      v-if="mostrarModalCrear"
       @cerrar-modal="toggleCreateModal(false)"
       @cliente-creado="loadClients"
+      :tiposEmpresa="tiposEmpresa"
+    />
+
+    <EditarCliente
+      v-if="mostrarModalEditar"
+      :mostrarModal="mostrarModalEditar"
+      :clienteAEditar="clienteSeleccionado"
+      :tiposEmpresa="tiposEmpresa"
+      @cerrar-modal="toggleEditModal"
+      @cliente-actualizado="loadClients"
     />
   </DashboardLayout>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
-import { useClients } from '../composables/useClients'
-import DashboardLayout from '@/modules/dashboard/layouts/DashboardLayout.vue'
-import ClienteTable from '../components/ClienteTable.vue'
-import CrearCliente from '../components/CrearCliente.vue'
+import { onMounted } from 'vue';
+import { useClients } from '../composables/useClients';
+import DashboardLayout from '@/modules/dashboard/layouts/DashboardLayout.vue';
+import ClienteTable from '../components/ClienteTable.vue';
+import CrearCliente from '../components/CrearCliente.vue';
+import EditarCliente from '../components/EditarCliente.vue';
+import type { Cliente } from '../composables/useClients'; // Ajusta la ruta si es necesario
+
 
 const {
+  mostrarModalEditar,
+  clienteSeleccionado,
+  toggleEditModal,
 
+  tiposEmpresa,
   cabecerasTabla,
   // Estado
   searchTerm,
   currentPage,
   isLoading,
   mostrarModalCrear,
-  
+
   // Computed
   clientesPaginados,
   totalPages,
-  
+
   // Métodos
   loadClients,
   deleteClient,
   setPage,
-  toggleCreateModal
-} = useClients()
+  toggleCreateModal,
+} = useClients();
 
-const editarCliente = (id: string) => {
-  console.log('Editar cliente con ID:', id)
-  // Implementar lógica de edición
-}
+const editarCliente = (cliente: Cliente) => { // Agrega la interfaz Cliente aquí
+  clienteSeleccionado.value = cliente; 
+  toggleEditModal(true, cliente); 
+};
 
-onMounted(loadClients)
+onMounted(loadClients);
 </script>

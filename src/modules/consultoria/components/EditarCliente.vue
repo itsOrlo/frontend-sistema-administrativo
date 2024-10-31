@@ -1,16 +1,14 @@
 <template>
-  <div v-if="true" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-    <!-- Modal container con scroll -->
+  <div v-if="mostrarModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
     <div
       class="relative mx-4 w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-lg shadow-xl"
       @click.stop
     >
-      <!-- Header -->
       <div class="bg-blue-700 px-6 py-4 rounded-t-lg">
         <div class="flex items-center justify-between">
-          <h2 class="text-lg font-bold text-white">Registrar Nuevo Cliente</h2>
+          <h2 class="text-lg font-bold text-white">Editar Cliente</h2>
           <button
-            @click="emit('cerrarModal')"
+            @click="$emit('cerrar-modal')"
             class="text-white hover:text-gray-200 focus:outline-none"
             aria-label="Cerrar modal"
           >
@@ -19,77 +17,72 @@
         </div>
       </div>
 
-      <!-- Form -->
       <div class="p-6">
         <form @submit.prevent="onSubmit" class="space-y-4">
-          <!-- Empresa -->
+          <input type="hidden" name="ccli_id" v-model="cliente.Acción" /> 
+          <input type="hidden" name="ctemp_id" v-model="cliente['Tipo de empresa']" /> 
           <div>
             <label for="empresa" class="block text-gray-700 font-bold mb-2"> Empresa: </label>
             <input
               type="text"
               id="empresa"
-              v-model="cliente.ccli_empresa"
+              v-model="cliente.Empresa"
               class="w-full p-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
-          <!-- RUC -->
           <div>
             <label for="ruc" class="block text-gray-700 font-bold mb-2"> RUC: </label>
             <input
               type="text"
               id="ruc"
-              v-model="cliente.ccli_ruc"
+              v-model="cliente.Ruc"
               class="w-full p-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
-          <!-- Contacto -->
           <div>
             <label for="contacto" class="block text-gray-700 font-bold mb-2"> Contacto: </label>
             <input
               type="text"
               id="contacto"
-              v-model="cliente.ccli_contacto_nombre"
+              v-model="cliente.Contacto"
               class="w-full p-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
-          <!-- Correo -->
           <div>
             <label for="correo" class="block text-gray-700 font-bold mb-2"> Correo: </label>
             <input
               type="email"
               id="correo"
-              v-model="cliente.ccli_contacto_correo"
+              v-model="cliente.Correo"
               class="w-full p-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
-          <!-- Teléfono -->
           <div>
             <label for="telefono" class="block text-gray-700 font-bold mb-2"> Teléfono: </label>
             <input
               type="tel"
               id="telefono"
-              v-model="cliente.ccli_contacto_telefono"
+              v-model="cliente.Teléfono"
               class="w-full p-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
-          <!-- Tipo Empresa -->
           <div>
             <label for="tipoEmpresa" class="block text-gray-700 font-bold mb-2">
               Tipo de Empresa:
             </label>
             <select
               id="tipoEmpresa"
-              v-model="cliente.ctemp_id"
+              v-model="cliente['Tipo de empresa']" 
               class="w-full p-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             >
@@ -100,11 +93,10 @@
             </select>
           </div>
 
-          <!-- Buttons -->
           <div class="flex justify-end gap-3 pt-4">
             <button
               type="button"
-              @click="emit('cerrarModal')"
+              @click="$emit('cerrar-modal')"
               class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               Cancelar
@@ -113,7 +105,7 @@
               type="submit"
               class="px-4 py-2 text-white bg-blue-700 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              Crear Cliente
+              Guardar Cambios
             </button>
           </div>
         </form>
@@ -123,67 +115,72 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useApi } from '@/composables/use-api';
 import Swal from 'sweetalert2';
 import type { PropType } from 'vue';
+import type { Cliente } from '../composables/useClients'; 
 
 const props = defineProps({
+  mostrarModal: {
+    type: Boolean,
+    required: true,
+  },
+  clienteAEditar: {
+    type: Object as PropType<Cliente>,
+    required: true,
+  },
   tiposEmpresa: {
     type: Object as PropType<{ [key: number]: string }>,
     required: true,
   },
 });
 
-const cliente = ref({
-  ccli_empresa: '',
-  ccli_ruc: '',
-  ccli_contacto_nombre: '',
-  ccli_contacto_correo: '',
-  ccli_contacto_telefono: '',
-  ctemp_id: '',
-});
+const emit = defineEmits(['cerrar-modal', 'cliente-actualizado']);
 
-const emit = defineEmits(['cerrarModal', 'cliente-creado']);
+const cliente = ref({ ...props.clienteAEditar }); 
+
+watch(
+  () => props.clienteAEditar,
+  (nuevoCliente) => {
+    cliente.value = { ...nuevoCliente };
+  },
+);
 
 const onSubmit = async () => {
   try {
-    const response = await useApi.post('/api/v1/consultoria/consultoria-empresa', cliente.value);
+    // Construir el objeto con los datos a actualizar
+    const datosActualizados = {
+      ccli_id: parseInt(cliente.value.Acción), 
+      ctemp_id: cliente.value['Tipo de empresa'], 
+      ccli_empresa: cliente.value.Empresa,
+      ccli_ruc: cliente.value.Ruc,
+      ccli_contacto_nombre: cliente.value.Contacto,
+      ccli_contacto_correo: cliente.value.Correo,
+      ccli_contacto_telefono: cliente.value.Teléfono,
+    };
+
+    const response = await useApi.put(
+      `/api/v1/consultoria/consultoria-empresa`,
+      datosActualizados 
+    );
 
     await Swal.fire({
       icon: 'success',
-      title: '¡Cliente registrado!',
+      title: '¡Cliente actualizado!',
       showConfirmButton: false,
       timer: 2000,
     });
 
-    // Emitir evento y cerrar modal
-    emit('cliente-creado', response.data);
-    emit('cerrarModal');
+    emit('cliente-actualizado', response.data); 
+    emit('cerrar-modal');
   } catch (error) {
-    console.error('Error al registrar el cliente:', error);
+    console.error('Error al actualizar el cliente:', error);
     await Swal.fire({
       icon: 'error',
-      title: 'Error al registrar el cliente',
+      title: 'Error al actualizar el cliente',
       text: 'Por favor, inténtalo de nuevo más tarde.',
     });
   }
 };
 </script>
-
-<style scoped>
-@keyframes modalFade {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.bg-white {
-  animation: modalFade 0.3s ease-out;
-}
-</style>
