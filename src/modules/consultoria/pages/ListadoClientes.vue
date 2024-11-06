@@ -41,9 +41,11 @@
     <!-- Create Modal -->
     <CrearCliente
       v-if="mostrarModalCrear"
+      :mostrarModal="mostrarModalCrear"
+      :clienteARegistrar="clienteSeleccionado"
+      :tiposEmpresa="tiposEmpresa"
       @cerrar-modal="toggleCreateModal(false)"
       @cliente-creado="loadClients"
-      :tiposEmpresa="tiposEmpresa"
     />
 
     <EditarCliente
@@ -51,7 +53,7 @@
       :mostrarModal="mostrarModalEditar"
       :clienteAEditar="clienteSeleccionado"
       :tiposEmpresa="tiposEmpresa"
-      @cerrar-modal="toggleEditModal"
+      @cerrar-modal="toggleEditModal(false)"
       @cliente-actualizado="loadClients"
     />
   </DashboardLayout>
@@ -64,7 +66,7 @@ import DashboardLayout from '@/modules/dashboard/layouts/DashboardLayout.vue';
 import ClienteTable from '../components/ClienteTable.vue';
 import CrearCliente from '../components/CrearCliente.vue';
 import EditarCliente from '../components/EditarCliente.vue';
-import type { Cliente } from '../composables/useClients'; // Ajusta la ruta si es necesario
+import type { Cliente } from '../composables/useClients'; 
 
 
 const {
@@ -95,6 +97,7 @@ const editarCliente = (cliente: Cliente) => { // Agrega la interfaz Cliente aqu√
   clienteSeleccionado.value = cliente; 
   toggleEditModal(true, cliente); 
 };
+
 
 onMounted(loadClients);
 </script>

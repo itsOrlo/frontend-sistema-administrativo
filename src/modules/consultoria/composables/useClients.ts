@@ -4,14 +4,20 @@ import { useApi } from '@/composables/use-api';
 import Swal from 'sweetalert2';
 
 export interface Cliente {
-  Acción: string;
+  
   Empresa: string;
   Ruc: string;
   Contacto: string;
   Correo: string;
   Teléfono: string;
-  ctemp_id?: number;
-  Accionxd: number;
+  Acción: number;
+  'Tipo de empresa': number;
+  [key: string]: string | number;
+}
+
+interface TipoEmpresa {
+  cempt_id: number;
+  cempt_nombre: string;
 }
 
 export function useClients(pageSize = 10) {
@@ -48,7 +54,7 @@ export function useClients(pageSize = 10) {
     try {
       const response = await useApi.get('/api/v1/consultoria/empresa-tipo');
       // Transformar la respuesta en un objeto { id: nombre }
-      response.data.forEach((tipo) => {
+      response.data.forEach((tipo: TipoEmpresa) => {
         tiposEmpresa.value[tipo.cempt_id] = tipo.cempt_nombre;
       });
     } catch (error) {
@@ -59,10 +65,16 @@ export function useClients(pageSize = 10) {
 
   const toggleEditModal = (show: boolean, cliente: Cliente | null = null) => {
     mostrarModalEditar.value = show;
-    if (cliente) {
-      clienteSeleccionado.value = { ...cliente };
+    if (show) { // Si el modal se va a mostrar
+      if (cliente) {
+        clienteSeleccionado.value = { ...cliente };
+      } else {
+        // Manejar el caso en que 'cliente' sea null, por ejemplo:
+        console.error("Error: Se esperaba un objeto Cliente.");
+        clienteSeleccionado.value = null; // O asignar un valor por defecto
+      }
     } else {
-      clienteSeleccionado.value = null;
+      clienteSeleccionado.value = null; // Asignar null al cerrar el modal
     }
   };
 
@@ -101,7 +113,7 @@ export function useClients(pageSize = 10) {
     if (!result.isConfirmed) return;
 
     try {
-      const clienteId = parseInt(cliente.Acción);
+      const clienteId = cliente.Acción;
       if (!clienteId) throw new Error('ID de cliente no válido');
 
       const response = await useApi.put('/api/v1/consultoria/eliminar-consultoria', {

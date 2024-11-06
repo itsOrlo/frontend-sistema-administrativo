@@ -128,12 +128,9 @@
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue';
 import type { PropType } from 'vue';
+import type { Cliente } from '../composables/useClients'; 
 
 const props = defineProps({
-  clientes: {
-    type: Array,
-    required: true,
-  },
   currentPage: {
     type: Number,
     required: true,
@@ -148,6 +145,10 @@ const props = defineProps({
   },
   tiposEmpresa: {
     type: Object as PropType<{ [key: number]: string }>,
+    required: true,
+  },
+  clientes: {
+    type: Array as PropType<Cliente[]>, // Aquí especificamos el tipo
     required: true,
   },
 });

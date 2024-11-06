@@ -1,154 +1,156 @@
 <template>
-  <div v-if="true" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-    <!-- Modal container con scroll -->
+  <Transition name="fade">
     <div
-      class="relative mx-4 w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-lg shadow-xl"
-      @click.stop
+      v-if="mostrarModal"
+      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
     >
-      <!-- Header -->
-      <div class="bg-blue-700 px-6 py-4 rounded-t-lg">
-        <div class="flex items-center justify-between">
-          <h2 class="text-lg font-bold text-white">Registrar Nuevo Cliente</h2>
-          <button
-            @click="emit('cerrarModal')"
-            class="text-white hover:text-gray-200 focus:outline-none"
-            aria-label="Cerrar modal"
-          >
-            <span class="text-2xl">&times;</span>
-          </button>
+      <div
+        class="relative mx-4 w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-lg shadow-xl"
+        @click.stop
+      >
+        <div class="bg-blue-700 px-6 py-4 rounded-t-lg">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold text-white">Registrar Nuevo Cliente</h2>
+            <button
+              @click="handleClose"
+              class="text-white hover:text-gray-200 focus:outline-none"
+              aria-label="Cerrar modal"
+            >
+              <span class="text-2xl text-white">&times;</span>
+            </button>
+          </div>
+        </div>
+        <div class="p-6">
+          <form @submit.prevent="handleSubmit" class="space-y-4">
+            <FormField
+              v-for="field in formFields"
+              :key="field.id"
+              v-model="formData[field.name]"
+              v-bind="field"
+            />
+            <div class="flex justify-end gap-3 pt-4">
+              <button
+                type="button"
+                @click="handleClose"
+                class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                :disabled="isSubmitting"
+                class="px-4 py-2 text-white bg-blue-700 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              >
+                {{ isSubmitting ? 'Guardando...' : 'Guardar Cambios' }}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
-
-      <!-- Form -->
-      <div class="p-6">
-        <form @submit.prevent="onSubmit" class="space-y-4">
-          <!-- Empresa -->
-          <div>
-            <label for="empresa" class="block text-gray-700 font-bold mb-2"> Empresa: </label>
-            <input
-              type="text"
-              id="empresa"
-              v-model="cliente.ccli_empresa"
-              class="w-full p-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          <!-- RUC -->
-          <div>
-            <label for="ruc" class="block text-gray-700 font-bold mb-2"> RUC: </label>
-            <input
-              type="text"
-              id="ruc"
-              v-model="cliente.ccli_ruc"
-              class="w-full p-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          <!-- Contacto -->
-          <div>
-            <label for="contacto" class="block text-gray-700 font-bold mb-2"> Contacto: </label>
-            <input
-              type="text"
-              id="contacto"
-              v-model="cliente.ccli_contacto_nombre"
-              class="w-full p-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          <!-- Correo -->
-          <div>
-            <label for="correo" class="block text-gray-700 font-bold mb-2"> Correo: </label>
-            <input
-              type="email"
-              id="correo"
-              v-model="cliente.ccli_contacto_correo"
-              class="w-full p-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          <!-- Teléfono -->
-          <div>
-            <label for="telefono" class="block text-gray-700 font-bold mb-2"> Teléfono: </label>
-            <input
-              type="tel"
-              id="telefono"
-              v-model="cliente.ccli_contacto_telefono"
-              class="w-full p-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          <!-- Tipo Empresa -->
-          <div>
-            <label for="tipoEmpresa" class="block text-gray-700 font-bold mb-2">
-              Tipo de Empresa:
-            </label>
-            <select
-              id="tipoEmpresa"
-              v-model="cliente.ctemp_id"
-              class="w-full p-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            >
-              <option value="" disabled selected>Seleccione una opción</option>
-              <option v-for="(nombre, id) in tiposEmpresa" :key="id" :value="id">
-                {{ nombre }}
-              </option>
-            </select>
-          </div>
-
-          <!-- Buttons -->
-          <div class="flex justify-end gap-3 pt-4">
-            <button
-              type="button"
-              @click="emit('cerrarModal')"
-              class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              class="px-4 py-2 text-white bg-blue-700 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              Crear Cliente
-            </button>
-          </div>
-        </form>
-      </div>
     </div>
-  </div>
+  </Transition>
 </template>
 
 <script setup lang="ts">
-import { defineProps, ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useApi } from '@/composables/use-api';
 import Swal from 'sweetalert2';
-import type { PropType } from 'vue';
+import FormField from './FormField.vue';
 
-const props = defineProps({
-  tiposEmpresa: {
-    type: Object as PropType<{ [key: number]: string }>,
+interface Props {
+  mostrarModal: boolean;
+  tiposEmpresa: Record<number, string>;
+}
+
+const props = defineProps<Props>();
+const emit = defineEmits<{
+  'cerrar-modal': [];
+  'cliente-creado': [data: any];
+}>();
+interface FormData {
+  Empresa: string;
+  Ruc: string;
+  Contacto: string;
+  Correo: string;
+  Teléfono: string | null;
+  'Tipo de empresa': number | null;
+}
+
+const isSubmitting = ref(false);
+const formData = ref<FormData>({
+  Empresa: '',
+  Ruc: '',
+  Contacto: '',
+  Correo: '',
+  Teléfono: null,
+  'Tipo de empresa': null,
+});
+
+const formFields = computed(() => [
+  {
+    id: 'empresa',
+    name: 'Empresa',
+    label: 'Empresa',
+    type: 'text',
     required: true,
   },
-});
+  {
+    id: 'ruc',
+    name: 'Ruc',
+    label: 'RUC',
+    type: 'text',
+    required: true,
+  },
+  {
+    id: 'contacto',
+    name: 'Contacto',
+    label: 'Contacto',
+    type: 'text',
+    required: true,
+  },
+  {
+    id: 'correo',
+    name: 'Correo',
+    label: 'Correo',
+    type: 'email',
+    required: true,
+  },
+  {
+    id: 'telefono',
+    name: 'Teléfono',
+    label: 'Teléfono',
+    type: 'tel',
+    required: true,
+  },
+  {
+    id: 'tipoEmpresa',
+    name: 'Tipo de empresa',
+    label: 'Tipo de Empresa',
+    type: 'select',
+    options: props.tiposEmpresa,
+    required: true,
+  },
+]);
 
-const cliente = ref({
-  ccli_empresa: '',
-  ccli_ruc: '',
-  ccli_contacto_nombre: '',
-  ccli_contacto_correo: '',
-  ccli_contacto_telefono: '',
-  ctemp_id: '',
-});
+const handleClose = () => {
+  emit('cerrar-modal');
+};
 
-const emit = defineEmits(['cerrarModal', 'cliente-creado']);
+const handleSubmit = async () => {
+  if (isSubmitting.value) return;
 
-const onSubmit = async () => {
   try {
-    const response = await useApi.post('/api/v1/consultoria/consultoria-empresa', cliente.value);
+    isSubmitting.value = true;
+    const datosRegistro = {
+      ctemp_id: formData.value['Tipo de empresa'],
+      ccli_empresa: formData.value.Empresa,
+      ccli_ruc: formData.value.Ruc,
+      ccli_contacto_nombre: formData.value.Contacto,
+      ccli_contacto_correo: formData.value.Correo,
+      ccli_contacto_telefono: formData.value['Teléfono'],
+    };
+
+    const response = await useApi.post('/api/v1/consultoria/consultoria-empresa', datosRegistro);
 
     await Swal.fire({
       icon: 'success',
@@ -157,33 +159,29 @@ const onSubmit = async () => {
       timer: 2000,
     });
 
-    // Emitir evento y cerrar modal
     emit('cliente-creado', response.data);
-    emit('cerrarModal');
+    handleClose();
   } catch (error) {
-    console.error('Error al registrar el cliente:', error);
+    console.error('Error al registrar cliente:', error);
     await Swal.fire({
       icon: 'error',
-      title: 'Error al registrar el cliente',
+      title: 'Error al registrar cliente',
       text: 'Por favor, inténtalo de nuevo más tarde.',
     });
+  } finally {
+    isSubmitting.value = false;
   }
 };
 </script>
 
 <style scoped>
-@keyframes modalFade {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
 }
 
-.bg-white {
-  animation: modalFade 0.3s ease-out;
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
