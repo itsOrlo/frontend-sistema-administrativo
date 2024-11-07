@@ -126,7 +126,6 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue';
 import type { PropType } from 'vue';
 import type { Cliente } from '../composables/useClients'; 
 
