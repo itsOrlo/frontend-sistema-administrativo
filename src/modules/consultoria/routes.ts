@@ -8,6 +8,14 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('./pages/ListadoClientes.vue'),
         meta: { requiresAuth: true }, 
     },
+
+    {
+        
+        path: '/listarDependencias',
+        name: 'listadoDependencias',
+        component: () => import('./pages/ListadoDependencias.vue'),
+        meta: { requiresAuth: true }, 
+    },
     /* {
         
         path: '/crear-clientes',
