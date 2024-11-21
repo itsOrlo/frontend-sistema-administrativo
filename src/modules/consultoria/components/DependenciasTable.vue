@@ -134,10 +134,6 @@ defineProps({
     type: Array as PropType<string[]>,
     required: true,
   },
-  tiposEmpresa: {
-    type: Object as PropType<{ [key: number]: string }>,
-    required: true,
-  },
   dependencias: {
     type: Array as PropType<Dependencia[]>, // Aquí especificamos el tipo
     required: true,
