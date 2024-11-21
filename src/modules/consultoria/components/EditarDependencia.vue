@@ -8,26 +8,28 @@
         class="relative mx-4 w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-lg shadow-xl"
         @click.stop
       >
-        <div class="bg-blue-700 px-6 py-4 rounded-t-lg">
+        <header class="bg-blue-700 px-6 py-4 rounded-t-lg">
           <div class="flex items-center justify-between">
-            <h2 class="text-lg font-bold text-white">Registrar Nueva Dependencia</h2>
+            <h2 class="text-lg font-bold text-white">Editar Dependencia</h2>
             <button
               @click="handleClose"
               class="text-white hover:text-gray-200 focus:outline-none"
               aria-label="Cerrar modal"
             >
-              <span class="text-2xl">&times;</span>
+              <span class="text-2xl text-white">&times;</span>
             </button>
           </div>
-        </div>
+        </header>
+
         <div class="p-6">
-          <form @submit.prevent="handleSubmit" class="space-y-4">
+          <form @submit.prevent="handleSubmit" cDlass="space-y-4">
             <FormField
               v-for="field in formFields"
               :key="field.id"
               v-model="formData[field.name]"
               v-bind="field"
             />
+
             <div class="flex justify-end gap-3 pt-4">
               <button
                 type="button"
@@ -52,28 +54,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useApi } from '@/composables/use-api';
 import Swal from 'sweetalert2';
 import FormField from './FormField.vue';
+import type { Cliente } from '../composables/useClients';
+import type { Dependencia } from '../composables/useDependencias';
 
 interface Props {
   mostrarModal: boolean;
+  dependenciaAEditar: Dependencia;
 }
 
-defineProps<Props>();
-
+const props = defineProps<Props>();
 const emit = defineEmits<{
   'cerrar-modal': [];
-  'dependencia-creada': [data: any];
+  'dependencia-actualizado': [data: any];
 }>();
 
-interface FormData {
-  [key: string]: string; // Index signature para propiedades dinámicas
-}
-
 const isSubmitting = ref(false);
-const formData = ref<FormData>({}); // Objeto FormData vacío
+const formData = ref<Dependencia>({ ...props.dependenciaAEditar });
 
 const formFields = computed(() => [
   {
@@ -85,6 +85,13 @@ const formFields = computed(() => [
   },
 ]);
 
+watch(
+  () => props.dependenciaAEditar,
+  (newDependencia) => {
+    formData.value = { ...newDependencia };
+  },
+);
+
 const handleClose = () => {
   emit('cerrar-modal');
 };
@@ -94,27 +101,27 @@ const handleSubmit = async () => {
 
   try {
     isSubmitting.value = true;
-    const datosRegistro = {
+    const datosActualizados = {
+      cdep_id: formData.value.cdep_id,
       cdep_dependencia: formData.value.cdep_dependencia,
     };
 
-    const response = await useApi.post('/api/v1/consultoria/consultoria-dependencias', datosRegistro);
+    const response = await useApi.put('/api/v1/consultoria/consultoria-dependencias', datosActualizados);
 
     await Swal.fire({
       icon: 'success',
-      title: '¡Dependencia registrado!',
+      title: '¡Dependencia actualizado!',
       showConfirmButton: false,
       timer: 2000,
     });
 
-    emit('dependencia-creada', response.data);
+    emit('dependencia-actualizado', response.data);
     handleClose();
-
   } catch (error) {
-    console.error('Error al registrar dependencia:', error);
+    console.error('Error al actualizar la dependencia:', error);
     await Swal.fire({
       icon: 'error',
-      title: 'Error al registrar dependencia',
+      title: 'Error al actualizar la dependencia',
       text: 'Por favor, inténtalo de nuevo más tarde.',
     });
   } finally {
@@ -133,4 +140,4 @@ const handleSubmit = async () => {
 .fade-leave-to {
   opacity: 0;
 }
-</style> 1
+</style>

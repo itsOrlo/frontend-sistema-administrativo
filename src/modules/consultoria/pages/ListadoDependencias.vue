@@ -31,6 +31,7 @@
         :current-page="currentPage"
         :total-pages="totalPages"
         :cabecerasTabla="cabecerasTabla"
+        @editar="editarDependencia" 
         @cambiar-pagina="setPage"
       />
 
@@ -40,8 +41,16 @@
         :mostrarModal="mostrarModalCrear"
         :clienteARegistrar="dependenciaSeleccionado"
         @cerrar-modal="toggleCreateModal(false)"
-        @cliente-creado="loadDepends"
+        @dependencia-creada="loadDepends"
       />
+
+      <EditarDependencia
+      v-if="mostrarModalEditar"
+      :mostrarModal="mostrarModalEditar"
+      :dependenciaAEditar="dependenciaSeleccionado"
+      @cerrar-modal="toggleEditModal(false)"
+      @dependencia-actualizado="loadDepends"
+    />
     </div>
   </DashboardLayout>
 </template>
@@ -53,6 +62,7 @@ import type { Dependencia } from '../composables/useDependencias';
 import DependenciasTable from '../components/DependenciasTable.vue';
 import { useDependencia } from '../composables/useDependencias';
 import CrearDependencia from '../components/CrearDependencia.vue';
+import EditarDependencia from '../components/EditarDependencia.vue';
 
 const {
   mostrarModalEditar,

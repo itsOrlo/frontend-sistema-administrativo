@@ -27,7 +27,7 @@
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm text-gray-900">{{ dependencia.cdep_fecha_registro }}</div>
             </td>
-            
+
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
               <button
                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded mr-2"
@@ -118,8 +118,8 @@
 </template>
 
 <script setup lang="ts">
-import { type PropType } from 'vue';
-import type { Dependencia } from '../composables/useDependencias'; 
+import type { PropType } from 'vue';
+import type { Dependencia } from '../composables/useDependencias';
 
 defineProps({
   currentPage: {

@@ -129,7 +129,7 @@
 import type { PropType } from 'vue';
 import type { Cliente } from '../composables/useClients'; 
 
-const props = defineProps({
+defineProps({
   currentPage: {
     type: Number,
     required: true,
