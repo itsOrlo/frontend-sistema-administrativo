@@ -36,14 +36,16 @@
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
               {{ tiposEmpresa[cliente['Tipo de empresa']] || 'Desconocido' }}
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            <td v-if="mostrarBotones" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
               <button
+              
                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded mr-2"
                 @click="$emit('editar', cliente)"
               >
                 Editar
               </button>
               <button
+  
                 class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
                 @click="$emit('eliminar', cliente)"
               >
@@ -127,7 +129,19 @@
 
 <script setup lang="ts">
 import type { PropType } from 'vue';
-import type { Cliente } from '../composables/useClients'; 
+import type { Cliente } from '../composables/useClients';
+import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
+import { onMounted, ref } from 'vue';
+
+const autenticacionStore = useAutenticacionStore();
+const mostrarBotones = ref(false);
+
+// Computed property para determinar si se deben mostrar los botones
+onMounted(() => {
+  console.log('Nombre de usuario:', autenticacionStore.nombre);
+  console.log('privilegio:', autenticacionStore.privilegio);
+  mostrarBotones.value = autenticacionStore.privilegio === 1;
+});
 
 defineProps({
   currentPage: {

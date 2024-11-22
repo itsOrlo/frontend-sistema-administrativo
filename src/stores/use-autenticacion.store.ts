@@ -1,10 +1,13 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import type { RutaDto } from '@/modules/autenticacion/dto/login-response.dto';
 
 export const useAutenticacionStore = defineStore('autenticacion', () => {
+  const privilegio = ref(0); // Privilegio
+
   const loginStatus = ref(false);
   const nombre = ref('');
+
   const rolId = ref(-1);
   const rutas = ref<RutaDto[]>([]);
   const token = ref('');
@@ -13,6 +16,18 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
   const messageError = ref('');
   const titleError = ref('');
 
+  onMounted(() => {
+    const storedPrivilegio = localStorage.getItem('privilegio');
+    if (storedPrivilegio) {
+      privilegio.value = parseInt(storedPrivilegio, 10);
+    }
+
+    const storedNombreUsuario = localStorage.getItem('usuario');
+    if (storedNombreUsuario) {
+      nombre.value = storedNombreUsuario;
+    }
+  });
+
   const onLogginSuccess = (
     success: boolean,
     nombreParam?: string,
@@ -20,6 +35,7 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
     message?: string,
     rutasParam?: any[],
     tokenParam?: string,
+    privilegioParam?: number,
   ) => {
     if (success === true) {
       loginStatus.value = true;
@@ -29,11 +45,20 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
       titleError.value = '';
       showModal.value = false;
 
-      console.log('Rutas asignadas al store:', rutas.value); // Debugging
-      console.log('Rutas desde el API:', rutasParam);
-      console.log('Estado del store después de asignar rutas:', rutas.value);
+      if (rutasParam) {
+        rutas.value = rutasParam;
+        // Obtener el privilegio (adaptar la lógica según tu API)
+        const privilegioValor = rutasParam.some((ruta) => ruta.roru_privilegio === 1) ? 1 : 0;
+        privilegio.value = privilegioValor; // Guardar el privilegio en el store
+        // ... (código que depende de rutas.value) ...
+      } else {
+        // Manejar el caso en que rutasParam sea undefined
+        console.error('rutasParam es undefined');
+        // Puedes asignar un valor por defecto a rutas.value, por ejemplo:
+        rutas.value = [];
+      }
 
-      rutas.value = rutasParam || [];
+      console.log('Privilegio actualizado:', privilegio.value); // Agregar este console.log
       token.value = tokenParam || '';
     } else {
       showModal.value = true;
@@ -75,6 +100,7 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
     // state
     loginStatus,
     nombre,
+    privilegio,
     rolId,
     rutas,
     token,

@@ -30,6 +30,8 @@
 
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
               <button
+
+                v-if="mostrarBotones"
                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded mr-2"
                 @click="$emit('editar', dependencia)"
               >
@@ -120,6 +122,22 @@
 <script setup lang="ts">
 import type { PropType } from 'vue';
 import type { Dependencia } from '../composables/useDependencias';
+import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
+import { computed, ref, watch } from 'vue';
+
+const autenticacionStore = useAutenticacionStore();
+
+// Variable reactiva para controlar la visibilidad de los botones
+const mostrarBotones = ref(false); 
+
+// Computed property para obtener el privilegio del store
+const privilegio = computed(() => autenticacionStore.privilegio);
+
+// Watch para observar los cambios en el privilegio
+watch(privilegio, (nuevoPrivilegio) => {
+  console.log("Privilegio actualizado:", nuevoPrivilegio);
+  mostrarBotones.value = nuevoPrivilegio === 1;
+});
 
 defineProps({
   currentPage: {

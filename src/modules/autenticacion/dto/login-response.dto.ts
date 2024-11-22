@@ -29,6 +29,7 @@ export interface RutaDto {
     ruta_actualizada: string;
     ruta_padre: number;
     ruta_estado: boolean;
+    roru_privilegio: number;
     rutasHijas?: RutaDto[]; 
 }
 
