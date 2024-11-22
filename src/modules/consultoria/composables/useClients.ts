@@ -31,12 +31,17 @@ export function useClients(pageSize = 10) {
   const clienteSeleccionado = ref<Cliente | null>(null);
 
   const clientesFiltrados = computed(() => {
-    if (!searchTerm.value) return clientes.value;
-
-    const term = searchTerm.value.toLowerCase();
-    return clientes.value.filter((cliente) =>
-      Object.values(cliente).join(' ').toLowerCase().includes(term),
-    );
+    let resultado = clientes.value;
+    
+    if (searchTerm.value) {
+      const term = searchTerm.value.toLowerCase();
+      resultado = resultado.filter((cliente) =>
+        Object.values(cliente).join(' ').toLowerCase().includes(term)
+      );
+    }
+    
+    // Ordenar por el campo Acción (ID)
+    return resultado.sort((a, b) => Number(a.Acción) - Number(b.Acción));
   });
 
   const cabecerasTabla = ref<string[]>([]);
@@ -82,13 +87,18 @@ export function useClients(pageSize = 10) {
     try {
       isLoading.value = true;
       const response = await useApi.get('/api/v1/consultoria/consultoria-empresa');
-      clientes.value = response.data;
+      
+      // Ordenar los datos antes de asignarlos
+      clientes.value = response.data.sort((a: Cliente, b: Cliente) => {
+        return Number(a.Acción) - Number(b.Acción);
+      });
 
       // Obtener las cabeceras del primer objeto
       if (clientes.value.length > 0) {
         cabecerasTabla.value = Object.keys(clientes.value[0]);
       }
     } catch (error) {
+      console.error('Error cargando clientes:', error);
       // ... manejo de errores ...
     } finally {
       isLoading.value = false;

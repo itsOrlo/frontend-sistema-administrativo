@@ -59,13 +59,19 @@ export function useDependencia(pageSize = 10) {
     try {
       isLoading.value = true;
       const response = await useApi.get('/api/v1/consultoria/consultoria-dependencias');
-      dependencias.value = response.data;
+      
+      // Ordenamos los datos antes de asignarlos
+      dependencias.value = response.data.sort((a: Dependencia, b: Dependencia) => {
+        // Convertimos explícitamente a números y ordenamos
+        return Number(a.cdep_id) - Number(b.cdep_id);
+      });
 
       // Obtener las cabeceras del primer objeto
       if (dependencias.value.length > 0) {
         cabecerasTabla.value = Object.keys(dependencias.value[0]);
       }
     } catch (error) {
+      console.error('Error cargando dependencias:', error);
       // ... manejo de errores ...
     } finally {
       isLoading.value = false;
