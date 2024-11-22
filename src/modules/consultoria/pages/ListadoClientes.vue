@@ -12,6 +12,7 @@
           class="p-2 border rounded w-64"
         />
         <button
+        v-if="mostrarBotones"
           @click="toggleCreateModal(true)"
           class="bg-blue-800 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded"
         >
@@ -60,13 +61,23 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
 import { useClients } from '../composables/useClients';
 import DashboardLayout from '@/modules/dashboard/layouts/DashboardLayout.vue';
 import ClienteTable from '../components/ClienteTable.vue';
 import CrearCliente from '../components/CrearCliente.vue';
 import EditarCliente from '../components/EditarCliente.vue';
 import type { Cliente } from '../composables/useClients'; 
+import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
+import { onMounted, ref } from 'vue';
+
+const autenticacionStore = useAutenticacionStore();
+const mostrarBotones = ref(false);
+
+// Computed property para determinar si se deben mostrar los botones
+onMounted(() => {
+  console.log('privilegio:', autenticacionStore.privilegio);
+  mostrarBotones.value = autenticacionStore.privilegio === 1;
+});
 
 
 const {

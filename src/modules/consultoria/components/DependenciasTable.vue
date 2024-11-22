@@ -7,7 +7,7 @@
           <tr>
             <!-- Asignado dinámico de cabecera -->
             <th
-              v-for="(cabecera, index) in cabecerasTabla"
+              v-for="(cabecera, index) in cabecerasVisibles"
               :key="index"
               scope="col"
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -28,10 +28,10 @@
               <div class="text-sm text-gray-900">{{ dependencia.cdep_fecha_registro }}</div>
             </td>
 
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            <td v-if="mostrarBotones" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
               <button
 
-                v-if="mostrarBotones"
+                
                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded mr-2"
                 @click="$emit('editar', dependencia)"
               >
@@ -123,23 +123,29 @@
 import type { PropType } from 'vue';
 import type { Dependencia } from '../composables/useDependencias';
 import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
-import { computed, ref, watch } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 
 const autenticacionStore = useAutenticacionStore();
+const mostrarBotones = ref(false);
 
-// Variable reactiva para controlar la visibilidad de los botones
-const mostrarBotones = ref(false); 
-
-// Computed property para obtener el privilegio del store
-const privilegio = computed(() => autenticacionStore.privilegio);
-
-// Watch para observar los cambios en el privilegio
-watch(privilegio, (nuevoPrivilegio) => {
-  console.log("Privilegio actualizado:", nuevoPrivilegio);
-  mostrarBotones.value = nuevoPrivilegio === 1;
+// Computed property para determinar si se deben mostrar los botones
+onMounted(() => {
+  /* console.log('Nombre de usuario:', autenticacionStore.nombre);
+  console.log('privilegio:', autenticacionStore.privilegio); */
+  mostrarBotones.value = autenticacionStore.privilegio === 1;
 });
 
-defineProps({
+// Computed property para las cabeceras visibles
+const cabecerasVisibles = computed(() => {
+  if (mostrarBotones.value) {
+    return props.cabecerasTabla;
+  } else {
+    // Retorna todas las cabeceras excepto la última
+    return props.cabecerasTabla.slice(0, -1); 
+  }
+});
+
+const props= defineProps({
   currentPage: {
     type: Number,
     required: true,

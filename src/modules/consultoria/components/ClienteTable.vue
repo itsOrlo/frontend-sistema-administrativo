@@ -7,7 +7,7 @@
           <tr>
             <!-- Asignado dinámico de cabecera -->
             <th
-              v-for="(cabecera, index) in cabecerasTabla"
+              v-for="(cabecera, index) in cabecerasVisibles"
               :key="index"
               scope="col"
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -131,19 +131,29 @@
 import type { PropType } from 'vue';
 import type { Cliente } from '../composables/useClients';
 import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 
 const autenticacionStore = useAutenticacionStore();
 const mostrarBotones = ref(false);
 
 // Computed property para determinar si se deben mostrar los botones
 onMounted(() => {
-  console.log('Nombre de usuario:', autenticacionStore.nombre);
-  console.log('privilegio:', autenticacionStore.privilegio);
+  /* console.log('Nombre de usuario:', autenticacionStore.nombre);
+  console.log('privilegio:', autenticacionStore.privilegio); */
   mostrarBotones.value = autenticacionStore.privilegio === 1;
 });
 
-defineProps({
+// Computed property para las cabeceras visibles
+const cabecerasVisibles = computed(() => {
+  if (mostrarBotones.value) {
+    return props.cabecerasTabla;
+  } else {
+    // Retorna todas las cabeceras excepto la última
+    return props.cabecerasTabla.slice(0, -1); 
+  }
+});
+
+const props = defineProps({
   currentPage: {
     type: Number,
     required: true,
