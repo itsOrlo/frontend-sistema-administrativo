@@ -58,7 +58,6 @@ import { ref, computed, watch } from 'vue';
 import { useApi } from '@/composables/use-api';
 import Swal from 'sweetalert2';
 import FormField from './FormField.vue';
-import type { Cliente } from '../composables/useClients';
 import type { Dependencia } from '../composables/useDependencias';
 
 interface Props {
@@ -76,6 +75,7 @@ const isSubmitting = ref(false);
 const formData = ref<Dependencia>({ ...props.dependenciaAEditar });
 
 const formFields = computed(() => [
+  
   {
     id: 'cdep_dependencia',
     name: 'cdep_dependencia',

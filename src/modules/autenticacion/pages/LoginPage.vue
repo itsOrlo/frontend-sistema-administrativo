@@ -68,33 +68,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import LoginLayout from '../layouts/LoginLayout.vue';
 import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
 import { useLogin } from '../composables/use-login';
 import { useRouter } from 'vue-router';
 import type { LoginResponseDto } from '../dto/login-response.dto';
 import { fetchRoutes } from '@/utils/route-utils';
-import { removeRoutesOnLogout } from '../../dashboard/helpers/parse-object-rutas';
-import { personalDb, estudiantesDb } from '@/indexed-db';
 
 const query = useLogin();
 const username = ref<string>('');
 const password = ref<string>('');
 const router = useRouter();
 const store = useAutenticacionStore();
-
-const logout = () => {
-  store.onLogout();
-  removeRoutesOnLogout(router);
-  estudiantesDb.closeDbEstudiantes();
-  personalDb.closeDbPersonal();
-  // router.push({ name: 'login', replace: true }); // Comentado para evitar redirección infinita
-};
-
-// onMounted(() => {
-//   logout(); // Comentado para evitar que se cierre la sesión al montar el componente
-// });
 
 const submit = async () => {
   try {
@@ -132,12 +118,10 @@ const submit = async () => {
       }
     } else {
       // Manejar el caso en que la respuesta sea undefined
-      console.error("Error en el login: la respuesta es undefined");
-      // Puedes mostrar un mensaje de error al usuario o realizar alguna otra acción
+      console.error("Error en el login: la respuesta es undefined")
     }
   } catch (error) {
     console.error('Error en el login:', error); // Registrar el error en la consola
-    // store.onLogginError((error as Error).message || 'Ocurrió un error inesperado');
   }
 };
 

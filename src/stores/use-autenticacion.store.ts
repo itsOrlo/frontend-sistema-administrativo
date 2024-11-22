@@ -35,7 +35,6 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
     message?: string,
     rutasParam?: any[],
     tokenParam?: string,
-    privilegioParam?: number,
   ) => {
     if (success === true) {
       loginStatus.value = true;
@@ -50,7 +49,6 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
         // Obtener el privilegio (adaptar la lógica según tu API)
         const privilegioValor = rutasParam.some((ruta) => ruta.roru_privilegio === 1) ? 1 : 0;
         privilegio.value = privilegioValor; // Guardar el privilegio en el store
-        // ... (código que depende de rutas.value) ...
       } else {
         // Manejar el caso en que rutasParam sea undefined
         console.error('rutasParam es undefined');
