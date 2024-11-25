@@ -74,7 +74,7 @@
                 </svg>
               </button>
               <div
-                @click="router.push({ name: 'dashboard', replace: true })"
+                @click="router.push({ name: 'consultoria-clientes', replace: true })"
                 class="flex ms-2 md:me-24 cursor-pointer"
               >
                 <img
