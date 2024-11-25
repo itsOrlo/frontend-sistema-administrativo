@@ -28,17 +28,30 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!localStorage.getItem('token'); // Verifica si el token está presente
+  const isAuthenticated = !!localStorage.getItem('token');
+  
+  // Si la ruta requiere autenticación
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (!isAuthenticated) {
-      next({ name: 'login' }); // Redirige al login si no está autenticado
+      next({ name: 'login' });
     } else {
-      next(); // Permitir el acceso a la ruta
+      next();
     }
-  } else {
-    next(); // Permitir el acceso si no requiere autenticación
+  } 
+  // Si la ruta es de autenticación (login, registro, etc.)
+  else if (to.matched.some((record) => record.meta.isAuthRoute)) {
+    if (isAuthenticated) {
+      next({ name: 'dashboard' }); // Redirige al dashboard si ya está autenticado
+    } else {
+      next();
+    }
+  }
+  // Para todas las demás rutas
+  else {
+    next();
   }
 });
+
 
 
 

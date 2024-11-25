@@ -8,6 +8,13 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('./pages/ListadoClientes.vue'),
         meta: { requiresAuth: true }, 
     },
+    {
+        
+        path: '/consultoria-clientes',
+        name: 'consultoriaClientes',
+        component: () => import('./pages/ConsultoriaClienetesPage.vue'),
+        meta: { requiresAuth: true }, 
+    },
 
     {
         

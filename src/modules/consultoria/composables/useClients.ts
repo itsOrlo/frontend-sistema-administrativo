@@ -162,6 +162,8 @@ export function useClients(pageSize = 10) {
     await loadTiposEmpresa();
   });
 
+  const totalClientes = computed(() => clientes.value.length);
+
   return {
     mostrarModalEditar,
     clienteSeleccionado,
@@ -189,5 +191,6 @@ export function useClients(pageSize = 10) {
     // Helpers
     setPage: (page: number) => (currentPage.value = page),
     toggleCreateModal: (show: boolean) => (mostrarModalCrear.value = show),
+    totalClientes,
   };
 }
