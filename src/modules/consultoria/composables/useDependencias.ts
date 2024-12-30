@@ -22,12 +22,14 @@ export function useDependencia(pageSize = 10) {
   const dependenciaSeleccionado = ref<Dependencia | null>(null);
 
   const dependenciasFiltrados = computed(() => {
-    if (!searchTerm.value) return dependencias.value;
+    if (!searchTerm.value) return dependencias.value.map(({ cdep_dependencia }) => cdep_dependencia);
 
     const term = searchTerm.value.toLowerCase();
-    return dependencias.value.filter((dependencia) =>
-      Object.values(dependencia).join(' ').toLowerCase().includes(term),
-    );
+    return dependencias.value
+      .filter((dependencia) =>
+        Object.values(dependencia).join(' ').toLowerCase().includes(term)
+      )
+      .map(({ cdep_dependencia }) => cdep_dependencia);
   });
 
   const cabecerasTabla = ref<string[]>([]);
@@ -60,23 +62,29 @@ export function useDependencia(pageSize = 10) {
       isLoading.value = true;
       const response = await useApi.get('/api/v1/consultoria/consultoria-dependencias');
       
-      // Ordenamos los datos antes de asignarlos
-      dependencias.value = response.data.sort((a: Dependencia, b: Dependencia) => {
-        // Convertimos explícitamente a números y ordenamos
-        return Number(a.cdep_id) - Number(b.cdep_id);
-      });
+      // Mantener la estructura completa del objeto
+      dependencias.value = response.data.sort((a: Dependencia, b: Dependencia) => 
+        Number(a.cdep_id) - Number(b.cdep_id)
+      );
 
-      // Obtener las cabeceras del primer objeto
       if (dependencias.value.length > 0) {
         cabecerasTabla.value = Object.keys(dependencias.value[0]);
       }
     } catch (error) {
       console.error('Error cargando dependencias:', error);
-      // ... manejo de errores ...
     } finally {
       isLoading.value = false;
     }
   };
+
+  // Agregar un computed para el formato que necesita el combobox
+  const dependenciasFormateadas = computed(() => {
+    return dependencias.value.reduce((acc, dep) => {
+      acc[dep.cdep_id] = dep.cdep_dependencia;
+      return acc;
+    }, {} as Record<number, string>);
+  });
+
   const deleteDepend = async (dependencia: Dependencia) => {
     const result = await Swal.fire({
       title: '¿Estás seguro?',
@@ -160,5 +168,7 @@ export function useDependencia(pageSize = 10) {
     // Helpers
     setPage: (page: number) => (currentPage.value = page),
     toggleCreateModal: (show: boolean) => (mostrarModalCrear.value = show),
+
+    dependenciasFormateadas,
   };
 }

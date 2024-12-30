@@ -1,0 +1,144 @@
+<template>
+  <DashboardLayout>
+    <div class="p-8 bg-gray-50 min-h-screen">
+      <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <h2 class="text-3xl font-bold text-gray-800 mb-2">Gestión de Consultorías</h2>
+        <p class="text-gray-600">Administra tus consultorías y clientes</p>
+      </div>
+
+      <div class="flex flex-col md:flex-row justify-between gap-4 mb-6">
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 pl-3 flex items-center">
+            <svg
+              class="h-5 w-5 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </span>
+          <input
+            type="text"
+            v-model="searchTerm"
+            placeholder="Buscar consultorías..."
+            class="pl-10 pr-4 py-3 w-full md:w-80 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+        <button
+          v-if="mostrarBotones"
+          @click="toggleCreateModal(true)"
+          class="bg-blue-600 hover:bg-blue-700 transform hover:scale-105 transition-all duration-200 text-white font-semibold py-3 px-6 rounded-lg flex items-center gap-2 shadow-md"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+          Nueva Consultoria
+        </button>
+      </div>
+
+      <div v-if="isLoading" class="flex justify-center py-12">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+
+      <div v-else class="bg-white rounded-lg shadow-sm overflow-hidden">
+        <ClienteTable
+          :clientes="clientesPaginados"
+          :current-page="currentPage"
+          :tiposEmpresa="tiposEmpresa"
+          :total-pages="totalPages"
+          :cabecerasTabla="cabecerasTabla"
+          @editar="editarCliente"
+          @eliminar="deleteClient"
+          @cambiar-pagina="setPage"
+          class="w-full"
+        />
+      </div>
+    </div>
+
+    <CrearConsultoria
+      :mostrar-modal="mostrarModalCrear"
+      :dependencias="dependenciasFormateadas"
+      :clientes="clientesFormateados"
+      @cerrar-modal="toggleCreateModal(false)"
+      @consultoria-creada="handleConsultoriaCreada"
+    />
+
+    
+  </DashboardLayout>
+</template>
+
+<script setup lang="ts">
+import { useClients } from '../composables/useClients';
+import { useDependencia } from '../composables/useDependencias';
+import DashboardLayout from '@/modules/dashboard/layouts/DashboardLayout.vue';
+import ClienteTable from '../components/ClienteTable.vue';
+import type { Cliente } from '../composables/useClients';
+import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
+import { onMounted, ref, computed } from 'vue';
+import CrearConsultoria from '../components/CrearConsultoria.vue';
+
+const autenticacionStore = useAutenticacionStore();
+const mostrarBotones = ref(false);
+
+const {
+  
+  clienteSeleccionado,
+  toggleEditModal,
+  clientes,
+  tiposEmpresa,
+  cabecerasTabla,
+  searchTerm,
+  currentPage,
+  isLoading,
+  mostrarModalCrear,
+  clientesPaginados,
+  totalPages,
+  loadClients,
+  deleteClient,
+  setPage,
+  toggleCreateModal,
+} = useClients();
+
+const { 
+  dependenciasFormateadas,
+  loadDepends,
+} = useDependencia();
+
+const clientesFormateados = computed(() => {
+  return clientes.value.reduce((acc, cliente) => {
+    acc[cliente.Acción] = cliente.Empresa;
+    return acc;
+  }, {} as Record<number, string>);
+});
+
+const editarCliente = (cliente: Cliente) => {
+  clienteSeleccionado.value = cliente;
+  toggleEditModal(true, cliente);
+};
+
+const handleConsultoriaCreada = async () => {
+  await Promise.all([
+    loadClients(),
+    loadDepends()
+  ]);
+};
+
+onMounted(async () => {
+  mostrarBotones.value = autenticacionStore.privilegio === 1;
+  await Promise.all([
+    loadClients(),
+    loadDepends()
+  ]);
+});
+</script>

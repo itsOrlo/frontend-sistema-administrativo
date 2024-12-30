@@ -15,6 +15,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('./pages/ConsultoriaClienetesPage.vue'),
         meta: { requiresAuth: true }, 
     },
+    
 
     {
         
@@ -23,6 +24,15 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('./pages/ListadoDependencias.vue'),
         meta: { requiresAuth: true }, 
     },
+/* Ruta Consultorias */
+{
+        
+    path: '/listarConsultorias',
+    name: 'listadoConsultorias',
+    component: () => import('./pages/ListadoConsultorias.vue'),
+    meta: { requiresAuth: true }, 
+},
+
     
 ];
 

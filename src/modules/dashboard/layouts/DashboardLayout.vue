@@ -1,5 +1,5 @@
 <template>
-  <div class="relative min-h-screen">
+  <div class="relative min-h-screen bg-white dark:bg-gray-900">
     <!-- Overlay -->
     <div
       v-if="sidebarOpen"
@@ -10,7 +10,7 @@
     <!-- Sidebar -->
     <aside
       :class="[
-        'fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform transform bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700',
+        'fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform transform bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700',
         sidebarOpen ? 'translate-x-0' : '-translate-x-full',
       ]"
       aria-label="Sidebar"
@@ -44,7 +44,7 @@
     </aside>
 
     <!-- Contenido Principal -->
-    <div :class="{ 'overflow-hidden': sidebarOpen }" class="transition-transform duration-300">
+    <div :class="{ 'overflow-hidden': sidebarOpen }" class="transition-transform duration-300 bg-white dark:bg-gray-900">
       <nav
         class="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700"
       >
@@ -116,12 +116,53 @@
                   </div>
                   <ul class="py-1" role="none">
                     <li>
-                      <div>
-                        <span
-                          class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:cursor-pointer dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                          role="menuitem"
-                          >Cambiar tema</span
+                      <div class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600">
+                        <span>Cambiar tema</span>
+                        <button 
+                          @click="themeStore.toggleTheme" 
+                          :class="[
+                            'relative inline-flex h-6 ml-2 w-11 items-center rounded-full transition-colors focus:outline-none',
+                            themeStore.isDarkMode ? 'bg-blue-600' : 'bg-gray-200'
+                          ]"
                         >
+                          <!-- Icono del Sol -->
+                          <svg 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            :class="[
+                              'h-3 w-3 absolute transition-opacity',
+                              themeStore.isDarkMode ? 'opacity-0 right-1' : 'opacity-100 right-1'
+                            ]"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path 
+                              d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+                            />
+                          </svg>
+
+                          <!-- Icono de la Luna -->
+                          <svg 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            :class="[
+                              'h-3 w-3 absolute transition-opacity',
+                              themeStore.isDarkMode ? 'opacity-100 left-1' : 'opacity-0 left-1'
+                            ]"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path 
+                              d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"
+                            />
+                          </svg>
+
+                          <!-- Círculo del toggle -->
+                          <span 
+                            :class="[
+                              'inline-block h-4 w-4 transform rounded-full bg-white transition-transform',
+                              themeStore.isDarkMode ? 'translate-x-6' : 'translate-x-1'
+                            ]"
+                          />
+                        </button>
                       </div>
                     </li>
                     <li>
@@ -140,7 +181,7 @@
         </div>
       </nav>
 
-      <div class="pt-14">
+      <div class="pt-14 bg-white dark:bg-gray-900">
         <slot />
       </div>
     </div>
@@ -153,10 +194,11 @@ import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
 import { useRouter } from 'vue-router';
 import { parseObjectRutas, removeRoutesOnLogout } from '../helpers/parse-object-rutas';
 import type { RutaInterface } from '../dto/menu-rutas-response.dto';
-import { personalDb, estudiantesDb } from '@/indexed-db';
 import { initFlowbite } from 'flowbite';
+import { useThemeStore } from '@/stores/use-theme.store';
 
 const store = useAutenticacionStore();
+const themeStore = useThemeStore();
 const router = useRouter();
 const sidebarOpen = ref(false);
 
@@ -167,8 +209,6 @@ const toggleSidebar = () => {
 const logout = () => {
   store.onLogout();
   removeRoutesOnLogout(router);
-  estudiantesDb.closeDbEstudiantes();
-  personalDb.closeDbPersonal();
   router.push({ name: 'login', replace: true });
 };
 
@@ -184,8 +224,7 @@ const fetchRoutes = async () => {
 onMounted(() => {
   initFlowbite();
   fetchRoutes();
-  personalDb.openDbPersonal();
-  estudiantesDb.openDbEstudiantes();
+  themeStore.initTheme();
 });
 
 const navigation = (routeName?: string) => {
