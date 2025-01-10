@@ -1,16 +1,16 @@
 <template>
   <DashboardLayout>
-    <div class="p-8 bg-gray-50 min-h-screen">
-      <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-        <h2 class="text-3xl font-bold text-gray-800 mb-2">Gestión de Consultorías</h2>
-        <p class="text-gray-600">Administra tus consultorías y clientes</p>
+    <div class="p-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-6">
+        <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-2">Gestión de Consultorías</h2>
+        <p class="text-gray-600 dark:text-gray-300">Administra tus consultorías y clientes</p>
       </div>
 
       <div class="flex flex-col md:flex-row justify-between gap-4 mb-6">
         <div class="relative">
           <span class="absolute inset-y-0 left-0 pl-3 flex items-center">
             <svg
-              class="h-5 w-5 text-gray-400"
+              class="h-5 w-5 text-gray-400 dark:text-gray-300"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -27,7 +27,7 @@
             type="text"
             v-model="searchTerm"
             placeholder="Buscar consultorías..."
-            class="pl-10 pr-4 py-3 w-full md:w-80 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            class="pl-10 pr-4 py-3 w-full md:w-80 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
         <button
@@ -51,7 +51,7 @@
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
 
-      <div v-else class="bg-white rounded-lg shadow-sm overflow-hidden">
+      <div v-else class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
         <ClienteTable
           :clientes="clientesPaginados"
           :current-page="currentPage"
@@ -73,8 +73,6 @@
       @cerrar-modal="toggleCreateModal(false)"
       @consultoria-creada="handleConsultoriaCreada"
     />
-
-    
   </DashboardLayout>
 </template>
 

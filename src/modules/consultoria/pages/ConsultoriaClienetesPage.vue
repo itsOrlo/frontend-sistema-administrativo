@@ -3,22 +3,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   </Head>
   <DashboardLayout>
-    
-    <div class="consultoria-container">
+    <div :class="['consultoria-container', { dark: isDarkMode }]">
       <!-- Header Section -->
-      <div class="welcome-header">
+      <div :class="['welcome-header', { dark: isDarkMode }]">
         <h1 class="text-3xl font-bold text-gray-800 dark:text-white">
           Bienvenido al Panel de Consultoría
         </h1>
-        
         <p class="text-gray-600 dark:text-gray-300 mt-2">
           Gestione sus consultas y clientes de manera eficiente
         </p>
       </div>
-
       <!-- Stats Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-        <div class="stat-card" :class="isDarkMode ? 'bg-gray-800' : 'bg-white'">
+        <div :class="['stat-card', { 'bg-gray-800': isDarkMode, 'bg-white': !isDarkMode }]">
           <div class="icon-wrapper bg-blue-100">
             <i class="fas fa-users text-blue-600"></i>
           </div>
@@ -27,8 +24,7 @@
             <p class="text-2xl font-bold text-blue-600">{{ totalClientes }}</p>
           </div>
         </div>
-
-        <div class="stat-card" :class="isDarkMode ? 'bg-gray-800' : 'bg-white'">
+        <div :class="['stat-card', { 'bg-gray-800': isDarkMode, 'bg-white': !isDarkMode }]">
           <div class="icon-wrapper bg-green-100">
             <i class="fas fa-calendar-check text-green-600"></i>
           </div>
@@ -37,8 +33,7 @@
             <p class="text-2xl font-bold text-green-600">45</p>
           </div>
         </div>
-
-        <div class="stat-card" :class="isDarkMode ? 'bg-gray-800' : 'bg-white'">
+        <div :class="['stat-card', { 'bg-gray-800': isDarkMode, 'bg-white': !isDarkMode }]">
           <div class="icon-wrapper bg-purple-100">
             <i class="fas fa-chart-line text-purple-600"></i>
           </div>
@@ -48,26 +43,25 @@
           </div>
         </div>
       </div>
-
       <!-- Quick Actions -->
       <div class="mt-12">
         <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
           Acciones Rápidas
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <button class="action-button" :class="isDarkMode ? 'dark-action-button' : ''">
+          <button :class="['action-button', { 'dark-action-button': isDarkMode }]">
             <i class="fas fa-plus-circle mr-2"></i>
             Nueva Consulta
           </button>
-          <button class="action-button" :class="isDarkMode ? 'dark-action-button' : ''">
+          <button :class="['action-button', { 'dark-action-button': isDarkMode }]">
             <i class="fas fa-user-plus mr-2"></i>
             Agregar Cliente
           </button>
-          <button class="action-button" :class="isDarkMode ? 'dark-action-button' : ''">
+          <button :class="['action-button', { 'dark-action-button': isDarkMode }]">
             <i class="fas fa-calendar-alt mr-2"></i>
             Agendar Reunión
           </button>
-          <button class="action-button" :class="isDarkMode ? 'dark-action-button' : ''">
+          <button :class="['action-button', { 'dark-action-button': isDarkMode }]">
             <i class="fas fa-file-alt mr-2"></i>
             Generar Reporte
           </button>
@@ -139,4 +133,3 @@ const isDarkMode = inject('isDarkMode', ref(false));
   @apply text-white;
 }
 </style>
-  
