@@ -30,8 +30,6 @@
 
             <td v-if="mostrarBotones" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
               <button
-
-                
                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded mr-2"
                 @click="$emit('editar', dependencia)"
               >

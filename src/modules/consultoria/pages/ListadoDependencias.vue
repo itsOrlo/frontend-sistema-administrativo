@@ -32,7 +32,7 @@
         :dependencias="dependenciasPaginados"
         :current-page="currentPage"
         :total-pages="totalPages"
-        :cabecerasTabla="cabecerasTabla"
+        :cabeceras-tabla="cabecerasTabla"
         @editar="editarDependencia" 
         @cambiar-pagina="setPage"
       />

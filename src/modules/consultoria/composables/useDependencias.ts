@@ -22,18 +22,15 @@ export function useDependencia(pageSize = 10) {
   const dependenciaSeleccionado = ref<Dependencia | null>(null);
 
   const dependenciasFiltrados = computed(() => {
-    if (!searchTerm.value) return dependencias.value.map(({ cdep_dependencia }) => cdep_dependencia);
+    if (!searchTerm.value) return dependencias.value;
 
     const term = searchTerm.value.toLowerCase();
-    return dependencias.value
-      .filter((dependencia) =>
-        Object.values(dependencia).join(' ').toLowerCase().includes(term)
-      )
-      .map(({ cdep_dependencia }) => cdep_dependencia);
+    return dependencias.value.filter((dependencia) =>
+      Object.values(dependencia).join(' ').toLowerCase().includes(term)
+    );
   });
 
   const cabecerasTabla = ref<string[]>([]);
-
 
   const totalPages = computed(() => Math.ceil(dependenciasFiltrados.value.length / pageSize));
 
