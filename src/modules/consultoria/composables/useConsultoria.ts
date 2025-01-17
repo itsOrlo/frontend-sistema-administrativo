@@ -3,11 +3,17 @@ import { useApi } from '@/composables/use-api';
 import Swal from 'sweetalert2';
 
 export interface Consultoria {
-  ccon_id: number;
-  ccon_nombre: string;
-  ccon_fecha_registro: string;
-  ccon_estado: number;
-  [key: string]: string | number;
+  Trámite: string;
+  Dependencia: string;
+  'Empresa cliente': string;
+  'Fecha de registro': string;
+  'Fecha de despacho': string | null;
+  Asunto: string;
+  conr_adjunto: string | null;
+  Estado: string;
+  Observación: string | null;
+  conr_id: number;
+  [key: string]: string | number | null;
 }
 
 export function useConsultoria(pageSize = 10) {
@@ -16,8 +22,8 @@ export function useConsultoria(pageSize = 10) {
   const currentPage = ref(1);
   const isLoading = ref(false);
   const mostrarModalCrear = ref(false);
-  const cabecerasTabla = ref<string[]>([]);
-  const dependencias = ref<{ [key: number]: string }>({});
+  const mostrarModalEditar = ref(false);
+  const consultoriaSeleccionada = ref<Consultoria | null>(null);
 
   const consultoriasFiltradas = computed(() => {
     if (!searchTerm.value) return consultorias.value;
@@ -28,6 +34,8 @@ export function useConsultoria(pageSize = 10) {
     );
   });
 
+  const cabecerasTabla = ref<string[]>([]);
+
   const totalPages = computed(() => Math.ceil(consultoriasFiltradas.value.length / pageSize));
 
   const consultoriasPaginadas = computed(() => {
@@ -35,24 +43,26 @@ export function useConsultoria(pageSize = 10) {
     return consultoriasFiltradas.value.slice(startIndex, startIndex + pageSize);
   });
 
-  const loadDependencias = async () => {
-    try {
-      const response = await useApi.get('/api/v1/consultoria/consultoria-dependencias');
-      // Transformar la respuesta en un objeto { id: nombre }
-      response.data.forEach((dep: any) => {
-        dependencias.value[dep.cdep_id] = dep.cdep_dependencia;
-      });
-    } catch (error) {
-      console.error('Error cargando dependencias:', error);
+  const toggleEditModal = (show: boolean, consultoria: Consultoria | null = null) => {
+    mostrarModalEditar.value = show;
+    if (show) {
+      if (consultoria) {
+        consultoriaSeleccionada.value = { ...consultoria };
+      } else {
+        console.error("Error: Se esperaba un objeto Consultoria.");
+        consultoriaSeleccionada.value = null;
+      }
+    } else {
+      consultoriaSeleccionada.value = null;
     }
   };
 
   const loadConsultorias = async () => {
     try {
       isLoading.value = true;
-      const response = await useApi.get('/api/v1/consultoria/consultorias');
+      const response = await useApi.get('/api/v1/consultoria/consultoria-registro');
       consultorias.value = response.data.sort((a: Consultoria, b: Consultoria) => 
-        Number(a.ccon_id) - Number(b.ccon_id)
+        Number(a.conr_id) - Number(b.conr_id)
       );
 
       if (consultorias.value.length > 0) {
@@ -65,36 +75,77 @@ export function useConsultoria(pageSize = 10) {
     }
   };
 
+  const deleteConsultoria = async (consultoria: Consultoria) => {
+    const result = await Swal.fire({
+      title: '¿Estás seguro?',
+      html: `
+        <p>¿Deseas eliminar la consultoría <strong>${consultoria.Trámite}</strong>?</p>
+        <p class="mt-2 text-sm text-gray-500">Esta acción no se puede deshacer.</p>
+      `,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#EF4444',
+      cancelButtonColor: '#6B7280',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true,
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const consultoriaId = consultoria.conr_id;
+      if (!consultoriaId) throw new Error('ID de consultoría no válido');
+
+      const response = await useApi.put('/api/v1/consultoria/eliminar-consultoria', {
+        conr_id: consultoriaId,
+      });
+
+      if (response.status === 200) {
+        consultorias.value = consultorias.value.filter((c) => c.conr_id !== consultoria.conr_id);
+        await Swal.fire({
+          title: '¡Eliminado!',
+          text: 'La consultoría ha sido eliminada correctamente.',
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        await loadConsultorias();
+      }
+    } catch (error) {
+      console.error('Error eliminando consultoría:', error);
+      await Swal.fire({
+        title: 'Error',
+        text: 'No se pudo eliminar la consultoría. Por favor, inténtalo de nuevo.',
+        icon: 'error',
+      });
+    }
+  };
+
   watch(searchTerm, () => {
     currentPage.value = 1;
   });
 
   onMounted(async () => {
     await loadConsultorias();
-    await loadDependencias();
   });
 
   return {
-    // Estado
+    mostrarModalEditar,
+    consultoriaSeleccionada,
+    toggleEditModal,
+    cabecerasTabla,
     consultorias,
-    dependencias,
     searchTerm,
     currentPage,
     isLoading,
     mostrarModalCrear,
-    cabecerasTabla,
-
-    // Computed
     consultoriasFiltradas,
     consultoriasPaginadas,
     totalPages,
-
-    // Métodos
     loadConsultorias,
-    loadDependencias,
-
-    // Helpers
+    deleteConsultoria,
     setPage: (page: number) => (currentPage.value = page),
     toggleCreateModal: (show: boolean) => (mostrarModalCrear.value = show),
   };
-} 
+}

@@ -17,7 +17,6 @@ export function useDependencia(pageSize = 10) {
   const currentPage = ref(1);
   const isLoading = ref(false);
   const mostrarModalCrear = ref(false);
-
   const mostrarModalEditar = ref(false);
   const dependenciaSeleccionado = ref<Dependencia | null>(null);
 
@@ -41,16 +40,15 @@ export function useDependencia(pageSize = 10) {
 
   const toggleEditModal = (show: boolean, dependencia: Dependencia | null = null) => {
     mostrarModalEditar.value = show;
-    if (show) { // Si el modal se va a mostrar
+    if (show) {
       if (dependencia) {
         dependenciaSeleccionado.value = { ...dependencia };
       } else {
-        // Manejar el caso en que 'dependencia' sea null, por ejemplo:
-        console.error("Error: Se esperaba un objeto Cliente.");
-        dependenciaSeleccionado.value = null; // O asignar un valor por defecto
+        console.error("Error: Se esperaba un objeto Dependencia.");
+        dependenciaSeleccionado.value = null;
       }
     } else {
-      dependenciaSeleccionado.value = null; // Asignar null al cerrar el modal
+      dependenciaSeleccionado.value = null;
     }
   };
 
@@ -58,8 +56,6 @@ export function useDependencia(pageSize = 10) {
     try {
       isLoading.value = true;
       const response = await useApi.get('/api/v1/consultoria/consultoria-dependencias');
-      
-      // Mantener la estructura completa del objeto
       dependencias.value = response.data.sort((a: Dependencia, b: Dependencia) => 
         Number(a.cdep_id) - Number(b.cdep_id)
       );
@@ -74,7 +70,6 @@ export function useDependencia(pageSize = 10) {
     }
   };
 
-  // Agregar un computed para el formato que necesita el combobox
   const dependenciasFormateadas = computed(() => {
     return dependencias.value.reduce((acc, dep) => {
       acc[dep.cdep_id] = dep.cdep_dependencia;
@@ -102,7 +97,7 @@ export function useDependencia(pageSize = 10) {
 
     try {
       const dependenciaId = dependencia.cdep_id;
-      if (!dependenciaId) throw new Error('ID de dependencoa no válido');
+      if (!dependenciaId) throw new Error('ID de dependencia no válido');
 
       const response = await useApi.put('/api/v1/consultoria/eliminar-consultoria', {
         ccdep_id: dependenciaId,
@@ -112,7 +107,7 @@ export function useDependencia(pageSize = 10) {
         dependencias.value = dependencias.value.filter((c) => c.cdep_id !== dependencia.cdep_id);
         await Swal.fire({
           title: '¡Eliminado!',
-          text: 'La dependencia ha sido eliminado correctamente.',
+          text: 'La dependencia ha sido eliminada correctamente.',
           icon: 'success',
           timer: 2000,
           showConfirmButton: false,
@@ -129,12 +124,10 @@ export function useDependencia(pageSize = 10) {
     }
   };
 
-  // Reset página cuando cambia el término de búsqueda
   watch(searchTerm, () => {
     currentPage.value = 1;
   });
 
-  /* Cargar tipo de Empresa */
   onMounted(async () => {
     await loadDepends();
   });
@@ -143,29 +136,19 @@ export function useDependencia(pageSize = 10) {
     mostrarModalEditar,
     dependenciaSeleccionado,
     toggleEditModal,
-
     cabecerasTabla,
-
-    // Estado
     dependencias,
     searchTerm,
     currentPage,
     isLoading,
     mostrarModalCrear,
-
-    // Computed
     dependenciasFiltrados,
     dependenciasPaginados,
     totalPages,
-
-    // Métodos
     loadDepends,
     deleteDepend,
-
-    // Helpers
     setPage: (page: number) => (currentPage.value = page),
     toggleCreateModal: (show: boolean) => (mostrarModalCrear.value = show),
-
     dependenciasFormateadas,
   };
 }

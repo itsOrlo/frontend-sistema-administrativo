@@ -52,14 +52,13 @@
       </div>
 
       <div v-else class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
-        <ClienteTable
-          :clientes="clientesPaginados"
+        <ConsultoriaTable
+          :consultorias="consultoriasPaginadas"
           :current-page="currentPage"
-          :tiposEmpresa="tiposEmpresa"
           :total-pages="totalPages"
           :cabecerasTabla="cabecerasTabla"
-          @editar="editarCliente"
-          @eliminar="deleteClient"
+          @editar="editarConsultoria"
+          @eliminar="deleteConsultoria"
           @cambiar-pagina="setPage"
           class="w-full"
         />
@@ -77,35 +76,41 @@
 </template>
 
 <script setup lang="ts">
+import { useConsultoria } from '../composables/useConsultoria';
 import { useClients } from '../composables/useClients';
 import { useDependencia } from '../composables/useDependencias';
 import DashboardLayout from '@/modules/dashboard/layouts/DashboardLayout.vue';
-import ClienteTable from '../components/ClienteTable.vue';
-import type { Cliente } from '../composables/useClients';
+import ConsultoriaTable from '../components/ConsultoriaTable.vue';
+import CrearConsultoria from '../components/CrearConsultoria.vue';
+import type { Consultoria } from '../composables/useConsultoria';
 import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
 import { onMounted, ref, computed } from 'vue';
-import CrearConsultoria from '../components/CrearConsultoria.vue';
 
 const autenticacionStore = useAutenticacionStore();
 const mostrarBotones = ref(false);
 
 const {
-  
-  clienteSeleccionado,
+  mostrarModalEditar,
+  consultoriaSeleccionada,
   toggleEditModal,
-  clientes,
-  tiposEmpresa,
+  consultorias,
   cabecerasTabla,
   searchTerm,
   currentPage,
   isLoading,
   mostrarModalCrear,
-  clientesPaginados,
+  consultoriasPaginadas,
   totalPages,
-  loadClients,
-  deleteClient,
+  loadConsultorias,
+  deleteConsultoria,
   setPage,
   toggleCreateModal,
+} = useConsultoria();
+
+const { 
+  clientes,
+  tiposEmpresa,
+  loadClients,
 } = useClients();
 
 const { 
@@ -120,13 +125,14 @@ const clientesFormateados = computed(() => {
   }, {} as Record<number, string>);
 });
 
-const editarCliente = (cliente: Cliente) => {
-  clienteSeleccionado.value = cliente;
-  toggleEditModal(true, cliente);
+const editarConsultoria = (consultoria: Consultoria) => {
+  consultoriaSeleccionada.value = consultoria;
+  toggleEditModal(true, consultoria);
 };
 
 const handleConsultoriaCreada = async () => {
   await Promise.all([
+    loadConsultorias(),
     loadClients(),
     loadDepends()
   ]);
@@ -135,6 +141,7 @@ const handleConsultoriaCreada = async () => {
 onMounted(async () => {
   mostrarBotones.value = autenticacionStore.privilegio === 1;
   await Promise.all([
+    loadConsultorias(),
     loadClients(),
     loadDepends()
   ]);

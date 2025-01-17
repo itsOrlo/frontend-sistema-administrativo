@@ -1,15 +1,5 @@
 <template>
   <div>
-    <!-- Filtro de Tipo de Empresa -->
-    <div class="mb-4">
-      <label for="tipoEmpresa" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Filtrar por Tipo de Empresa</label>
-      <select id="tipoEmpresa" v-model="filtroTipoEmpresa" @change="filtrarClientes" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-        <option value="">Todos</option>
-        <option value="1">Pública</option>
-        <option value="2">Privada</option>
-      </select>
-    </div>
-
     <!-- Start Table -->
     <div class="overflow-x-auto table-responsive">
       <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -27,35 +17,49 @@
           </tr>
         </thead>
         <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-          <tr v-for="cliente in clientesFiltrados" :key="cliente.Ruc">
+          <tr v-for="consultoria in consultoriasFiltradas" :key="consultoria.conr_id">
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-900 dark:text-gray-300">{{ cliente.Empresa }}</div>
+              <div class="text-sm text-gray-900 dark:text-gray-300">{{ consultoria.Trámite }}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-900 dark:text-gray-300">{{ cliente.Ruc }}</div>
+              <div class="text-sm text-gray-900 dark:text-gray-300">{{ consultoria.Dependencia }}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-900 dark:text-gray-300">{{ cliente.Contacto }}</div>
+              <div class="text-sm text-gray-900 dark:text-gray-300">{{ consultoria['Empresa cliente'] }}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-500 dark:text-gray-400">{{ cliente.Correo }}</div>
+              <div class="text-sm text-gray-500 dark:text-gray-400">{{ consultoria['Fecha de registro'] }}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-500 dark:text-gray-400">{{ cliente.Teléfono }}</div>
+              <div class="text-sm text-gray-500 dark:text-gray-400">{{ consultoria['Fecha de despacho'] }}</div>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-              {{ tiposEmpresa[cliente['Tipo de empresa']] || 'Desconocido' }}
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-500 dark:text-gray-400">{{ consultoria.Asunto }}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <a
+                v-if="consultoria.conr_adjunto"
+                :href="consultoria.conr_adjunto"
+                target="_blank"
+                class="text-blue-500 hover:underline"
+              >
+                Descargar
+              </a>
+              <span v-else class="text-gray-500 dark:text-gray-400">No disponible</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-500 dark:text-gray-400">{{ consultoria.Estado }}</div>
             </td>
             <td v-if="mostrarBotones" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
               <button
                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded mr-2"
-                @click="$emit('editar', cliente)"
+                @click="$emit('editar', consultoria)"
               >
                 Editar
               </button>
               <button
                 class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
-                @click="$emit('eliminar', cliente)"
+                @click="$emit('eliminar', consultoria)"
               >
                 Eliminar
               </button>
@@ -147,14 +151,13 @@
 
 <script setup lang="ts">
 import type { PropType } from 'vue';
-import type { Cliente } from '../composables/useClients';
+import type { Consultoria } from '../composables/useConsultoria';
 import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
-import { onMounted, ref, computed, watch } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import * as XLSX from 'xlsx';
 
 const autenticacionStore = useAutenticacionStore();
 const mostrarBotones = ref(false);
-const filtroTipoEmpresa = ref('');
 
 const props = defineProps({
   currentPage: {
@@ -169,23 +172,15 @@ const props = defineProps({
     type: Array as PropType<string[]>,
     required: true,
   },
-  tiposEmpresa: {
-    type: Object as PropType<{ [key: number]: string }>,
-    required: true,
-  },
-  clientes: {
-    type: Array as PropType<Cliente[]>,
+  consultorias: {
+    type: Array as PropType<Consultoria[]>,
     required: true,
   },
 });
 defineEmits(['editar', 'eliminar', 'cambiar-pagina']);
 
-const clientesFiltrados = computed(() => {
-  let resultado = props.clientes;
-  if (filtroTipoEmpresa.value) {
-    resultado = resultado.filter(cliente => cliente['Tipo de empresa'] == filtroTipoEmpresa.value);
-  }
-  return resultado.slice((props.currentPage - 1) * 10, props.currentPage * 10);
+const consultoriasFiltradas = computed(() => {
+  return props.consultorias.slice((props.currentPage - 1) * 10, props.currentPage * 10);
 });
 
 onMounted(() => {
@@ -203,31 +198,23 @@ const cabecerasVisibles = computed(() => {
 });
 
 const exportarExcel = () => {
-  const datosParaExportar = props.clientes.filter(cliente => {
-    if (filtroTipoEmpresa.value) {
-      return cliente['Tipo de empresa'] == filtroTipoEmpresa.value;
-    }
-    return true;
-  }).map(cliente => {
-    const { Empresa, Ruc, Contacto, Correo, Teléfono, 'Tipo de empresa': tipoEmpresa } = cliente;
+  const datosParaExportar = props.consultorias.map(consultoria => {
+    const { Trámite, Dependencia, 'Empresa cliente': EmpresaCliente, 'Fecha de registro': FechaRegistro, 'Fecha de despacho': FechaDespacho, Asunto, conr_adjunto, Estado } = consultoria;
     return {
-      Empresa,
-      Ruc,
-      Contacto,
-      Correo,
-      Teléfono,
-      'Tipo de empresa': tipoEmpresa === 1 ? 'Pública' : tipoEmpresa === 2 ? 'Privada' : tipoEmpresa
+      'Trámite': Trámite,
+      'Dependencia': Dependencia,
+      'Empresa cliente': EmpresaCliente,
+      'Fecha de registro': FechaRegistro,
+      'Fecha de despacho': FechaDespacho,
+      'Asunto': Asunto,
+      'Archivo': conr_adjunto ? 'Disponible' : 'No disponible',
+      'Estado': Estado
     };
   });
 
   const ws = XLSX.utils.json_to_sheet(datosParaExportar);
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Clientes');
-  XLSX.writeFile(wb, 'clientes.xlsx');
-};
-
-const filtrarClientes = () => {
-  // Esta función se llama cuando se cambia el filtro de tipo de empresa
-  // No es necesario hacer nada aquí ya que `clientesFiltrados` es una propiedad computada
+  XLSX.utils.book_append_sheet(wb, ws, 'Consultorias');
+  XLSX.writeFile(wb, 'consultorias.xlsx');
 };
 </script>

@@ -1,7 +1,4 @@
 <template>
-  <Head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  </Head>
   <DashboardLayout>
     <div :class="['consultoria-container', { dark: isDarkMode }]">
       <!-- Header Section -->
@@ -49,13 +46,13 @@
           Acciones Rápidas
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <button :class="['action-button', { 'dark-action-button': isDarkMode }]">
+          <button @click="toggleCreateModal(true)" :class="['action-button', { 'dark-action-button': isDarkMode }]">
             <i class="fas fa-plus-circle mr-2"></i>
-            Nueva Consulta
+            Agregar Cliente
           </button>
           <button :class="['action-button', { 'dark-action-button': isDarkMode }]">
             <i class="fas fa-user-plus mr-2"></i>
-            Agregar Cliente
+            Nueva Consulta
           </button>
           <button :class="['action-button', { 'dark-action-button': isDarkMode }]">
             <i class="fas fa-calendar-alt mr-2"></i>
@@ -68,16 +65,35 @@
         </div>
       </div>
     </div>
+
+    <!-- Create Modal -->
+    <CrearCliente
+      v-if="mostrarModalCrear"
+      :mostrarModal="mostrarModalCrear"
+      :clienteARegistrar="clienteSeleccionado"
+      :tiposEmpresa="tiposEmpresa"
+      @cerrar-modal="toggleCreateModal(false)"
+      @cliente-creado="loadClients"
+    />
   </DashboardLayout>
 </template>
 
 <script setup lang="ts">
 import DashboardLayout from '@/modules/dashboard/layouts/DashboardLayout.vue';
 import { useClients } from '../composables/useClients';
-import { inject, ref } from 'vue';
+import { inject, ref, onMounted } from 'vue';
+import CrearCliente from '../components/CrearCliente.vue';
 
-const { totalClientes } = useClients();
+const { totalClientes, tiposEmpresa, loadClients } = useClients();
 const isDarkMode = inject('isDarkMode', ref(false));
+const mostrarModalCrear = ref(false);
+const clienteSeleccionado = ref(null);
+
+const toggleCreateModal = (state: boolean) => {
+  mostrarModalCrear.value = state;
+};
+
+onMounted(loadClients);
 </script>
 
 <style scoped lang="postcss">

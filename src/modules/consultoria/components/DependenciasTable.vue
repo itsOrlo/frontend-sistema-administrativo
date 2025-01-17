@@ -17,7 +17,7 @@
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          <tr v-for="dependencia in dependencias" :key="dependencia.cdep_id">
+          <tr v-for="dependencia in dependenciasFiltrados" :key="dependencia.cdep_id">
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm text-gray-900">{{ dependencia.cdep_id }}</div>
             </td>
@@ -48,6 +48,15 @@
     </div>
     <!-- End Table -->
 
+    <!-- Botón para exportar a Excel -->
+    <div class="mt-4 flex justify-end">
+      <button @click="exportarExcel" class="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M3 3a2 2 0 012-2h10a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V3zm2 0v14h10V3H5zm3 4h4v2H8V7zm0 4h4v2H8v-2z" />
+        </svg>
+        Exportar a Excel
+      </button>
+    </div>
     <!-- Pagination with improved design -->
     <div
       class="mt-6 flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6"
@@ -111,6 +120,7 @@
               ></path>
             </svg>
           </button>
+         
         </div>
       </div>
     </div>
@@ -122,26 +132,10 @@ import type { PropType } from 'vue';
 import type { Dependencia } from '../composables/useDependencias';
 import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
 import { onMounted, ref, computed } from 'vue';
+import * as XLSX from 'xlsx';
 
 const autenticacionStore = useAutenticacionStore();
 const mostrarBotones = ref(false);
-
-// Computed property para determinar si se deben mostrar los botones
-onMounted(() => {
-  /* console.log('Nombre de usuario:', autenticacionStore.nombre);
-  console.log('privilegio:', autenticacionStore.privilegio); */
-  mostrarBotones.value = autenticacionStore.privilegio === 1;
-});
-
-// Computed property para las cabeceras visibles
-const cabecerasVisibles = computed(() => {
-  if (mostrarBotones.value) {
-    return props.cabecerasTabla;
-  } else {
-    // Retorna todas las cabeceras excepto la última
-    return props.cabecerasTabla.slice(0, -1); 
-  }
-});
 
 const props= defineProps({
   currentPage: {
@@ -162,4 +156,37 @@ const props= defineProps({
   },
 });
 defineEmits(['editar', 'eliminar', 'cambiar-pagina']);
+
+const dependenciasFiltrados = computed(() => {
+  return props.dependencias.slice((props.currentPage - 1) * 10, props.currentPage * 10);
+});
+
+onMounted(() => {
+  mostrarBotones.value = autenticacionStore.privilegio === 1;
+});
+
+// Computed property para las cabeceras visibles
+const cabecerasVisibles = computed(() => {
+  if (mostrarBotones.value) {
+    return props.cabecerasTabla;
+  } else {
+    // Retorna todas las cabeceras excepto la última
+    return props.cabecerasTabla.slice(0, -1); 
+  }
+});
+
+const exportarExcel = () => {
+  const datosParaExportar = props.dependencias.map(dependencia => {
+    const { cdep_id, cdep_dependencia } = dependencia;
+    return {
+      'ID': cdep_id,
+      'Dependencia': cdep_dependencia
+    };
+  });
+
+  const ws = XLSX.utils.json_to_sheet(datosParaExportar);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Dependencias');
+  XLSX.writeFile(wb, 'dependencias.xlsx');
+};
 </script>

@@ -1,7 +1,7 @@
 <template>
   <DashboardLayout>
     <div class="p-6">
-      <h2 class="text-2xl font-bold mb-4">Clientes</h2>
+      <h2 class="text-2xl text-gray-700 dark:text-gray-300 font-bold mb-4">Clientes</h2>
 
       <!-- Header Actions -->
       <div class="flex justify-between mb-4">
