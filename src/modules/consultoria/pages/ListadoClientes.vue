@@ -28,7 +28,7 @@
       <!-- Clients Table -->
       <ClienteTable
         v-else
-        :clientes="clientesPaginados"
+        :clientes="clientesFiltrados"
         :current-page="currentPage"
         :tiposEmpresa="tiposEmpresa"
         :total-pages="totalPages"
@@ -68,7 +68,7 @@ import CrearCliente from '../components/CrearCliente.vue';
 import EditarCliente from '../components/EditarCliente.vue';
 import type { Cliente } from '../composables/useClients'; 
 import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 
 const autenticacionStore = useAutenticacionStore();
 const mostrarBotones = ref(false);
@@ -78,7 +78,6 @@ onMounted(() => {
   console.log('privilegio:', autenticacionStore.privilegio);
   mostrarBotones.value = autenticacionStore.privilegio === 1;
 });
-
 
 const {
   mostrarModalEditar,
@@ -94,7 +93,7 @@ const {
   mostrarModalCrear,
 
   // Computed
-  clientesPaginados,
+  clientesFiltrados,
   totalPages,
 
   // Métodos
@@ -104,11 +103,10 @@ const {
   toggleCreateModal,
 } = useClients();
 
-const editarCliente = (cliente: Cliente) => { // Agrega la interfaz Cliente aquí
+const editarCliente = (cliente: Cliente) => { 
   clienteSeleccionado.value = cliente; 
   toggleEditModal(true, cliente); 
 };
-
 
 onMounted(loadClients);
 </script>

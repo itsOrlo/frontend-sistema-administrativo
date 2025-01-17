@@ -1,5 +1,15 @@
 <template>
   <div>
+    <!-- Filtro de Tipo de Empresa -->
+    <div class="mb-4">
+      <label for="tipoEmpresa" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Filtrar por Tipo de Empresa</label>
+      <select id="tipoEmpresa" v-model="filtroTipoEmpresa" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+        <option value="">Todos</option>
+        <option value="Pública">Pública</option>
+        <option value="Privada">Privada</option>
+      </select>
+    </div>
+
     <!-- Start Table -->
     <div class="overflow-x-auto table-responsive">
       <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -17,7 +27,7 @@
           </tr>
         </thead>
         <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-          <tr v-for="cliente in clientes" :key="cliente.Ruc">
+          <tr v-for="cliente in clientesFiltrados" :key="cliente.Ruc">
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm text-gray-900 dark:text-gray-300">{{ cliente.Empresa }}</div>
             </td>
@@ -55,6 +65,16 @@
       </table>
     </div>
     <!-- End Table -->
+
+    <!-- Botón para exportar a Excel -->
+    <div class="mt-4 flex justify-end">
+      <button @click="exportarExcel" class="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M3 3a2 2 0 012-2h10a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V3zm2 0v14h10V3H5zm3 4h4v2H8V7zm0 4h4v2H8v-2z" />
+        </svg>
+        Exportar a Excel
+      </button>
+    </div>
 
     <!-- Pagination with improved design -->
     <div
@@ -129,25 +149,12 @@
 import type { PropType } from 'vue';
 import type { Cliente } from '../composables/useClients';
 import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref, computed, watch } from 'vue';
+import * as XLSX from 'xlsx';
 
 const autenticacionStore = useAutenticacionStore();
 const mostrarBotones = ref(false);
-
-// Computed property para determinar si se deben mostrar los botones
-onMounted(() => {
-  mostrarBotones.value = autenticacionStore.privilegio === 1;
-});
-
-// Computed property para las cabeceras visibles
-const cabecerasVisibles = computed(() => {
-  if (mostrarBotones.value) {
-    return props.cabecerasTabla;
-  } else {
-    // Retorna todas las cabeceras excepto la última
-    return props.cabecerasTabla.slice(0, -1); 
-  }
-});
+const filtroTipoEmpresa = ref('');
 
 const props = defineProps({
   currentPage: {
@@ -167,9 +174,40 @@ const props = defineProps({
     required: true,
   },
   clientes: {
-    type: Array as PropType<Cliente[]>, // Aquí especificamos el tipo
+    type: Array as PropType<Cliente[]>,
     required: true,
   },
 });
 defineEmits(['editar', 'eliminar', 'cambiar-pagina']);
+
+const clientesFiltrados = computed(() => {
+  let resultado = props.clientes;
+  if (filtroTipoEmpresa.value) {
+    resultado = resultado.filter(cliente => tiposEmpresa[cliente['Tipo de empresa']] === filtroTipoEmpresa.value);
+  }
+  return resultado;
+});
+
+onMounted(() => {
+  mostrarBotones.value = autenticacionStore.privilegio === 1;
+});
+
+const exportarExcel = () => {
+  const datosParaExportar = clientesFiltrados.value.map(cliente => {
+    const { Empresa, Ruc, Contacto, Correo, Teléfono, 'Tipo de empresa': tipoEmpresa } = cliente;
+    return {
+      Empresa,
+      Ruc,
+      Contacto,
+      Correo,
+      Teléfono,
+      'Tipo de empresa': tipoEmpresa === 1 ? 'Publica' : tipoEmpresa === 2 ? 'Privada' : tipoEmpresa
+    };
+  });
+
+  const ws = XLSX.utils.json_to_sheet(datosParaExportar);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Clientes');
+  XLSX.writeFile(wb, 'clientes.xlsx');
+};
 </script>

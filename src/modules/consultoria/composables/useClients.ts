@@ -4,7 +4,6 @@ import { useApi } from '@/composables/use-api';
 import Swal from 'sweetalert2';
 
 export interface Cliente {
-  
   Empresa: string;
   Ruc: string;
   Contacto: string;
@@ -58,28 +57,25 @@ export function useClients(pageSize = 10) {
   const loadTiposEmpresa = async () => {
     try {
       const response = await useApi.get('/api/v1/consultoria/empresa-tipo');
-      // Transformar la respuesta en un objeto { id: nombre }
       response.data.forEach((tipo: TipoEmpresa) => {
         tiposEmpresa.value[tipo.cempt_id] = tipo.cempt_nombre;
       });
     } catch (error) {
       console.error('Error cargando tipos de empresa:', error);
-      // Manejo de errores (opcional): Mostrar una alerta al usuario
     }
   };
 
   const toggleEditModal = (show: boolean, cliente: Cliente | null = null) => {
     mostrarModalEditar.value = show;
-    if (show) { // Si el modal se va a mostrar
+    if (show) {
       if (cliente) {
         clienteSeleccionado.value = { ...cliente };
       } else {
-        // Manejar el caso en que 'cliente' sea null, por ejemplo:
         console.error("Error: Se esperaba un objeto Cliente.");
-        clienteSeleccionado.value = null; // O asignar un valor por defecto
+        clienteSeleccionado.value = null;
       }
     } else {
-      clienteSeleccionado.value = null; // Asignar null al cerrar el modal
+      clienteSeleccionado.value = null;
     }
   };
 
@@ -87,23 +83,20 @@ export function useClients(pageSize = 10) {
     try {
       isLoading.value = true;
       const response = await useApi.get('/api/v1/consultoria/consultoria-empresa');
-      
-      // Ordenar los datos antes de asignarlos
       clientes.value = response.data.sort((a: Cliente, b: Cliente) => {
         return Number(a.Acción) - Number(b.Acción);
       });
 
-      // Obtener las cabeceras del primer objeto
       if (clientes.value.length > 0) {
         cabecerasTabla.value = Object.keys(clientes.value[0]);
       }
     } catch (error) {
       console.error('Error cargando clientes:', error);
-      // ... manejo de errores ...
     } finally {
       isLoading.value = false;
     }
   };
+
   const deleteClient = async (cliente: Cliente) => {
     const result = await Swal.fire({
       title: '¿Estás seguro?',
@@ -151,12 +144,10 @@ export function useClients(pageSize = 10) {
     }
   };
 
-  // Reset página cuando cambia el término de búsqueda
   watch(searchTerm, () => {
     currentPage.value = 1;
   });
 
-  /* Cargar tipo de Empresa */
   onMounted(async () => {
     await loadClients();
     await loadTiposEmpresa();
@@ -172,23 +163,19 @@ export function useClients(pageSize = 10) {
     tiposEmpresa,
     cabecerasTabla,
 
-    // Estado
     clientes,
     searchTerm,
     currentPage,
     isLoading,
     mostrarModalCrear,
 
-    // Computed
     clientesFiltrados,
     clientesPaginados,
     totalPages,
 
-    // Métodos
     loadClients,
     deleteClient,
 
-    // Helpers
     setPage: (page: number) => (currentPage.value = page),
     toggleCreateModal: (show: boolean) => (mostrarModalCrear.value = show),
     totalClientes,
