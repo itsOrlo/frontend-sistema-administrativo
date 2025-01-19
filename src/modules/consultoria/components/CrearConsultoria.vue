@@ -130,7 +130,7 @@
                     <label for="archivo"
                       class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
                       <span>Seleccionar un archivo</span>
-                      <input id="archivo" name="archivo" type="file" class="sr-only" @change="handleFileUpload">
+                      <input id="archivo" name="archivo" type="file" class="sr-only" @change="handleFileUpload" />
                     </label>
                     <p class="pl-1">o arrastrar y soltar</p>
                   </div>
@@ -201,15 +201,47 @@ const handleClose = () => {
 const handleSubmit = async () => {
   if (isSubmitting.value) return;
 
+  // Validar campos requeridos
+  if (!formData.value.dependenciaId) {
+    await Swal.fire({
+      icon: 'warning',
+      title: 'Campo requerido',
+      text: 'Por favor, selecciona una dependencia.',
+    });
+    return;
+  }
+
+  if (!formData.value.clienteId) {
+    await Swal.fire({
+      icon: 'warning',
+      title: 'Campo requerido',
+      text: 'Por favor, selecciona un cliente.',
+    });
+    return;
+  }
+
+  if (!formData.value.asunto) {
+    await Swal.fire({
+      icon: 'warning',
+      title: 'Campo requerido',
+      text: 'Por favor, ingresa un asunto.',
+    });
+    return;
+  }
+
   try {
     isSubmitting.value = true;
     const formDataToSend = new FormData();
     formDataToSend.append('cdep_id', formData.value.dependenciaId?.toString() || '');
     formDataToSend.append('ccli_id', formData.value.clienteId?.toString() || '');
-    formDataToSend.append('conr_fecha_registro', '2025-01-07'); // Valor manual para la fecha
+    
+    // Obtener la fecha actual en el formato requerido
+    const fechaRegistro = new Date().toISOString(); // Formato "2025-01-07T00:00:00.000Z"
+    formDataToSend.append('conr_fecha_registro', fechaRegistro);
+    
     formDataToSend.append('conr_asunto', formData.value.asunto);
     if (formData.value.archivo) {
-      formDataToSend.append('file', "");
+      formDataToSend.append('file', formData.value.archivo);
     }
 
     const response = await useApi.post('/api/v1/consultoria/consultoria-registro', formDataToSend, {
