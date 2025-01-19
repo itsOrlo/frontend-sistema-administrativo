@@ -12,31 +12,31 @@
       </div>
       <!-- Stats Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-        <div :class="['stat-card', { 'bg-gray-800': isDarkMode, 'bg-white': !isDarkMode }]">
+        <div :class="['stat-card', { 'bg-gray-800': isDarkMode, 'bg-gradient-to-r from-blue-400 to-blue-600': !isDarkMode }]">
           <div class="icon-wrapper bg-blue-100">
             <i class="fas fa-users text-blue-600"></i>
           </div>
           <div class="stat-content">
-            <h3 class="text-lg font-semibold">Clientes</h3>
-            <p class="text-2xl font-bold text-blue-600">{{ totalClientes }}</p>
+            <h3 class="text-lg font-semibold text-white">Clientes</h3>
+            <p class="text-2xl font-bold text-white">{{ totalClientes }}</p>
           </div>
         </div>
-        <div :class="['stat-card', { 'bg-gray-800': isDarkMode, 'bg-white': !isDarkMode }]">
+        <div :class="['stat-card', { 'bg-gray-800': isDarkMode, 'bg-gradient-to-r from-green-300 to-green-400': !isDarkMode }]">
           <div class="icon-wrapper bg-green-100">
             <i class="fas fa-calendar-check text-green-600"></i>
           </div>
           <div class="stat-content">
-            <h3 class="text-lg font-semibold">Consultas del Mes</h3>
-            <p class="text-2xl font-bold text-green-600">45</p>
+            <h3 class="text-lg font-semibold text-white">Consultas del Mes</h3>
+            <p class="text-2xl font-bold text-white">45</p>
           </div>
         </div>
-        <div :class="['stat-card', { 'bg-gray-800': isDarkMode, 'bg-white': !isDarkMode }]">
+        <div :class="['stat-card', { 'bg-gray-800': isDarkMode, 'bg-gradient-to-r from-purple-400 to-purple-500': !isDarkMode }]">
           <div class="icon-wrapper bg-purple-100">
             <i class="fas fa-chart-line text-purple-600"></i>
           </div>
           <div class="stat-content">
-            <h3 class="text-lg font-semibold">Proyectos en Curso</h3>
-            <p class="text-2xl font-bold text-purple-600">12</p>
+            <h3 class="text-lg font-semibold text-white">Proyectos en Curso</h3>
+            <p class="text-2xl font-bold text-white">12</p>
           </div>
         </div>
       </div>
@@ -46,19 +46,19 @@
           Acciones Rápidas
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <button @click="toggleCreateModal(true)" :class="['action-button', { 'dark-action-button': isDarkMode }]">
+          <button @click="toggleCreateModal(true)" :class="['action-button', { 'dark-action-button': isDarkMode, 'bg-blue-500': !isDarkMode }]">
             <i class="fas fa-plus-circle mr-2"></i>
             Agregar Cliente
           </button>
-          <button :class="['action-button', { 'dark-action-button': isDarkMode }]">
+          <button :class="['action-button', { 'dark-action-button': isDarkMode, 'bg-green-500': !isDarkMode }]">
             <i class="fas fa-user-plus mr-2"></i>
             Nueva Consulta
           </button>
-          <button :class="['action-button', { 'dark-action-button': isDarkMode }]">
+          <button :class="['action-button', { 'dark-action-button': isDarkMode, 'bg-yellow-500': !isDarkMode }]">
             <i class="fas fa-calendar-alt mr-2"></i>
             Agendar Reunión
           </button>
-          <button :class="['action-button', { 'dark-action-button': isDarkMode }]">
+          <button :class="['action-button', { 'dark-action-button': isDarkMode, 'bg-purple-500': !isDarkMode }]">
             <i class="fas fa-file-alt mr-2"></i>
             Generar Reporte
           </button>

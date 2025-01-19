@@ -68,7 +68,7 @@
 
     <!-- Botón para exportar a Excel -->
     <div class="mt-4 flex justify-end">
-      <button @click="exportarExcel" class="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded flex items-center">
+      <button v-if="hasRole('exportar_excel')" @click="exportarExcel" class="border border-green-600 text-green-600 hover:bg-green-600 hover:text-white font-bold py-2 px-4 rounded flex items-center">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
           <path d="M3 3a2 2 0 012-2h10a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V3zm2 0v14h10V3H5zm3 4h4v2H8V7zm0 4h4v2H8v-2z" />
         </svg>
@@ -149,7 +149,7 @@
 import type { PropType } from 'vue';
 import type { Cliente } from '../composables/useClients';
 import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
-import { onMounted, ref, computed, watch } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import * as XLSX from 'xlsx';
 
 const autenticacionStore = useAutenticacionStore();
@@ -201,6 +201,11 @@ const cabecerasVisibles = computed(() => {
     return props.cabecerasTabla.slice(0, -1); 
   }
 });
+
+// Control de roles para el botón de exportar
+const hasRole = (role: string) => {
+  return autenticacionStore.privilegio === 1 || role === 'exportar_excel'; // Cambia esto según tu lógica de roles
+};
 
 const exportarExcel = () => {
   const datosParaExportar = props.clientes.filter(cliente => {

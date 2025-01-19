@@ -36,19 +36,34 @@
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm text-gray-500 dark:text-gray-400">{{ consultoria.Asunto }}</div>
             </td>
+           
             <td class="px-6 py-4 whitespace-nowrap">
               <a
                 v-if="consultoria.conr_adjunto"
                 :href="consultoria.conr_adjunto"
                 target="_blank"
-                class="text-blue-500 hover:underline"
+                class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded flex items-center"
               >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M10 0a2 2 0 00-2 2v8.586l-3.293-3.293A2 2 0 002 8.586l6 6a2 2 0 002 0l6-6a2 2 0 00-1.414-3.414L12 10.586V2a2 2 0 00-2-2z" />
+                </svg>
                 Descargar
               </a>
               <span v-else class="text-gray-500 dark:text-gray-400">No disponible</span>
             </td>
+            
+            <td v-if="mostrarBotones" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+              <div :class="{
+                'bg-yellow-200 text-yellow-800': consultoria.Estado === 'En marcha',
+                'bg-green-200 text-green-800': consultoria.Estado === 'Finalizado',
+                'bg-red-200 text-red-800': consultoria.Estado === 'No es factible',
+                'bg-gray-200 text-gray-800': consultoria.Estado === 'Por despachar'
+              }" class="inline-block px-3 py-1 rounded-full font-semibold">
+                {{ consultoria.Estado }}
+              </div>
+            </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-500 dark:text-gray-400">{{ consultoria.Estado }}</div>
+              <div class="text-sm text-gray-500 dark:text-gray-400">{{ consultoria.Observacion }}</div>
             </td>
             <td v-if="mostrarBotones" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
               <button
