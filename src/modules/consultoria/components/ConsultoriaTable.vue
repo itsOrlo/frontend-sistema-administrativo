@@ -1,5 +1,22 @@
 <template>
   <div>
+    <!-- Filtro de Estado de Consultoría -->
+    <div class="mb-4">
+      <label for="estadoConsultoria" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Filtrar por Estado de Consultoría</label>
+      <select id="estadoConsultoria" v-model="filtroEstadoConsultoria" @change="filtrarConsultorias" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+        <option value="">Todos</option>
+        <option v-for="estado in estadosConsultoria" :key="estado.conre_id" :value="estado.conre_id">{{ estado.conre_nombre }}</option>
+      </select>
+    </div>
+    <!-- Barra de búsqueda -->
+    <div class="mb-4">
+      <input
+        type="text"
+        v-model="searchTerm"
+        placeholder="Buscar..."
+        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+      />
+    </div>
     <!-- Start Table -->
     <div class="overflow-x-auto table-responsive">
       <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -17,7 +34,7 @@
           </tr>
         </thead>
         <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-          <tr v-for="consultoria in consultoriasFiltradas" :key="consultoria.conr_id">
+          <tr v-for="consultoria in consultoriasPaginadas" :key="consultoria.conr_id">
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm text-gray-900 dark:text-gray-300">{{ consultoria.Trámite }}</div>
             </td>
@@ -149,10 +166,10 @@
     </div>
     <!-- End Table -->
 
-    <!-- Botón para exportar a Excel -->
-    <div class="mt-4 flex justify-end">
+    <!-- Botones para exportar a Excel -->
+    <div class="mt-4 flex justify-end gap-2">
       <button
-        @click="exportarExcel"
+        @click="exportarTodasConsultorias"
         class="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded flex items-center"
       >
         <svg
@@ -165,7 +182,23 @@
             d="M3 3a2 2 0 012-2h10a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V3zm2 0v14h10V3H5zm3 4h4v2H8V7zm0 4h4v2H8v-2z"
           />
         </svg>
-        Exportar a Excel
+        Exportar BD
+      </button>
+      <button
+        @click="exportarVistaActual"
+        class="bg-blue-600 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded flex items-center"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 mr-2"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            d="M3 3a2 2 0 012-2h10a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V3zm2 0v14h10V3H5zm3 4h4v2H8V7zm0 4h4v2H8v-2z"
+          />
+        </svg>
+        Exportar Vista Actual
       </button>
     </div>
 
@@ -250,6 +283,7 @@ import type { PropType } from 'vue';
 import type { Consultoria } from '../composables/useConsultoria';
 import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
 import { onMounted, ref, computed, onBeforeUnmount } from 'vue';
+import { useConsultoria } from '../composables/useConsultoria';
 import * as XLSX from 'xlsx';
 import DetallesConsultoria from './DetallesConsultoria.vue';
 
@@ -257,6 +291,15 @@ const autenticacionStore = useAutenticacionStore();
 const mostrarBotones = ref(false);
 const mostrarModalDetalles = ref(false);
 const consultoriaSeleccionada = ref(null);
+const searchTerm = ref('');
+const filtroEstadoConsultoria = ref('');
+
+const estadosConsultoria = [
+  { conre_id: 2, conre_nombre: 'En marcha' },
+  { conre_id: 3, conre_nombre: 'Finalizado' },
+  { conre_id: 4, conre_nombre: 'No es factible' },
+  { conre_id: 1, conre_nombre: 'Por despachar' }
+];
 
 const props = defineProps({
   currentPage: {
@@ -278,8 +321,23 @@ const props = defineProps({
 });
 defineEmits(['editar', 'eliminar', 'cambiar-pagina']);
 
+const { exportarTodasConsultorias, filtroEstadoConsultoria: filtroEstado, searchTerm: search } = useConsultoria();
+
+filtroEstado.value = filtroEstadoConsultoria.value;
+search.value = searchTerm.value;
+
 const consultoriasFiltradas = computed(() => {
-  return props.consultorias; // Asegúrate de que esto devuelva todos los registros en orden ascendente
+  let resultado = props.consultorias;
+  if (searchTerm.value) {
+    const term = searchTerm.value.toLowerCase();
+    resultado = resultado.filter((consultoria) =>
+      Object.values(consultoria).join(' ').toLowerCase().includes(term)
+    );
+  }
+  if (filtroEstadoConsultoria.value) {
+    resultado = resultado.filter(consultoria => consultoria.Estado === estadosConsultoria.find(estado => estado.conre_id == filtroEstadoConsultoria.value)?.conre_nombre);
+  }
+  return resultado;
 });
 
 const consultoriasPaginadas = computed(() => {
@@ -305,36 +363,6 @@ const cabecerasVisibles = computed(() => {
     return props.cabecerasTabla.slice(0, -1);
   }
 });
-
-const exportarExcel = () => {
-  const datosParaExportar = props.consultorias.map((consultoria) => {
-    const {
-      Trámite,
-      Dependencia,
-      'Empresa cliente': EmpresaCliente,
-      'Fecha de registro': FechaRegistro,
-      'Fecha de despacho': FechaDespacho,
-      Asunto,
-      conr_adjunto,
-      Estado,
-    } = consultoria;
-    return {
-      Trámite: Trámite,
-      Dependencia: Dependencia,
-      'Empresa cliente': EmpresaCliente,
-      'Fecha de registro': FechaRegistro,
-      'Fecha de despacho': FechaDespacho,
-      Asunto: Asunto,
-      Archivo: conr_adjunto ? 'Disponible' : 'No disponible',
-      Estado: Estado,
-    };
-  });
-
-  const ws = XLSX.utils.json_to_sheet(datosParaExportar);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Consultorias');
-  XLSX.writeFile(wb, 'consultorias.xlsx');
-};
 
 const mostrarDetalles = (consultoria) => {
   consultoriaSeleccionada.value = consultoria;
@@ -379,5 +407,32 @@ const handleActionChange = (action, consultoria) => {
     mostrarDetalles(consultoria);
   }
   dropdownStates.value[consultoria.conr_id] = false; // Cierra el dropdown después de seleccionar
+};
+
+const filtrarConsultorias = () => {
+  filtroEstado.value = filtroEstadoConsultoria.value;
+  search.value = searchTerm.value;
+  // Esta función se llama cuando se cambia el filtro de estado de consultoría
+  // No es necesario hacer nada aquí ya que `consultoriasFiltradas` es una propiedad computada
+};
+
+const exportarVistaActual = () => {
+  const datosParaExportar = consultoriasFiltradas.value.map(consultoria => {
+    return {
+      Trámite: consultoria.Trámite,
+      Dependencia: consultoria.Dependencia,
+      'Empresa cliente': consultoria['Empresa cliente'],
+      'Fecha de registro': consultoria['Fecha de registro'],
+      'Fecha de despacho': consultoria['Fecha de despacho'],
+      Asunto: consultoria.Asunto,
+      Estado: consultoria.Estado,
+      Observacion: consultoria.Observacion,
+    };
+  });
+
+  const ws = XLSX.utils.json_to_sheet(datosParaExportar);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Consultorias');
+  XLSX.writeFile(wb, 'consultorias.xlsx');
 };
 </script>

@@ -1,6 +1,7 @@
 import { ref, computed, watch, onMounted } from 'vue';
 import { useApi } from '@/composables/use-api';
 import Swal from 'sweetalert2';
+import * as XLSX from 'xlsx';
 
 export interface Consultoria {
   Trámite: string;
@@ -24,14 +25,20 @@ export function useConsultoria(pageSize = 10) {
   const mostrarModalCrear = ref(false);
   const mostrarModalEditar = ref(false);
   const consultoriaSeleccionada = ref<Consultoria | null>(null);
+  const filtroEstadoConsultoria = ref('');
 
   const consultoriasFiltradas = computed(() => {
-    if (!searchTerm.value) return consultorias.value;
-
-    const term = searchTerm.value.toLowerCase();
-    return consultorias.value.filter((consultoria) =>
-      Object.values(consultoria).join(' ').toLowerCase().includes(term)
-    );
+    let resultado = consultorias.value;
+    if (searchTerm.value) {
+      const term = searchTerm.value.toLowerCase();
+      resultado = resultado.filter((consultoria) =>
+        Object.values(consultoria).join(' ').toLowerCase().includes(term)
+      );
+    }
+    if (filtroEstadoConsultoria.value) {
+      resultado = resultado.filter(consultoria => consultoria.Estado === filtroEstadoConsultoria.value);
+    }
+    return resultado;
   });
 
   const cabecerasTabla = ref<string[]>([]);
@@ -122,6 +129,36 @@ export function useConsultoria(pageSize = 10) {
     }
   };
 
+  const exportarTodasConsultorias = () => {
+    const datosParaExportar = consultoriasFiltradas.value.map((consultoria) => {
+      const {
+        Trámite,
+        Dependencia,
+        'Empresa cliente': EmpresaCliente,
+        'Fecha de registro': FechaRegistro,
+        'Fecha de despacho': FechaDespacho,
+        Asunto,
+        conr_adjunto,
+        Estado,
+      } = consultoria;
+      return {
+        Trámite,
+        Dependencia,
+        'Empresa cliente': EmpresaCliente,
+        'Fecha de registro': FechaRegistro,
+        'Fecha de despacho': FechaDespacho,
+        Asunto,
+        Archivo: conr_adjunto ? 'Disponible' : 'No disponible',
+        Estado,
+      };
+    });
+
+    const ws = XLSX.utils.json_to_sheet(datosParaExportar);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Consultorias');
+    XLSX.writeFile(wb, 'consultorias.xlsx');
+  };
+
   watch(searchTerm, () => {
     currentPage.value = 1;
   });
@@ -147,5 +184,7 @@ export function useConsultoria(pageSize = 10) {
     deleteConsultoria,
     setPage: (page: number) => (currentPage.value = page),
     toggleCreateModal: (show: boolean) => (mostrarModalCrear.value = show),
+    filtroEstadoConsultoria,
+    exportarTodasConsultorias,
   };
 }
