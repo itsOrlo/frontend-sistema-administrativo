@@ -32,6 +32,12 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('./pages/ListadoConsultorias.vue'),
     meta: { requiresAuth: true }, 
 },
+{
+    path: '/bienvenido',
+    name: 'bienvenidoUsuario',
+    component: () => import('./pages/BienvenidoUsuario.vue'),
+    meta: { requiresAuth: true },
+},
 
     
 ];

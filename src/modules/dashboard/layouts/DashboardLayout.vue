@@ -1,4 +1,5 @@
 <template>
+
   <Head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   </Head>
@@ -185,7 +186,7 @@ onMounted(() => {
   if (!sessionStorage.getItem('pageReloaded')) {
     // Recargar la página 
     location.reload();
-    
+
 
     // Guardar un valor en sessionStorage para indicar que la página ya se ha recargado
     sessionStorage.setItem('pageReloaded', 'true');
