@@ -29,7 +29,7 @@
           </div>
           <div class="stat-content">
             <h3 class="text-lg font-semibold text-white">Consultas del Mes</h3>
-            <p class="text-2xl font-bold text-white">45</p>
+            <p class="text-2xl font-bold text-white">{{ totalConsultoriasDelMes }}</p>
           </div>
         </div>
         <div @click="goToRoute('listadoConsultorias')"
@@ -102,7 +102,7 @@ import CrearConsultoria from '../components/CrearConsultoria.vue';
 
 const { totalClientes, tiposEmpresa, loadClients, clientes } = useClients();
 const { dependenciasFormateadas, loadDepends, totalDependencias } = useDependencia();
-const { totalProyectosEnMarcha } = useConsultoria();
+const { totalProyectosEnMarcha, totalConsultoriasDelMes } = useConsultoria();
 const isDarkMode = inject('isDarkMode', ref(false));
 const mostrarModalCrear = ref(false);
 const mostrarModalConsultoria = ref(false);

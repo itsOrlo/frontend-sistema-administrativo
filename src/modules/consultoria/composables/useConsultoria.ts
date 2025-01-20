@@ -55,6 +55,16 @@ export function useConsultoria(pageSize = 10) {
     return consultorias.value.filter(consultoria => consultoria.Estado === 'En marcha').length;
   });
 
+  const totalConsultoriasDelMes = computed(() => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    return consultorias.value.filter(consultoria => {
+      const fechaRegistro = new Date(consultoria['Fecha de registro']);
+      return fechaRegistro.getMonth() === currentMonth && fechaRegistro.getFullYear() === currentYear;
+    }).length;
+  });
+
   const toggleEditModal = (show: boolean, consultoria: Consultoria | null = null) => {
     mostrarModalEditar.value = show;
     if (show) {
@@ -203,5 +213,6 @@ export function useConsultoria(pageSize = 10) {
     estadosConsultoria, // Añadir estadosConsultoria al return
     exportarTodasConsultorias,
     totalProyectosEnMarcha,
+    totalConsultoriasDelMes,
   };
 }
