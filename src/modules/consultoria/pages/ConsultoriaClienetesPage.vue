@@ -12,7 +12,8 @@
       </div>
       <!-- Stats Cards -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6 mt-8">
-        <div @click="goToRoute('listadoCliente')" :class="['stat-card', { 'bg-gray-800': isDarkMode, 'bg-gradient-to-r from-blue-400 to-blue-600': !isDarkMode }]">
+        <div @click="goToRoute('listadoCliente')"
+          :class="['stat-card', { 'bg-gray-800': isDarkMode, 'bg-gradient-to-r from-blue-400 to-blue-600': !isDarkMode }]">
           <div class="icon-wrapper bg-blue-100">
             <i class="fas fa-users text-blue-600"></i>
           </div>
@@ -21,7 +22,8 @@
             <p class="text-2xl font-bold text-white">{{ totalClientes }}</p>
           </div>
         </div>
-        <div @click="goToRoute('listadoConsultorias')" :class="['stat-card', { 'bg-gray-800': isDarkMode, 'bg-gradient-to-r from-green-300 to-green-400': !isDarkMode }]">
+        <div @click="goToRoute('listadoConsultorias')"
+          :class="['stat-card', { 'bg-gray-800': isDarkMode, 'bg-gradient-to-r from-green-300 to-green-400': !isDarkMode }]">
           <div class="icon-wrapper bg-green-100">
             <i class="fas fa-calendar-check text-green-600"></i>
           </div>
@@ -30,22 +32,24 @@
             <p class="text-2xl font-bold text-white">45</p>
           </div>
         </div>
-        <div @click="goToRoute('listadoConsultorias')" :class="['stat-card', { 'bg-gray-800': isDarkMode, 'bg-gradient-to-r from-purple-400 to-purple-500': !isDarkMode }]">
+        <div @click="goToRoute('listadoConsultorias')"
+          :class="['stat-card', { 'bg-gray-800': isDarkMode, 'bg-gradient-to-r from-purple-400 to-purple-500': !isDarkMode }]">
           <div class="icon-wrapper bg-purple-100">
             <i class="fas fa-chart-line text-purple-600"></i>
           </div>
           <div class="stat-content">
             <h3 class="text-lg font-semibold text-white">Proyectos En Marcha</h3>
-            <p class="text-2xl font-bold text-white">12</p>
+            <p class="text-2xl font-bold text-white">{{ totalProyectosEnMarcha }}</p>
           </div>
         </div>
-        <div @click="goToRoute('listadoDependencias')" :class="['stat-card', { 'bg-gray-800': isDarkMode, 'bg-gradient-to-r from-red-400 to-red-500': !isDarkMode }]">
+        <div @click="goToRoute('listadoDependencias')"
+          :class="['stat-card', { 'bg-gray-800': isDarkMode, 'bg-gradient-to-r from-red-400 to-red-500': !isDarkMode }]">
           <div class="icon-wrapper bg-red-100">
             <i class="fas fa-building text-red-600"></i>
           </div>
           <div class="stat-content">
             <h3 class="text-lg font-semibold text-white">Dependencias</h3>
-            <p class="text-3xl font-bold text-white">0</p>
+            <p class="text-3xl font-bold text-white">{{ totalDependencias }}</p>
           </div>
         </div>
       </div>
@@ -55,11 +59,13 @@
           Acciones Rápidas
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <button @click="toggleCreateModal(true)" :class="['action-button', { 'dark-action-button': isDarkMode, 'bg-blue-500': !isDarkMode }]">
+          <button @click="toggleCreateModal(true)"
+            :class="['action-button', { 'dark-action-button': isDarkMode, 'bg-blue-500': !isDarkMode }]">
             <i class="fas fa-plus-circle mr-2"></i>
             Agregar Cliente
           </button>
-          <button @click="toggleConsultoriaModal(true)" :class="['action-button', { 'dark-action-button': isDarkMode, 'bg-green-500': !isDarkMode }]">
+          <button @click="toggleConsultoriaModal(true)"
+            :class="['action-button', { 'dark-action-button': isDarkMode, 'bg-green-500': !isDarkMode }]">
             <i class="fas fa-user-plus mr-2"></i>
             Nueva Consulta
           </button>
@@ -76,21 +82,11 @@
     </div>
 
     <!-- Create Modal -->
-    <CrearCliente
-      v-if="mostrarModalCrear"
-      :mostrarModal="mostrarModalCrear"
-      :clienteARegistrar="clienteSeleccionado"
-      :tiposEmpresa="tiposEmpresa"
-      @cerrar-modal="toggleCreateModal(false)"
-      @cliente-creado="loadClients"
-    />
-    <CrearConsultoria
-      :mostrarModal="mostrarModalConsultoria"
-      :dependencias="dependenciasFormateadas"
-      :clientes="clientesFormateados"
-      @cerrar-modal="toggleConsultoriaModal(false)"
-      @consultoria-creada="handleConsultoriaCreada"
-    />
+    <CrearCliente v-if="mostrarModalCrear" :mostrarModal="mostrarModalCrear" :clienteARegistrar="clienteSeleccionado"
+      :tiposEmpresa="tiposEmpresa" @cerrar-modal="toggleCreateModal(false)" @cliente-creado="loadClients" />
+    <CrearConsultoria :mostrarModal="mostrarModalConsultoria" :dependencias="dependenciasFormateadas"
+      :clientes="clientesFormateados" @cerrar-modal="toggleConsultoriaModal(false)"
+      @consultoria-creada="handleConsultoriaCreada" />
   </DashboardLayout>
 </template>
 
@@ -98,6 +94,7 @@
 import DashboardLayout from '@/modules/dashboard/layouts/DashboardLayout.vue';
 import { useClients } from '../composables/useClients';
 import { useDependencia } from '../composables/useDependencias';
+import { useConsultoria } from '../composables/useConsultoria';
 import { inject, ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import CrearCliente from '../components/CrearCliente.vue';
@@ -105,6 +102,7 @@ import CrearConsultoria from '../components/CrearConsultoria.vue';
 
 const { totalClientes, tiposEmpresa, loadClients, clientes } = useClients();
 const { dependenciasFormateadas, loadDepends, totalDependencias } = useDependencia();
+const { totalProyectosEnMarcha } = useConsultoria();
 const isDarkMode = inject('isDarkMode', ref(false));
 const mostrarModalCrear = ref(false);
 const mostrarModalConsultoria = ref(false);
@@ -156,7 +154,8 @@ onMounted(async () => {
 
 .stat-card {
   @apply p-6 rounded-lg shadow-md flex flex-col items-center justify-center space-y-4 bg-white cursor-pointer;
-  height: 200px; /* Ajustar la altura para que sean cuadrados */
+  height: 200px;
+  /* Ajustar la altura para que sean cuadrados */
 }
 
 .icon-wrapper {
@@ -168,13 +167,12 @@ onMounted(async () => {
 }
 
 .stat-content p {
-  @apply text-3xl; /* Aumentar ligeramente el tamaño de los números */
+  @apply text-3xl;
+  /* Aumentar ligeramente el tamaño de los números */
 }
 
 .action-button {
-  @apply bg-white text-gray-800 hover:bg-gray-50 font-semibold py-3 px-4 rounded-lg 
-         shadow-sm border w-full flex items-center justify-center 
-         transition-colors duration-200;
+  @apply bg-white text-gray-800 hover:bg-gray-50 font-semibold py-3 px-4 rounded-lg shadow-sm border w-full flex items-center justify-center transition-colors duration-200;
 }
 
 /* Modo oscuro */

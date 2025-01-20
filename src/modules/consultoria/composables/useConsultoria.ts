@@ -51,6 +51,10 @@ export function useConsultoria(pageSize = 10) {
     return consultoriasFiltradas.value.slice(startIndex, startIndex + pageSize);
   });
 
+  const totalProyectosEnMarcha = computed(() => {
+    return consultorias.value.filter(consultoria => consultoria.Estado === 'En marcha').length;
+  });
+
   const toggleEditModal = (show: boolean, consultoria: Consultoria | null = null) => {
     mostrarModalEditar.value = show;
     if (show) {
@@ -198,5 +202,6 @@ export function useConsultoria(pageSize = 10) {
     filtroEstadoConsultoria,
     estadosConsultoria, // Añadir estadosConsultoria al return
     exportarTodasConsultorias,
+    totalProyectosEnMarcha,
   };
 }

@@ -39,6 +39,8 @@ export function useDependencia(pageSize = 10) {
     return dependenciasFiltrados.value.slice(startIndex, startIndex + pageSize);
   });
 
+  const totalDependencias = computed(() => dependencias.value.length);
+
   const toggleEditModal = (show: boolean, dependencia: Dependencia | null = null) => {
     mostrarModalEditar.value = show;
     if (show) {
@@ -169,5 +171,6 @@ export function useDependencia(pageSize = 10) {
     toggleCreateModal: (show: boolean) => (mostrarModalCrear.value = show),
     dependenciasFormateadas,
     exportarTodasDependencias,
+    totalDependencias,
   };
 }
