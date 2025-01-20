@@ -2,7 +2,8 @@
   <DashboardLayout>
     <div class="bienvenido-container">
       <div class="welcome-message">
-        <img src="https://res.cloudinary.com/dw8oyuntj/image/upload/apusxpslr1qq9med9jaf" alt="Bienvenido" class="welcome-image" />
+        <img src="https://res.cloudinary.com/dw8oyuntj/image/upload/apusxpslr1qq9med9jaf" alt="Bienvenido"
+          class="welcome-image" />
         <h1 class="text-3xl font-bold text-gray-800 dark:text-white">
           Bienvenido al Sistema de Consultoría
         </h1>
@@ -10,37 +11,42 @@
           Como usuario, podrá navegar por las siguientes secciones:
         </p>
       </div>
-      <div class="navigation-list mt-8">
-        <ul>
-          <li class="nav-item">
-            <router-link to="/listar" class="nav-link">
-              <i class="fas fa-users mr-2"></i>Listado de Clientes
-              <p class="nav-description">Visualice todos los clientes registrados.</p>
-              <i class="fas fa-chevron-right ml-auto"></i>
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/consultoria-clientes" class="nav-link">
-              <i class="fas fa-user-tie mr-2"></i>Consultoría de Clientes
-              <p class="nav-description">Acceda a las consultas e insights.</p>
-              <i class="fas fa-chevron-right ml-auto"></i>
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/listarDependencias" class="nav-link">
-              <i class="fas fa-building mr-2"></i>Listado de Dependencias
-              <p class="nav-description">Acceda a las dependencias y sus relaciones.</p>
-              <i class="fas fa-chevron-right ml-auto"></i>
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/listarConsultorias" class="nav-link">
-              <i class="fa fa-briefcase mr-2"></i>Listado de Consultorías
-              <p class="nav-description">Revise, gestione y realice seguimiento de todas las consultorías.</p>
-              <i class="fas fa-chevron-right ml-auto"></i>
-            </router-link>
-          </li>
-        </ul>
+      <div class="content-columns mt-8">
+        <div class="left-column">
+          <img src="https://res.cloudinary.com/dw8oyuntj/image/upload/vhgnv1vk3vu9n9acfdvk" alt="Próximamente" class="coming-soon-image" />
+        </div>
+        <div class="navigation-list">
+          <ul>
+            <li class="nav-item">
+              <router-link to="/listar" class="nav-link">
+                <i class="fas fa-users mr-2"></i>Listado de Clientes
+                <p class="nav-description">Visualice todos los clientes registrados.</p>
+                <i class="fas fa-chevron-right ml-auto"></i>
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link to="/consultoria-clientes" class="nav-link">
+                <i class="fas fa-user-tie mr-2"></i>Consultoría de Clientes
+                <p class="nav-description">Acceda a las consultas e insights.</p>
+                <i class="fas fa-chevron-right ml-auto"></i>
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link to="/listarDependencias" class="nav-link">
+                <i class="fas fa-building mr-2"></i>Listado de Dependencias
+                <p class="nav-description">Acceda a las dependencias y sus relaciones.</p>
+                <i class="fas fa-chevron-right ml-auto"></i>
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link to="/listarConsultorias" class="nav-link">
+                <i class="fa fa-briefcase mr-2"></i>Listado de Consultorías
+                <p class="nav-description">Revise, gestione y realice seguimiento de todas las consultorías.</p>
+                <i class="fas fa-chevron-right ml-auto"></i>
+              </router-link>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </DashboardLayout>
@@ -62,8 +68,24 @@ import DashboardLayout from '@/modules/dashboard/layouts/DashboardLayout.vue';
 
 .welcome-image {
   @apply mx-auto mb-4;
+  width: 250px;
+}
+
+.content-columns {
+  @apply flex justify-center;
+}
+
+.left-column {
+  @apply mr-8 flex justify-center;
+}
+
+.coming-soon-image {
+  @apply mx-auto mb-4;
   width: 280px;
-  padding-left: 8%;
+}
+
+.navigation-list {
+  @apply flex justify-center;
 }
 
 .navigation-list ul {
