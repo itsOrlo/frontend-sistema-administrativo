@@ -2,6 +2,7 @@
 import { ref, computed, watch, onMounted } from 'vue';
 import { useApi } from '@/composables/use-api';
 import Swal from 'sweetalert2';
+import * as XLSX from 'xlsx';
 
 export interface Dependencia {
   cdep_id: number;
@@ -124,6 +125,23 @@ export function useDependencia(pageSize = 10) {
     }
   };
 
+  const exportarTodasDependencias = () => {
+    const datosParaExportar = dependencias.value.map((dependencia) => {
+      const { cdep_id, cdep_dependencia, cdep_fecha_registro, cdep_estado } = dependencia;
+      return {
+        ID: cdep_id,
+        Dependencia: cdep_dependencia,
+        'Fecha de Registro': cdep_fecha_registro,
+        Estado: cdep_estado
+      };
+    });
+
+    const ws = XLSX.utils.json_to_sheet(datosParaExportar);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Dependencias');
+    XLSX.writeFile(wb, 'dependencias.xlsx');
+  };
+
   watch(searchTerm, () => {
     currentPage.value = 1;
   });
@@ -150,5 +168,6 @@ export function useDependencia(pageSize = 10) {
     setPage: (page: number) => (currentPage.value = page),
     toggleCreateModal: (show: boolean) => (mostrarModalCrear.value = show),
     dependenciasFormateadas,
+    exportarTodasDependencias,
   };
 }

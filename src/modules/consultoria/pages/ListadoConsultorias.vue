@@ -59,10 +59,8 @@ const mostrarBotones = ref(false);
 const filtroEstadoConsultoria = ref('');
 
 const {
-  mostrarModalEditar,
   consultoriaSeleccionada,
   toggleEditModal,
-  consultorias,
   cabecerasTabla,
   searchTerm,
   currentPage,
@@ -78,7 +76,6 @@ const {
 
 const {
   clientes,
-  tiposEmpresa,
   loadClients,
 } = useClients();
 

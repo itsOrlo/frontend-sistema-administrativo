@@ -3,13 +3,13 @@
     <!-- Dropdown para filtrar por estado -->
     <div class="mb-4">
       <label for="estado-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Filtrar por
-        estado:</label>
+      estado:</label>
       <select id="estado-filter" v-model="filtroEstadoConsultoria"
-        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-        <option value="">Todos</option>
-        <option v-for="estado in estadosConsultoria" :key="estado.conre_" :value="estado.conre_nombre">
-          {{ estado.conre_nombre }}
-        </option>
+      class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+      <option value="">Todos</option>
+      <option v-for="estado in estadosConsultoria" :key="estado.conre_id" :value="estado.conre_nombre">
+        {{ estado.conre_nombre }}
+      </option>
       </select>
     </div>
 
@@ -70,7 +70,7 @@
               <span v-else class="text-gray-500 dark:text-gray-400">No disponible</span>
             </td>
 
-            <td v-if="mostrarBotones" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
               <div :class="{
                 'bg-yellow-400 text-gray-100': consultoria.Estado === 'En marcha',
                 'bg-green-400 text-gray-100': consultoria.Estado === 'Finalizado',
