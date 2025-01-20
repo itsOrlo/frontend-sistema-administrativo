@@ -26,6 +26,7 @@ export function useConsultoria(pageSize = 10) {
   const mostrarModalEditar = ref(false);
   const consultoriaSeleccionada = ref<Consultoria | null>(null);
   const filtroEstadoConsultoria = ref('');
+  const estadosConsultoria = ref<{ conre_id: number; conre_nombre: string }[]>([]);
 
   const consultoriasFiltradas = computed(() => {
     let resultado = consultorias.value;
@@ -64,9 +65,19 @@ export function useConsultoria(pageSize = 10) {
     }
   };
 
+  const loadEstadosConsultoria = async () => {
+    try {
+      const response = await useApi.get('/api/v1/consultoria/consultoria-registro-estado');
+      estadosConsultoria.value = response.data;
+    } catch (error) {
+      console.error('Error cargando estados de consultoría:', error);
+    }
+  };
+
   const loadConsultorias = async () => {
     try {
       isLoading.value = true;
+      await loadEstadosConsultoria(); // Cargar estados antes de cargar consultorías
       const response = await useApi.get('/api/v1/consultoria/consultoria-registro');
       consultorias.value = response.data.sort((a: Consultoria, b: Consultoria) => 
         Number(a.conr_id) - Number(b.conr_id)
@@ -156,7 +167,7 @@ export function useConsultoria(pageSize = 10) {
     const ws = XLSX.utils.json_to_sheet(datosParaExportar);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Consultorias');
-    XLSX.writeFile(wb, 'consultorias.xlsx');
+    XLSX.writeFile(wb, 'bdd_consultorias.xlsx');
   };
 
   watch(searchTerm, () => {
@@ -185,6 +196,7 @@ export function useConsultoria(pageSize = 10) {
     setPage: (page: number) => (currentPage.value = page),
     toggleCreateModal: (show: boolean) => (mostrarModalCrear.value = show),
     filtroEstadoConsultoria,
+    estadosConsultoria, // Añadir estadosConsultoria al return
     exportarTodasConsultorias,
   };
 }

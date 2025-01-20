@@ -340,13 +340,6 @@ const fechaActual = computed(() => {
     day: 'numeric'
   });
 });
-
-// Para depuración
-watchEffect(() => {
-  console.log('Valor actual de dependenciaId:', formData.value.dependenciaId);
-  console.log('Dependencias disponibles:', props.dependencias);
-  console.log('Dependencias filtradas:', dependenciasFiltered.value);
-});
 </script>
 
 <style scoped>
