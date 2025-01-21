@@ -5,10 +5,10 @@
       class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
     >
       <div
-        class="relative mx-4 w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-lg shadow-xl"
+        class="relative mx-4 w-full max-w-md max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-800 rounded-lg shadow-xl"
         @click.stop
       >
-        <header class="bg-blue-700 px-6 py-4 rounded-t-lg">
+        <header class="bg-blue-700 dark:bg-blue-900 px-6 py-4 rounded-t-lg">
           <div class="flex items-center justify-between">
             <h2 class="text-lg font-bold text-white">Editar Dependencia</h2>
             <button
@@ -22,7 +22,7 @@
         </header>
 
         <div class="p-6">
-          <form @submit.prevent="handleSubmit" cDlass="space-y-4">
+          <form @submit.prevent="handleSubmit" class="space-y-4">
             <FormField
               v-for="field in formFields"
               :key="field.id"
@@ -34,14 +34,14 @@
               <button
                 type="button"
                 @click="handleClose"
-                class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 :disabled="isSubmitting"
-                class="px-4 py-2 text-white bg-blue-700 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                class="px-4 py-2 text-white bg-blue-700 dark:bg-blue-900 rounded-md hover:bg-blue-600 dark:hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
               >
                 {{ isSubmitting ? 'Guardando...' : 'Guardar Cambios' }}
               </button>
@@ -139,5 +139,22 @@ const handleSubmit = async () => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+/* Modo oscuro */
+.dark .bg-white {
+  background-color: #2d3748;
+}
+
+.dark .text-gray-700 {
+  color: #e2e8f0;
+}
+
+.dark .border-gray-300 {
+  border-color: #4a5568;
+}
+
+.dark .hover\:bg-gray-50:hover {
+  background-color: #4a5568;
 }
 </style>

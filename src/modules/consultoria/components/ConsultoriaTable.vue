@@ -3,19 +3,19 @@
     <!-- Dropdown para filtrar por estado -->
     <div class="mb-4">
       <label for="estado-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Filtrar por
-      estado:</label>
+        estado:</label>
       <select id="estado-filter" v-model="filtroEstadoConsultoria"
-      class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-      <option value="">Todos</option>
-      <option v-for="estado in estadosConsultoria" :key="estado.conre_id" :value="estado.conre_nombre">
-        {{ estado.conre_nombre }}
-      </option>
+        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md shadow-md">
+        <option value="">Todos</option>
+        <option v-for="estado in estadosConsultoria" :key="estado.conre_id" :value="estado.conre_nombre">
+          {{ estado.conre_nombre }}
+        </option>
       </select>
     </div>
 
     <!-- Start Table -->
     <div class="overflow-x-auto table-responsive">
-      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 shadow-lg rounded-lg">
         <thead class="bg-gray-50 dark:bg-gray-800 ">
           <tr>
             <!-- Asignado dinámico de cabecera -->
@@ -26,7 +26,8 @@
           </tr>
         </thead>
         <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-          <tr v-for="consultoria in consultoriasFiltradas" :key="consultoria.conr_id">
+          <tr v-for="consultoria in consultoriasFiltradas" :key="consultoria.conr_id"
+            class="hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200">
             <td class="px-6 py-4 whitespace-nowrap">
               <div @click="mostrarDetalles(consultoria)"
                 class="text-sm font-bold text-gray-700 dark:text-gray-300 cursor-pointer hover:text-blue-600">
@@ -58,9 +59,9 @@
               </div>
             </td>
 
-            <td class="px-6 py-4 whitespace-nowrap">
+            <td v-if="mostrarBotones" class="px-6 py-4 whitespace-nowrap">
               <a v-if="consultoria.conr_adjunto" :href="consultoria.conr_adjunto" target="_blank"
-                class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded flex items-center">
+                class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded flex items-center shadow-md">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                   <path
                     d="M10 0a2 2 0 00-2 2v8.586l-3.293-3.293A2 2 0 002 8.586l6 6a2 2 0 002 0l6-6a2 2 0 00-1.414-3.414L12 10.586V2a2 2 0 00-2-2z" />
@@ -88,7 +89,7 @@
             <td v-if="mostrarBotones" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
               <div class="relative">
                 <button :id="`dropdown-button-${consultoria.conr_id}`" @click="toggleDropdown(consultoria.conr_id)"
-                  class="bg-white border border-gray-300 rounded-md p-2 px-6 flex items-center">
+                  class="bg-blue-600 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded flex items-center shadow-md">
                   Acción
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
@@ -96,7 +97,7 @@
                   </svg>
                 </button>
                 <ul :id="`dropdown-menu-${consultoria.conr_id}`" v-if="dropdownStates[consultoria.conr_id]"
-                    class="absolute z-10 bg-white border border-gray-300 rounded-md mt-1 w-full">
+                  class="absolute z-10 bg-white border border-gray-300 rounded-md mt-1 w-full shadow-lg">
                   <li @click="handleActionChange('editar', consultoria)"
                     class="flex items-center p-2 hover:bg-gray-100 cursor-pointer">
                     <i class="fa fa-pencil-alt mr-2"></i>
@@ -124,7 +125,7 @@
     <!-- Botón para exportar a Excel -->
     <div class="mt-4 flex justify-end gap-2" v-if="hasRole()">
       <button @click="exportarTodasConsultorias"
-        class="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded flex items-center">
+        class="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded flex items-center shadow-md">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
           <path
             d="M3 3a2 2 0 012-2h10a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V3zm2 0v14h10V3H5zm3 4h4v2H8V7zm0 4h4v2H8v-2z" />
@@ -132,7 +133,7 @@
         Exportar BD
       </button>
       <button @click="exportarExcel"
-        class="bg-blue-600 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded flex items-center">
+        class="bg-blue-600 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded flex items-center shadow-md">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
           <path
             d="M3 3a2 2 0 012-2h10a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V3zm2 0v14h10V3H5zm3 4h4v2H8V7zm0 4h4v2H8v-2z" />
@@ -143,7 +144,7 @@
 
     <!-- Pagination with improved design -->
     <div
-      class="mt-6 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-3 sm:px-6">
+      class="mt-6 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-3 sm:px-6 shadow-md rounded-lg">
       <div class="flex flex-1 justify-between items-center">
         <div>
           <p class="text-sm text-gray-700 dark:text-gray-300">
@@ -240,11 +241,12 @@ onBeforeUnmount(() => {
 
 // Computed property para las cabeceras visibles
 const cabecerasVisibles = computed(() => {
-  if (mostrarBotones.value) {
-    return props.cabecerasTabla;
+  if (!mostrarBotones.value) {
+    // Excluir la sexta cabecera
+    return props.cabecerasTabla.filter((_, index) => index !== 6).slice(0, -1);
   } else {
     // Retorna todas las cabeceras excepto la última
-    return props.cabecerasTabla.slice(0, -1);
+    return props.cabecerasTabla;
   }
 });
 
@@ -291,10 +293,6 @@ const cerrarModalDetalles = () => {
 const dropdownStates = ref<Record<number, boolean>>({}); // Objeto para manejar el estado de cada fila
 
 const toggleDropdown = (id: number) => {
-  // Cierra todos los dropdowns y abre solo el que se selecciona
-  for (const key in dropdownStates.value) {
-    dropdownStates.value[key] = false;
-  }
   dropdownStates.value[id] = !dropdownStates.value[id]; // Cambia el estado del dropdown de la fila seleccionada
 };
 

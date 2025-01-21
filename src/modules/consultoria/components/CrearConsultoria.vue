@@ -1,8 +1,8 @@
 <template>
   <Transition name="fade">
     <div v-if="mostrarModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div class="relative mx-4 w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-lg shadow-xl" @click.stop>
-        <div class="bg-blue-700 px-6 py-4 rounded-t-lg">
+      <div class="relative mx-4 w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-800 rounded-lg shadow-xl" @click.stop>
+        <div class="bg-blue-700 dark:bg-blue-900 px-6 py-4 rounded-t-lg">
           <div class="flex items-center justify-between">
             <h2 class="text-lg font-bold text-white">Registrar Nueva Consultoría</h2>
             <button @click="handleClose" class="text-white hover:text-gray-200 focus:outline-none"
@@ -17,13 +17,13 @@
               <!-- Columna izquierda -->
               <div class="space-y-4">
                 <div class="form-group">
-                  <label for="dependencia" class="block text-sm font-medium text-gray-700 mb-1">
+                  <label for="dependencia" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Dependencia:
                   </label>
                   <Combobox v-model="formData.dependenciaId" as="div" class="relative">
                     <div class="relative">
                       <ComboboxInput
-                        class="w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 dark:text-gray-300 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                         :displayValue="(id) => getDependenciaName(id)" @change="busqueda = $event.target.value"
                         placeholder="Buscar dependencia..." />
                       <ComboboxButton class="absolute inset-y-0 right-0 flex items-center pr-2">
@@ -31,14 +31,14 @@
                       </ComboboxButton>
                     </div>
                     <ComboboxOptions
-                      class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                      class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-gray-700 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                       <ComboboxOption v-for="(nombre, id) in dependenciasFiltered" :key="id" :value="Number(id)"
                         v-slot="{ selected, active }">
                         <li class="relative cursor-default select-none py-2 pl-3 pr-9" :class="{
                           'bg-blue-600 text-white': active,
-                          'text-gray-900': !active
+                          'text-gray-900 dark:text-gray-300': !active
                         }">
-                          <span class="block truncate" :class="{ 'font-medium': selected, 'font-normal': !selected }">
+                          <span class="block whitespace-normal break-words" :class="{ 'font-medium': selected, 'font-normal': !selected }" :title="nombre">
                             {{ nombre }}
                           </span>
                         </li>
@@ -48,13 +48,13 @@
                 </div>
 
                 <div class="form-group">
-                  <label for="cliente" class="block text-sm font-medium text-gray-700 mb-1">
+                  <label for="cliente" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Remitente:
                   </label>
                   <Combobox v-model="formData.clienteId" as="div" class="relative">
                     <div class="relative">
                       <ComboboxInput
-                        class="w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 dark:text-gray-300 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                         :displayValue="(id) => props.clientes[id as number] || ''"
                         @change="busquedaCliente = $event.target.value" placeholder="Buscar cliente..." />
                       <ComboboxButton class="absolute inset-y-0 right-0 flex items-center pr-2">
@@ -62,14 +62,14 @@
                       </ComboboxButton>
                     </div>
                     <ComboboxOptions
-                      class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                      class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-gray-700 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                       <ComboboxOption v-for="(nombre, id) in clientesFiltrados" :key="id" :value="id"
                         v-slot="{ selected, active }">
                         <li class="relative cursor-default select-none py-2 pl-3 pr-9" :class="{
                           'bg-blue-600 text-white': active,
-                          'text-gray-900': !active
+                          'text-gray-900 dark:text-gray-300': !active
                         }">
-                          <span class="block truncate" :class="{ 'font-medium': selected, 'font-normal': !selected }">
+                          <span class="block whitespace-normal break-words" :class="{ 'font-medium': selected, 'font-normal': !selected }" :title="nombre">
                             {{ nombre }}
                           </span>
                         </li>
@@ -82,32 +82,32 @@
               <!-- Columna derecha -->
               <div class="space-y-4">
                 <div class="form-group">
-                  <label class="block text-sm font-medium text-gray-700 mb-1">
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Fecha de registro:
                   </label>
                   <input type="text" :value="fechaActual" disabled
-                    class="w-full rounded-md border border-gray-300 bg-gray-50 py-2 px-3 text-sm text-gray-700" />
+                    class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 py-2 px-3 text-sm text-gray-700 dark:text-gray-300" />
                 </div>
               </div>
             </div>
 
             <!-- Input Asunto -->
             <div class="form-group col-span-2">
-              <label for="asunto" class="block text-sm font-medium text-gray-700 mb-1">
+              <label for="asunto" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Asunto:
               </label>
               <textarea id="asunto" v-model="formData.asunto"
-                class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 text-sm leading-5 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 resize-y"
+                class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 py-2 px-3 text-sm leading-5 text-gray-900 dark:text-gray-300 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 resize-y"
                 placeholder="Ingrese el asunto..." rows="4"></textarea>
             </div>
 
             <div class="form-group col-span-2">
-              <label for="archivo" class="block text-sm font-medium text-gray-700 mb-2">
+              <label for="archivo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Subir Archivo
               </label>
               <div v-if="formData.archivo"
-                class="flex items-center justify-between p-3 border border-gray-300 rounded-md mb-2">
-                <span>{{ formData.archivo.name }}</span>
+                class="flex items-center justify-between p-3 border border-gray-300 dark:border-gray-600 rounded-md mb-2">
+                <span class="text-gray-900 dark:text-gray-300">{{ formData.archivo.name }}</span>
                 <button @click="eliminarArchivo" class="text-red-500 hover:text-red-700">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="w-5 h-5">
@@ -117,7 +117,7 @@
                 </button>
               </div>
               <div ref="dropArea"
-                class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md"
+                class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-md"
                 @dragover="onDragOver" @dragleave="onDragLeave" @drop="onDrop">
                 <div class="space-y-1 text-center">
                   <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48"
@@ -126,15 +126,15 @@
                       d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 40"
                       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                   </svg>
-                  <div class="flex text-sm text-gray-600">
+                  <div class="flex text-sm text-gray-600 dark:text-gray-400">
                     <label for="archivo"
-                      class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                      class="relative cursor-pointer bg-white dark:bg-gray-700 rounded-md font-medium text-blue-600 dark:text-blue-500 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
                       <span>Seleccionar un archivo</span>
                       <input id="archivo" name="archivo" type="file" class="sr-only" @change="handleFileUpload" />
                     </label>
                     <p class="pl-1">o arrastrar y soltar</p>
                   </div>
-                  <p class="text-xs text-gray-500">
+                  <p class="text-xs text-gray-500 dark:text-gray-400">
                     PNG, JPG, GIF hasta 10MB
                   </p>
                 </div>
@@ -143,11 +143,11 @@
 
             <div class="flex justify-end gap-3 pt-4">
               <button type="button" @click="handleClose"
-                class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 Cancelar
               </button>
               <button type="submit" :disabled="isSubmitting"
-                class="px-4 py-2 text-white bg-blue-700 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50">
+                class="px-4 py-2 text-white bg-blue-700 dark:bg-blue-600 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50">
                 {{ isSubmitting ? 'Guardando...' : 'Guardar Cambios' }}
               </button>
             </div>

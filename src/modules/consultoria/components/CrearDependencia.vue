@@ -5,10 +5,10 @@
       class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
     >
       <div
-        class="relative mx-4 w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-lg shadow-xl"
+        class="relative mx-4 w-full max-w-md max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-800 rounded-lg shadow-xl"
         @click.stop
       >
-        <div class="bg-blue-700 px-6 py-4 rounded-t-lg">
+        <div class="bg-blue-700 dark:bg-blue-900 px-6 py-4 rounded-t-lg">
           <div class="flex items-center justify-between">
             <h2 class="text-lg font-bold text-white">Registrar Nueva Dependencia</h2>
             <button
@@ -32,14 +32,14 @@
               <button
                 type="button"
                 @click="handleClose"
-                class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 :disabled="isSubmitting"
-                class="px-4 py-2 text-white bg-blue-700 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                class="px-4 py-2 text-white bg-blue-700 rounded-md hover:bg-blue-600 dark:bg-blue-900 dark:hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
               >
                 {{ isSubmitting ? 'Guardando...' : 'Guardar Cambios' }}
               </button>
@@ -133,4 +133,25 @@ const handleSubmit = async () => {
 .fade-leave-to {
   opacity: 0;
 }
-</style> 1
+
+/* Modo oscuro */
+.dark .bg-white {
+  background-color: #1f2937;
+}
+
+.dark .text-gray-700 {
+  color: #d1d5db;
+}
+
+.dark .bg-gray-50 {
+  background-color: #374151;
+}
+
+.dark .border-gray-300 {
+  border-color: #4b5563;
+}
+
+.dark .hover\:bg-gray-50:hover {
+  background-color: #4b5563;
+}
+</style>

@@ -2,29 +2,25 @@
   <div>
     <!-- Start Table -->
     <div class="overflow-x-auto table-responsive">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-800">
           <tr>
             <!-- Asignado dinámico de cabecera -->
             <th v-for="(cabecera, index) in cabecerasVisibles" :key="index" scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
               {{ cabecera }}
             </th>
           </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
+        <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
           <tr v-for="dependencia in dependencias" :key="dependencia.cdep_id">
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-900">{{ dependencia.cdep_id }}</div>
+              <div class="text-sm text-gray-900 dark:text-gray-100">{{ dependencia.cdep_id }}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-900">{{ dependencia.cdep_dependencia }}</div>
+              <div class="text-sm text-gray-900 dark:text-gray-100">{{ dependencia.cdep_dependencia }}</div>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-900">{{ dependencia.cdep_fecha_registro }}</div>
-            </td>
-
-            <td v-if="mostrarBotones" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            <td v-if="mostrarBotones" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
               <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded mr-2"
                 @click="$emit('editar', dependencia)">
                 Editar
@@ -53,19 +49,19 @@
     </div>
 
     <!-- Pagination with improved design -->
-    <div class="mt-6 flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+    <div class="mt-6 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-3 sm:px-6">
       <div class="flex flex-1 justify-between items-center">
         <div>
-          <p class="text-sm text-gray-700">
+          <p class="text-sm text-gray-700 dark:text-gray-300">
             Mostrando página <span class="font-medium">{{ currentPage }}</span> de
             <span class="font-medium">{{ totalPages }}</span>
           </p>
         </div>
         <div class="flex gap-2">
           <button @click="$emit('cambiar-pagina', currentPage - 1)" :disabled="currentPage === 1"
-            class="relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed rounded-md bg-white text-gray-900 shadow-sm"
+            class="relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
             :class="{
-              'hover:bg-gray-50 focus:z-20 focus:outline-offset-0': currentPage !== 1,
+              'hover:bg-gray-50 dark:hover:bg-gray-700 focus:z-20 focus:outline-offset-0': currentPage !== 1,
               'opacity-50 cursor-not-allowed': currentPage === 1,
             }">
             <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
@@ -76,9 +72,9 @@
           </button>
 
           <button @click="$emit('cambiar-pagina', currentPage + 1)" :disabled="currentPage === totalPages"
-            class="relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed rounded-md bg-white text-gray-900 shadow-sm"
+            class="relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
             :class="{
-              'hover:bg-gray-50 focus:z-20 focus:outline-offset-0': currentPage !== totalPages,
+              'hover:bg-gray-50 dark:hover:bg-gray-700 focus:z-20 focus:outline-offset-0': currentPage !== totalPages,
               'opacity-50 cursor-not-allowed': currentPage === totalPages,
             }">
             Siguiente

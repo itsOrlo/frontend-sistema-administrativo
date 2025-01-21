@@ -1,7 +1,7 @@
 <template>
   <DashboardLayout>
-    <div class="p-6">
-      <h2 class="text-2xl font-bold mb-4">Dependencias</h2>
+    <div class="p-6 dark:bg-gray-800">
+      <h2 class="text-2xl font-bold mb-4 dark:text-white">Dependencias</h2>
 
       <!-- Header Actions -->
       <div class="flex justify-between mb-4">
@@ -9,10 +9,9 @@
           type="text"
           v-model="searchTerm"
           placeholder="Buscar..."
-          class="p-2 border rounded w-64"
+          class="p-2 border rounded w-64 dark:bg-gray-700 dark:text-white dark:border-gray-600"
         />
         <button
-
           v-if="mostrarBotones"
           @click="toggleCreateModal(true)"
           class="bg-blue-800 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded"
@@ -23,7 +22,7 @@
 
       <!-- Loading State -->
       <div v-if="isLoading" class="flex justify-center py-8">
-        <span class="text-gray-500">Cargando dependencia...</span>
+        <span class="text-gray-500 dark:text-gray-400">Cargando dependencia...</span>
       </div>
 
       <!-- Clients Table -->

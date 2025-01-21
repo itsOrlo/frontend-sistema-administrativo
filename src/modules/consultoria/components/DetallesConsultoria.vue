@@ -1,8 +1,8 @@
 <template>
   <Transition name="fade">
     <div v-if="mostrarModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div class="relative mx-4 w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-lg shadow-xl" @click.stop>
-        <header class="bg-blue-700 px-6 py-4 rounded-t-lg">
+      <div class="relative mx-4 w-full max-w-md max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-800 rounded-lg shadow-xl" @click.stop>
+        <header class="bg-blue-700 dark:bg-blue-900 px-6 py-4 rounded-t-lg">
           <div class="flex items-center justify-between">
             <h2 class="text-lg font-bold text-white">Detalles de Consultoría</h2>
             <button @click="handleClose" class="text-white hover:text-gray-200 focus:outline-none" aria-label="Cerrar modal">
@@ -13,24 +13,24 @@
         <div class="p-6">
           <div class="space-y-4">
             <div class="flex items-center justify-between">
-              <p><strong>Trámite:</strong> {{ consultoria.Trámite }}</p>
+              <p class="text-black dark:text-white"><strong>Trámite:</strong> {{ consultoria.Trámite }}</p>
               <button @click="copyToClipboard(consultoria.Trámite)" class="bg-gray-500 text-white py-1 px-3 rounded hover:bg-gray-600 transition duration-200 flex items-center">
                 <i class="fas fa-copy mr-1"></i> Copiar
               </button>
             </div>
-            <p><strong>Dependencia:</strong> {{ consultoria.Dependencia }}</p>
-            <p><strong>Empresa Cliente:</strong> {{ consultoria['Empresa cliente'] }}</p>
-            <p><strong>Fecha de Registro:</strong> {{ consultoria['Fecha de registro'] }}</p>
-            <p><strong>Fecha de Despacho:</strong> {{ consultoria['Fecha de despacho'] }}</p>
-            <p><strong>Asunto:</strong> {{ consultoria.Asunto }}</p>
-            <p><strong>Estado:</strong> {{ consultoria.Estado }}</p>
-            <p><strong>Observación:</strong> {{ consultoria.Observacion }}</p>
+            <p class="text-black dark:text-white"><strong>Dependencia:</strong> {{ consultoria.Dependencia }}</p>
+            <p class="text-black dark:text-white"><strong>Empresa Cliente:</strong> {{ consultoria['Empresa cliente'] }}</p>
+            <p class="text-black dark:text-white"><strong>Fecha de Registro:</strong> {{ consultoria['Fecha de registro'] }}</p>
+            <p class="text-black dark:text-white"><strong>Fecha de Despacho:</strong> {{ consultoria['Fecha de despacho'] }}</p>
+            <p class="text-black dark:text-white"><strong>Asunto:</strong> {{ consultoria.Asunto }}</p>
+            <p class="text-black dark:text-white"><strong>Estado:</strong> {{ consultoria.Estado }}</p>
+            <p class="text-black dark:text-white"><strong>Observación:</strong> {{ consultoria.Observacion }}</p>
           </div>
           <div class="flex justify-between mt-4">
             <button @click="copyAllDetails" class="bg-teal-500 text-white py-2 px-4 rounded hover:bg-teal-600 transition duration-200 flex items-center">
               <i class="fas fa-copy mr-1"></i> Copiar todos los detalles
             </button>
-            <button @click="handleClose" class="bg-gray-300 text-black py-2 px-4 rounded hover:bg-gray-400 transition duration-200">
+            <button @click="handleClose" class="bg-gray-300 dark:bg-gray-700 text-black dark:text-white py-2 px-4 rounded hover:bg-gray-400 dark:hover:bg-gray-600 transition duration-200">
               <i class="fas fa-times mr-1"></i> Cerrar
             </button>
           </div>
@@ -119,4 +119,21 @@ const copyAllDetails = () => {
 .fade-leave-to {
   opacity: 0;
 }
-</style> 
+
+/* Modo oscuro */
+.dark .bg-white {
+  background-color: #2d3748;
+}
+
+.dark .text-black {
+  color: #e2e8f0;
+}
+
+.dark .bg-gray-300 {
+  background-color: #4a5568;
+}
+
+.dark .hover\:bg-gray-400:hover {
+  background-color: #718096;
+}
+</style>
