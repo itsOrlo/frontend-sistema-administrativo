@@ -184,6 +184,11 @@ export function useConsultoria(pageSize = 10) {
     XLSX.writeFile(wb, 'bdd_consultorias.xlsx');
   };
 
+  const handleConsultoriaCreada = async () => {
+    await loadConsultorias();
+    window.location.reload(); // Recargar la página
+  };
+
   watch(searchTerm, () => {
     currentPage.value = 1;
   });
@@ -214,5 +219,6 @@ export function useConsultoria(pageSize = 10) {
     exportarTodasConsultorias,
     totalProyectosEnMarcha,
     totalConsultoriasDelMes,
+    handleConsultoriaCreada,
   };
 }

@@ -29,6 +29,8 @@ export function useClients(pageSize = 10) {
   const mostrarModalEditar = ref(false);
   const clienteSeleccionado = ref<Cliente | null>(null);
 
+  const filtroTipoEmpresa = ref('');
+
   const clientesFiltrados = computed(() => {
     let resultado = clientes.value;
     
@@ -41,6 +43,9 @@ export function useClients(pageSize = 10) {
         cliente.Correo.toLowerCase().includes(term) ||
         cliente.Teléfono.toLowerCase().includes(term)
       );
+    }
+    if (filtroTipoEmpresa.value) {
+      resultado = resultado.filter(cliente => cliente['Tipo de empresa'] == filtroTipoEmpresa.value);
     }
     
     // Ordenar por el campo Acción (ID)
@@ -56,6 +61,14 @@ export function useClients(pageSize = 10) {
   const clientesPaginados = computed(() => {
     const startIndex = (currentPage.value - 1) * pageSize;
     return clientesFiltrados.value.slice(startIndex, startIndex + pageSize);
+  });
+
+  const totalPublicas = computed(() => {
+    return clientes.value.filter(cliente => tiposEmpresa.value[cliente['Tipo de empresa']] === 'Pública').length;
+  });
+
+  const totalPrivadas = computed(() => {
+    return clientes.value.filter(cliente => tiposEmpresa.value[cliente['Tipo de empresa']] === 'Privada').length;
   });
 
   const loadTiposEmpresa = async () => {
@@ -183,5 +196,8 @@ export function useClients(pageSize = 10) {
     setPage: (page: number) => (currentPage.value = page),
     toggleCreateModal: (show: boolean) => (mostrarModalCrear.value = show),
     totalClientes,
+    filtroTipoEmpresa,
+    totalPublicas,
+    totalPrivadas,
   };
 }

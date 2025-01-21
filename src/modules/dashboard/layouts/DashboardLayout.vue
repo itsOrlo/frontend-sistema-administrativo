@@ -1,9 +1,7 @@
 <template>
 
-  <Head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  </Head>
   <div class="relative min-h-screen bg-white dark:bg-gray-900">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Overlay -->
     <div v-if="sidebarOpen" class="fixed inset-0 bg-gray-500 bg-opacity-30 backdrop-blur-sm z-30"
       @click="toggleSidebar"></div>

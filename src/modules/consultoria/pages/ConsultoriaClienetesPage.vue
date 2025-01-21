@@ -71,7 +71,7 @@
           </button>
           <button :class="['action-button', { 'dark-action-button': isDarkMode, 'bg-yellow-500': !isDarkMode }]">
             <i class="fas fa-calendar-alt mr-2"></i>
-            Agendar Reunión
+            Crear Dependencia
           </button>
           <button :class="['action-button', { 'dark-action-button': isDarkMode, 'bg-purple-500': !isDarkMode }]">
             <i class="fas fa-file-alt mr-2"></i>
@@ -102,7 +102,7 @@ import CrearConsultoria from '../components/CrearConsultoria.vue';
 
 const { totalClientes, tiposEmpresa, loadClients, clientes } = useClients();
 const { dependenciasFormateadas, loadDepends, totalDependencias } = useDependencia();
-const { totalProyectosEnMarcha, totalConsultoriasDelMes } = useConsultoria();
+const { totalProyectosEnMarcha, totalConsultoriasDelMes, handleConsultoriaCreada } = useConsultoria();
 const isDarkMode = inject('isDarkMode', ref(false));
 const mostrarModalCrear = ref(false);
 const mostrarModalConsultoria = ref(false);
@@ -123,13 +123,6 @@ const clientesFormateados = computed(() => {
     return acc;
   }, {} as Record<number, string>);
 });
-
-const handleConsultoriaCreada = async () => {
-  await Promise.all([
-    loadClients(),
-    loadDepends()
-  ]);
-};
 
 const goToRoute = (routeName: string) => {
   router.push({ name: routeName });

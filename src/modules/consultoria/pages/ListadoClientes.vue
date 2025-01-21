@@ -3,6 +3,24 @@
     <div class="p-6">
       <h2 class="text-2xl text-gray-700 dark:text-gray-300 font-bold mb-4">Clientes</h2>
 
+      <!-- Contadores de Tipo de Empresa -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+        <div class="stat-card bg-purple-500 text-white p-6 rounded-lg shadow-md flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-semibold">Empresas Públicas</h3>
+            <p class="text-3xl font-bold">{{ totalPublicas }}</p>
+          </div>
+          <i class="fas fa-building text-4xl"></i>
+        </div>
+        <div class="stat-card bg-pink-500 text-white p-6 rounded-lg shadow-md flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-semibold">Empresas Privadas</h3>
+            <p class="text-3xl font-bold">{{ totalPrivadas }}</p>
+          </div>
+          <i class="fas fa-building text-4xl"></i>
+        </div>
+      </div>
+
       <!-- Header Actions -->
       <div class="flex justify-between mb-4">
         <input
@@ -101,6 +119,10 @@ const {
   deleteClient,
   setPage,
   toggleCreateModal,
+
+  // Contadores de tipo de empresa
+  totalPublicas,
+  totalPrivadas,
 } = useClients();
 
 const editarCliente = (cliente: Cliente) => { 

@@ -3,10 +3,9 @@
     <!-- Filtro de Tipo de Empresa -->
     <div class="mb-4">
       <label for="tipoEmpresa" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Filtrar por Tipo de Empresa</label>
-      <select id="tipoEmpresa" v-model="filtroTipoEmpresa" @change="resetSearchTerm" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+      <select id="tipoEmpresa" v-model="filtroTipoEmpresa" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
         <option value="">Todos</option>
-        <option value="1">Pública</option>
-        <option value="2">Privada</option>
+        <option v-for="(nombre, id) in tiposEmpresa" :key="id" :value="id">{{ nombre }}</option>
       </select>
     </div>
 
@@ -44,7 +43,12 @@
               <div class="text-sm text-gray-500 dark:text-gray-400">{{ cliente.Teléfono }}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-              {{ tiposEmpresa[cliente['Tipo de empresa']] || 'Desconocido' }}
+              <div :class="{
+                'bg-purple-500 text-gray-100': tiposEmpresa[cliente['Tipo de empresa']] === 'Pública',
+                'bg-pink-500 text-gray-100': tiposEmpresa[cliente['Tipo de empresa']] === 'Privada',
+              }" class="inline-block px-3 py-1 rounded-full font-semibold">
+                {{ tiposEmpresa[cliente['Tipo de empresa']] || 'Desconocido' }}
+              </div>
             </td>
             <td v-if="mostrarBotones" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
               <button
@@ -183,9 +187,7 @@ defineEmits(['editar', 'eliminar', 'cambiar-pagina']);
 
 const clientesFiltrados = computed(() => {
   let resultado = props.clientes;
-  if (filtroTipoEmpresa.value) {
-    resultado = resultado.filter(cliente => cliente['Tipo de empresa'] == filtroTipoEmpresa.value);
-  } else if (searchTerm.value) {
+  if (searchTerm.value) {
     resultado = resultado.filter(cliente =>
       cliente.Empresa.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
       cliente.Ruc.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
@@ -193,6 +195,9 @@ const clientesFiltrados = computed(() => {
       cliente.Correo.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
       cliente.Teléfono.toLowerCase().includes(searchTerm.value.toLowerCase())
     );
+  }
+  if (filtroTipoEmpresa.value) {
+    resultado = resultado.filter(cliente => cliente['Tipo de empresa'] == Number(filtroTipoEmpresa.value));
   }
   return resultado.slice((props.currentPage - 1) * 10, props.currentPage * 10);
 });
@@ -222,15 +227,10 @@ const cabecerasVisibles = computed(() => {
   }
 });
 
-// Control de roles para el botón de exportar
-const hasRole = (role: string) => {
-  return autenticacionStore.privilegio === 1 || role === 'exportar_excel'; // Cambia esto según tu lógica de roles
-};
-
 const exportarExcel = () => {
   const datosParaExportar = props.clientes.filter(cliente => {
     if (filtroTipoEmpresa.value) {
-      return cliente['Tipo de empresa'] == filtroTipoEmpresa.value;
+      return cliente['Tipo de empresa'] == Number(filtroTipoEmpresa.value);
     }
     return true;
   }).map(cliente => {
@@ -249,10 +249,5 @@ const exportarExcel = () => {
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Clientes');
   XLSX.writeFile(wb, 'clientes.xlsx');
-};
-
-const filtrarClientes = () => {
-  // Esta función se llama cuando se cambia el filtro de tipo de empresa
-  // No es necesario hacer nada aquí ya que `clientesFiltrados` es una propiedad computada
 };
 </script>
