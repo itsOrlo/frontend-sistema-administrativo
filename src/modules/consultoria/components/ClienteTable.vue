@@ -3,7 +3,7 @@
     <!-- Filtro de Tipo de Empresa -->
     <div class="mb-4">
       <label for="tipoEmpresa" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Filtrar por Tipo de Empresa</label>
-      <select id="tipoEmpresa" v-model="filtroTipoEmpresa" @change="filtrarClientes" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+      <select id="tipoEmpresa" v-model="filtroTipoEmpresa" @change="resetSearchTerm" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
         <option value="">Todos</option>
         <option value="1">Pública</option>
         <option value="2">Privada</option>
@@ -68,7 +68,7 @@
 
     <!-- Botón para exportar a Excel -->
     <div class="mt-4 flex justify-end">
-      <button v-if="hasRole('exportar_excel')" @click="exportarExcel" class="bg-green-600 text-gray-100 hover:bg-green-800 font-bold py-2 px-4 rounded flex items-center">
+      <button v-if="mostrarBotones" @click="exportarExcel" class="bg-green-600 text-gray-100 hover:bg-green-800 font-bold py-2 px-4 rounded flex items-center">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
           <path d="M3 3a2 2 0 012-2h10a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V3zm2 0v14h10V3H5zm3 4h4v2H8V7zm0 4h4v2H8v-2z" />
         </svg>
@@ -149,12 +149,13 @@
 import type { PropType } from 'vue';
 import type { Cliente } from '../composables/useClients';
 import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref, computed, watch } from 'vue';
 import * as XLSX from 'xlsx';
 
 const autenticacionStore = useAutenticacionStore();
 const mostrarBotones = ref(false);
 const filtroTipoEmpresa = ref('');
+const searchTerm = ref('');
 
 const props = defineProps({
   currentPage: {
@@ -184,9 +185,28 @@ const clientesFiltrados = computed(() => {
   let resultado = props.clientes;
   if (filtroTipoEmpresa.value) {
     resultado = resultado.filter(cliente => cliente['Tipo de empresa'] == filtroTipoEmpresa.value);
+  } else if (searchTerm.value) {
+    resultado = resultado.filter(cliente =>
+      cliente.Empresa.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+      cliente.Ruc.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+      cliente.Contacto.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+      cliente.Correo.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+      cliente.Teléfono.toLowerCase().includes(searchTerm.value.toLowerCase())
+    );
   }
   return resultado.slice((props.currentPage - 1) * 10, props.currentPage * 10);
 });
+
+const resetSearchTerm = () => {
+  searchTerm.value = '';
+};
+
+const resetFiltroTipoEmpresa = () => {
+  filtroTipoEmpresa.value = '';
+};
+
+watch(filtroTipoEmpresa, resetSearchTerm);
+watch(searchTerm, resetFiltroTipoEmpresa);
 
 onMounted(() => {
   mostrarBotones.value = autenticacionStore.privilegio === 1;

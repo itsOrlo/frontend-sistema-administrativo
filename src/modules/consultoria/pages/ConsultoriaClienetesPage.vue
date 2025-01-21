@@ -61,12 +61,12 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <button @click="toggleCreateModal(true)"
             :class="['action-button', { 'dark-action-button': isDarkMode, 'bg-blue-500': !isDarkMode }]">
-            <i class="fas fa-plus-circle mr-2"></i>
+            <i class="fas fa-user-plus mr-2"></i>
             Agregar Cliente
           </button>
           <button @click="toggleConsultoriaModal(true)"
             :class="['action-button', { 'dark-action-button': isDarkMode, 'bg-green-500': !isDarkMode }]">
-            <i class="fas fa-user-plus mr-2"></i>
+            <i class="fas fa-plus-circle mr-2"></i>
             Nueva Consulta
           </button>
           <button :class="['action-button', { 'dark-action-button': isDarkMode, 'bg-yellow-500': !isDarkMode }]">

@@ -196,6 +196,12 @@ const formData = ref<FormData>({
 
 const handleClose = () => {
   emit('cerrar-modal');
+  formData.value = {
+    dependenciaId: null,
+    clienteId: null,
+    asunto: '',
+    archivo: undefined
+  };
 };
 
 const handleSubmit = async () => {

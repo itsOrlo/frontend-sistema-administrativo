@@ -35,7 +35,11 @@ export function useClients(pageSize = 10) {
     if (searchTerm.value) {
       const term = searchTerm.value.toLowerCase();
       resultado = resultado.filter((cliente) =>
-        Object.values(cliente).join(' ').toLowerCase().includes(term)
+        cliente.Empresa.toLowerCase().includes(term) ||
+        cliente.Ruc.toLowerCase().includes(term) ||
+        cliente.Contacto.toLowerCase().includes(term) ||
+        cliente.Correo.toLowerCase().includes(term) ||
+        cliente.Teléfono.toLowerCase().includes(term)
       );
     }
     
