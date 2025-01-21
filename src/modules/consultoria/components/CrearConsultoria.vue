@@ -159,7 +159,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watchEffect, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 import { useApi } from '@/composables/use-api';
 import Swal from 'sweetalert2';
 import { Combobox, ComboboxInput, ComboboxButton, ComboboxOptions, ComboboxOption } from '@headlessui/vue';
@@ -322,7 +322,7 @@ const dependenciasFiltered = computed(() => {
   if (!search) return props.dependencias;
 
   return Object.fromEntries(
-    Object.entries(props.dependencias).filter(([_, nombre]) =>
+    Object.entries(props.dependencias).filter(([, nombre]) =>
       nombre.toLowerCase().includes(search)
     )
   );
@@ -332,9 +332,9 @@ const busquedaCliente = ref('');
 const clientesFiltrados = computed(() => {
   const search = busquedaCliente.value.toLowerCase();
   return Object.entries(props.clientes)
-    .filter(([_, nombre]) => nombre.toLowerCase().includes(search))
+    .filter(([, nombre]) => nombre.toLowerCase().includes(search))
     .reduce((acc, [id, nombre]) => {
-      acc[id] = nombre;
+      acc[Number(id)] = nombre;
       return acc;
     }, {} as Record<number, string>);
 });

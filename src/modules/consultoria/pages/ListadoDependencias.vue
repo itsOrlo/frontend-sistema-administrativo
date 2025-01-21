@@ -49,7 +49,7 @@
       <EditarDependencia
       v-if="mostrarModalEditar"
       :mostrarModal="mostrarModalEditar"
-      :dependenciaAEditar="dependenciaSeleccionado"
+      :dependenciaAEditar="dependenciaSeleccionado!"
       @cerrar-modal="toggleEditModal(false)"
       @dependencia-actualizado="loadDepends"
     />
@@ -94,7 +94,6 @@ const {
 
   // Métodos
   loadDepends,
-  deleteDepend,
   setPage,
   toggleCreateModal,
 } = useDependencia();

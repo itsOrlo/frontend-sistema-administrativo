@@ -1,6 +1,6 @@
 <template>
   <div>
-    <label :for="id" class="block text-gray-700 font-bold mb-2">
+    <label :for="id" class="block text-gray-700 dark:text-gray-300 font-bold mb-2">
       {{ label }}:
     </label>
 
@@ -8,7 +8,7 @@
       <select
         :id="id"
         v-model="inputValue"
-        class="w-full p-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300 bg-white dark:bg-gray-700 text-black dark:text-white"
         :required="required"
       >
         <option value="" disabled>Seleccione una opción</option>
@@ -27,7 +27,7 @@
         :id="id"
         :type="type"
         v-model="inputValue"
-        class="w-full p-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300 bg-white dark:bg-gray-700 text-black dark:text-white"
         :required="required"
       />
     </template>

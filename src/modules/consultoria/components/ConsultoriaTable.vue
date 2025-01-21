@@ -50,7 +50,7 @@
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm text-gray-500 dark:text-gray-400">
-                {{ formatEmptyColumn2(consultoria['Fecha de despacho'], 10) }}
+                {{ formatEmptyColumn2(consultoria['Fecha de despacho'] ?? '', 10) }}
               </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
@@ -96,7 +96,7 @@
                   </svg>
                 </button>
                 <ul :id="`dropdown-menu-${consultoria.conr_id}`" v-if="dropdownStates[consultoria.conr_id]"
-                  class="absolute z-10 bg-white border border-gray-300 rounded-md mt-1 w-full">
+                    class="absolute z-10 bg-white border border-gray-300 rounded-md mt-1 w-full">
                   <li @click="handleActionChange('editar', consultoria)"
                     class="flex items-center p-2 hover:bg-gray-100 cursor-pointer">
                     <i class="fa fa-pencil-alt mr-2"></i>
@@ -122,7 +122,7 @@
     <!-- End Table -->
 
     <!-- Botón para exportar a Excel -->
-    <div class="mt-4 flex justify-end gap-2" v-if="hasRole('exportar_excel')">
+    <div class="mt-4 flex justify-end gap-2" v-if="hasRole()">
       <button @click="exportarTodasConsultorias"
         class="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded flex items-center">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -198,7 +198,7 @@ import DetallesConsultoria from './DetallesConsultoria.vue';
 const autenticacionStore = useAutenticacionStore();
 const mostrarBotones = ref(false);
 const mostrarModalDetalles = ref(false);
-const consultoriaSeleccionada = ref(null);
+const consultoriaSeleccionada = ref<Consultoria | null>(null);
 
 const { exportarTodasConsultorias, filtroEstadoConsultoria, estadosConsultoria } = useConsultoria();
 
@@ -220,7 +220,7 @@ const props = defineProps({
     required: true,
   },
 });
-defineEmits(['editar', 'eliminar', 'cambiar-pagina']);
+const emit = defineEmits(['editar', 'eliminar', 'cambiar-pagina']);
 
 const consultoriasFiltradas = computed(() => {
   return props.consultorias.filter(consultoria => {
@@ -278,7 +278,7 @@ const exportarExcel = () => {
   XLSX.writeFile(wb, 'consultorias_segmentado.xlsx');
 };
 
-const mostrarDetalles = (consultoria) => {
+const mostrarDetalles = (consultoria: Consultoria) => {
   consultoriaSeleccionada.value = consultoria;
   mostrarModalDetalles.value = true;
 };
@@ -288,9 +288,9 @@ const cerrarModalDetalles = () => {
   consultoriaSeleccionada.value = null;
 };
 
-const dropdownStates = ref({}); // Objeto para manejar el estado de cada fila
+const dropdownStates = ref<Record<number, boolean>>({}); // Objeto para manejar el estado de cada fila
 
-const toggleDropdown = (id) => {
+const toggleDropdown = (id: number) => {
   // Cierra todos los dropdowns y abre solo el que se selecciona
   for (const key in dropdownStates.value) {
     dropdownStates.value[key] = false;
@@ -299,8 +299,8 @@ const toggleDropdown = (id) => {
 };
 
 // Función para cerrar el dropdown si se hace clic fuera de él
-const closeDropdowns = (event) => {
-  const target = event.target;
+const closeDropdowns = (event: MouseEvent) => {
+  const target = event.target as HTMLElement;
   for (const key in dropdownStates.value) {
     const dropdownButton = document.getElementById(`dropdown-button-${key}`);
     const dropdownMenu = document.getElementById(`dropdown-menu-${key}`);
@@ -312,24 +312,25 @@ const closeDropdowns = (event) => {
   }
 };
 
-const handleActionChange = (action, consultoria) => {
+
+const handleActionChange = (action: 'editar' | 'eliminar' | 'detalles', consultoria: Consultoria) => {
   if (action === 'editar') {
-    $emit('editar', consultoria);
+    emit('editar', consultoria);
   } else if (action === 'eliminar') {
-    $emit('eliminar', consultoria);
+    emit('eliminar', consultoria);
   } else if (action === 'detalles') {
     mostrarDetalles(consultoria);
   }
   dropdownStates.value[consultoria.conr_id] = false; // Cierra el dropdown después de seleccionar
 };
-const hasRole = (role: string) => {
+const hasRole = () => {
   return autenticacionStore.privilegio === 1; // Asegúrate de que esta lógica sea correcta para tu caso
 };
-const formatEmptyColumn = (texto, maxLength) => {
+const formatEmptyColumn = (texto: string, maxLength: number) => {
   if (!texto) return 'N/A';
   return texto.length > maxLength ? texto.substring(0, maxLength) + '...' : texto;
 };
-const formatEmptyColumn2 = (texto, maxLength) => {
+const formatEmptyColumn2 = (texto: string, maxLength: number) => {
   if (!texto) return 'N/A';
   return texto.length > maxLength ? texto.substring(0, maxLength) + '' : texto;
 };

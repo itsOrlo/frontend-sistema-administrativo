@@ -98,7 +98,6 @@ import type { PropType } from 'vue';
 import type { Dependencia } from '../composables/useDependencias';
 import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
 import { onMounted, ref, computed } from 'vue';
-import * as XLSX from 'xlsx';
 import { useDependencia } from '../composables/useDependencias';
 
 
@@ -139,26 +138,4 @@ const props = defineProps({
   },
 });
 defineEmits(['editar', 'eliminar', 'cambiar-pagina']);
-
-// Control de roles para el botón de exportar
-const hasRole = (role: string) => {
-  return autenticacionStore.privilegio === 1 || role === 'exportar_excel'; // Cambia esto según tu lógica de roles
-};
-
-const exportarExcel = () => {
-  const datosParaExportar = props.dependencias.map(dependencia => {
-    const { cdep_id, cdep_dependencia, cdep_fecha_registro, cdep_estado } = dependencia;
-    return {
-      ID: cdep_id,
-      Dependencia: cdep_dependencia,
-      'Fecha de Registro': cdep_fecha_registro,
-      Estado: cdep_estado
-    };
-  });
-
-  const ws = XLSX.utils.json_to_sheet(datosParaExportar);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Dependencias');
-  XLSX.writeFile(wb, 'dependencias.xlsx');
-};
 </script>

@@ -70,7 +70,7 @@
     <EditarCliente
       v-if="mostrarModalEditar"
       :mostrarModal="mostrarModalEditar"
-      :clienteAEditar="clienteSeleccionado"
+      :clienteAEditar="clienteSeleccionado!"
       :tiposEmpresa="tiposEmpresa"
       @cerrar-modal="toggleEditModal(false)"
       @cliente-actualizado="loadClients"
@@ -86,7 +86,7 @@ import CrearCliente from '../components/CrearCliente.vue';
 import EditarCliente from '../components/EditarCliente.vue';
 import type { Cliente } from '../composables/useClients'; 
 import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref } from 'vue';
 
 const autenticacionStore = useAutenticacionStore();
 const mostrarBotones = ref(false);
