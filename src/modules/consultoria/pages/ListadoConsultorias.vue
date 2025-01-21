@@ -6,6 +6,38 @@
         <p class="text-gray-600 dark:text-gray-300">Administra tus consultorías y clientes</p>
       </div>
 
+      <!-- Cuadros dinámicos para estados de consultoría -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <div class="stat-card bg-yellow-400 text-gray-100 p-6 rounded-lg shadow-md flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-semibold">En marcha</h3>
+            <p class="text-3xl font-bold">{{ totalProyectosEnMarcha }}</p>
+          </div>
+          <i class="fas fa-tasks text-4xl"></i>
+        </div>
+        <div class="stat-card bg-green-400 text-gray-100 p-6 rounded-lg shadow-md flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-semibold">Finalizado</h3>
+            <p class="text-3xl font-bold">{{ totalFinalizado }}</p>
+          </div>
+          <i class="fas fa-check-circle text-4xl"></i>
+        </div>
+        <div class="stat-card bg-red-500 text-gray-100 p-6 rounded-lg shadow-md flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-semibold">No es factible</h3>
+            <p class="text-3xl font-bold">{{ totalNoFactible }}</p>
+          </div>
+          <i class="fas fa-times-circle text-4xl"></i>
+        </div>
+        <div class="stat-card bg-gray-500 text-gray-100 p-6 rounded-lg shadow-md flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-semibold">Por despachar</h3>
+            <p class="text-3xl font-bold">{{ totalPorDespachar }}</p>
+          </div>
+          <i class="fas fa-clock text-4xl"></i>
+        </div>
+      </div>
+
       <div class="flex flex-col md:flex-row justify-between gap-4 mb-6">
         <div class="relative">
           <span class="absolute inset-y-0 left-0 pl-3 flex items-center">
@@ -72,6 +104,10 @@ const {
   deleteConsultoria,
   setPage,
   toggleCreateModal,
+  totalProyectosEnMarcha,
+  totalFinalizado,
+  totalNoFactible,
+  totalPorDespachar,
 } = useConsultoria();
 
 const {

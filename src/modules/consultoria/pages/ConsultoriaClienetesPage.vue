@@ -69,8 +69,9 @@
             <i class="fas fa-plus-circle mr-2"></i>
             Nueva Consulta
           </button>
-          <button :class="['action-button', { 'dark-action-button': isDarkMode, 'bg-yellow-500': !isDarkMode }]">
-            <i class="fas fa-calendar-alt mr-2"></i>
+          <button @click="toggleDependenciaModal(true)"
+            :class="['action-button', { 'dark-action-button': isDarkMode, 'bg-yellow-500': !isDarkMode }]">
+            <i class="fas fa-building mr-2"></i>
             Crear Dependencia
           </button>
           <button :class="['action-button', { 'dark-action-button': isDarkMode, 'bg-purple-500': !isDarkMode }]">
@@ -87,6 +88,13 @@
     <CrearConsultoria :mostrarModal="mostrarModalConsultoria" :dependencias="dependenciasFormateadas"
       :clientes="clientesFormateados" @cerrar-modal="toggleConsultoriaModal(false)"
       @consultoria-creada="handleConsultoriaCreada" />
+    <CrearDependencia
+      v-if="mostrarModalDependencia"
+      :mostrarModal="mostrarModalDependencia"
+      :clienteARegistrar="dependenciaSeleccionado"
+      @cerrar-modal="toggleDependenciaModal(false)"
+      @dependencia-creada="loadDepends"
+    />
   </DashboardLayout>
 </template>
 
@@ -99,6 +107,7 @@ import { inject, ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import CrearCliente from '../components/CrearCliente.vue';
 import CrearConsultoria from '../components/CrearConsultoria.vue';
+import CrearDependencia from '../components/CrearDependencia.vue';
 
 const { totalClientes, tiposEmpresa, loadClients, clientes } = useClients();
 const { dependenciasFormateadas, loadDepends, totalDependencias } = useDependencia();
@@ -106,7 +115,9 @@ const { totalProyectosEnMarcha, totalConsultoriasDelMes, handleConsultoriaCreada
 const isDarkMode = inject('isDarkMode', ref(false));
 const mostrarModalCrear = ref(false);
 const mostrarModalConsultoria = ref(false);
+const mostrarModalDependencia = ref(false);
 const clienteSeleccionado = ref(null);
+const dependenciaSeleccionado = ref(null);
 const router = useRouter();
 
 const toggleCreateModal = (state: boolean) => {
@@ -115,6 +126,10 @@ const toggleCreateModal = (state: boolean) => {
 
 const toggleConsultoriaModal = (state: boolean) => {
   mostrarModalConsultoria.value = state;
+};
+
+const toggleDependenciaModal = (state: boolean) => {
+  mostrarModalDependencia.value = state;
 };
 
 const clientesFormateados = computed(() => {

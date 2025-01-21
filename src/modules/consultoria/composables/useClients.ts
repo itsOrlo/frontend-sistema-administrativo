@@ -45,7 +45,7 @@ export function useClients(pageSize = 10) {
       );
     }
     if (filtroTipoEmpresa.value) {
-      resultado = resultado.filter(cliente => cliente['Tipo de empresa'] == filtroTipoEmpresa.value);
+      resultado = resultado.filter(cliente => cliente['Tipo de empresa'] === Number(filtroTipoEmpresa.value));
     }
     
     // Ordenar por el campo Acción (ID)

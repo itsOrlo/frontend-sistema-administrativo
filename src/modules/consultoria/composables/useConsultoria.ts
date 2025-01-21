@@ -65,6 +65,30 @@ export function useConsultoria(pageSize = 10) {
     }).length;
   });
 
+  const totalCompletado = computed(() => {
+    return consultorias.value.filter(consultoria => consultoria.Estado === 'Completado').length;
+  });
+
+  const totalPendiente = computed(() => {
+    return consultorias.value.filter(consultoria => consultoria.Estado === 'Pendiente').length;
+  });
+
+  const totalCancelado = computed(() => {
+    return consultorias.value.filter(consultoria => consultoria.Estado === 'Cancelado').length;
+  });
+
+  const totalFinalizado = computed(() => {
+    return consultorias.value.filter(consultoria => consultoria.Estado === 'Finalizado').length;
+  });
+
+  const totalNoFactible = computed(() => {
+    return consultorias.value.filter(consultoria => consultoria.Estado === 'No es factible').length;
+  });
+
+  const totalPorDespachar = computed(() => {
+    return consultorias.value.filter(consultoria => consultoria.Estado === 'Por despachar').length;
+  });
+
   const toggleEditModal = (show: boolean, consultoria: Consultoria | null = null) => {
     mostrarModalEditar.value = show;
     if (show) {
@@ -218,6 +242,12 @@ export function useConsultoria(pageSize = 10) {
     estadosConsultoria, // Añadir estadosConsultoria al return
     exportarTodasConsultorias,
     totalProyectosEnMarcha,
+    totalFinalizado,
+    totalNoFactible,
+    totalPorDespachar,
+    totalCompletado,
+    totalPendiente,
+    totalCancelado,
     totalConsultoriasDelMes,
     handleConsultoriaCreada,
   };
