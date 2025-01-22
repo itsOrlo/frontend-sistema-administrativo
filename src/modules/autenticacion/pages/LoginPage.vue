@@ -171,7 +171,7 @@ const submit = async () => {
       const { usuario, rol, rutas, token }: LoginResponseDto = response;
 
       // Actualizar el store con los datos del login, incluyendo el privilegio
-      store.onLogginSuccess(true, usuario.usu_nombres, rol.rol_id, 'Login exitoso', rutas, token); // Pasar el privilegio como argumento
+      store.onLogginSuccess(true, usuario.usu_nombre, rol.rol_id, 'Login exitoso', rutas, token); // Pasar el privilegio como argumento
 
       localStorage.setItem('usuarioId', usuario.usu_id.toString());
       localStorage.setItem('usuario', usuario.usu_usuario);

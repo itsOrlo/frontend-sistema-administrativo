@@ -162,11 +162,11 @@ const toggleSidebar = () => {
 const logout = () => {
   store.onLogout();
   removeRoutesOnLogout(router);
+  localStorage.removeItem('token'); // Eliminar el token del localStorage
+  sessionStorage.clear(); // Limpiar el sessionStorage
   router.push({ name: 'login', replace: true });
 };
 
-
-// const autenticacionStorage = JSON.parse(localStorage.getItem('autenticacion') || '{}');
 const rutas = ref<RutaInterface[]>([]);
 
 const fetchRoutes = async () => {
@@ -184,7 +184,6 @@ onMounted(() => {
   if (!sessionStorage.getItem('pageReloaded')) {
     // Recargar la página 
     location.reload();
-
 
     // Guardar un valor en sessionStorage para indicar que la página ya se ha recargado
     sessionStorage.setItem('pageReloaded', 'true');

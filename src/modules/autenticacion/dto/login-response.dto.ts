@@ -1,6 +1,6 @@
 export interface UsuarioDto {
     usu_id: number;
-    usu_nombres: string;
+    usu_nombre: string;
     usu_apellidos: string;
     usu_usuario: string;
     usu_password: string;

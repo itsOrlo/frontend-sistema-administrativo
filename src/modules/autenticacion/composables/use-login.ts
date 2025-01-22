@@ -17,31 +17,42 @@ export const useLogin = () => {
 
   const mutation = useMutation({
     mutationFn: async (data: LoginDto) => {
-      const response = await useApi.post<LoginResponseDto>('/api/v1/auth/login', {
-        username: data.username,
-        password: data.password,
-      });
+      try {
+        const response = await useApi.post<LoginResponseDto>('/api/v1/auth/login', {
+          username: data.username,
+          password: data.password,
+        });
 
-      const { usuario, rol, rutas, token, message, statusCode } = response.data;
+        const { usuario, rol, rutas, token, message, statusCode } = response.data;
 
-      // Verificar la respuesta de la API
-      if (statusCode === 400 && message) {
-        // Llamar a onLogginSuccess con error
-        autenticacionStore.onLogginSuccess(false, undefined, undefined, message);
-        return; // Detener la ejecución
+        // Verificar la respuesta de la API
+        if (statusCode === 400 && message) {
+          console.error('Error en la respuesta del servidor:', message);
+          // Llamar a onLogginSuccess con error
+          autenticacionStore.onLogginSuccess(false, undefined, undefined, message);
+          return; // Detener la ejecución
+        }
+
+        // Si falta información importante en la respuesta
+        if (!usuario || !rol || !rutas || !token || !usuario.usu_nombre) {
+          console.error('Respuesta del servidor incompleta:', response.data);
+          // Llamar a onLogginSuccess con error
+          autenticacionStore.onLogginSuccess(false, undefined, undefined, 'La respuesta del servidor es incompleta.');
+          return; // Detener la ejecución
+        }
+
+        // Llamar a onLogginSuccess con éxito
+        autenticacionStore.onLogginSuccess(true, usuario.usu_nombre, rol.rol_id, undefined, rutas, token);
+
+        // Guardar el token y el privilegio en el localStorage
+        localStorage.setItem('token', token);
+        localStorage.setItem('privilege', rol.rol_id.toString()); // Asumiendo que rol_id es el privilegio
+
+        return response.data;
+      } catch (error) {
+        console.error('Error durante la solicitud de login:', error);
+        throw error;
       }
-
-      // Si falta información importante en la respuesta
-      if (!usuario || !rol || !rutas || !token) {
-        // Llamar a onLogginSuccess con error
-        autenticacionStore.onLogginSuccess(false, undefined, undefined, 'La respuesta del servidor es incompleta.');
-        return; // Detener la ejecución
-      }
-
-      // Llamar a onLogginSuccess con éxito
-      autenticacionStore.onLogginSuccess(true, usuario.usu_nombres, rol.rol_id, undefined, rutas, token);
-
-      return response.data;
     },
 
     onError: (error) => {
