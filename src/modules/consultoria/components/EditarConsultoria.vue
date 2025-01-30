@@ -36,7 +36,7 @@
               </label>
               <select id="estado" v-model="formData.estado"
                 class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 py-2 px-3 text-sm leading-5 text-gray-900 dark:text-gray-300 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
-                <option v-for="estado in estadosConsultoria" :key="estado.conre_id" :value="estado.conre_nombre">
+                <option v-for="estado in estadosConsultoria" :key="estado.conre_id" :value="estado.conre_id">
                   {{ estado.conre_nombre }}
                 </option>
               </select>
@@ -90,7 +90,7 @@ const isSubmitting = ref(false);
 const formData = ref({
   asunto: '',
   fechaDespacho: '',
-  estado: '',
+  estado: 0,
   observacion: '',
   cdep_id: 0,
   ccli_id: 0,
@@ -107,8 +107,8 @@ watch(
         console.log('Datos de la API para la consultoria:', data);
         formData.value = {
           asunto: data.Asunto || '',
-          fechaDespacho: data['Fecha despacho'] || '',
-          estado: data.Estado || '',
+          fechaDespacho: data['Fecha despacho'] ? new Date(data['Fecha despacho']).toISOString().split('T')[0] : '',
+          estado: data.conre_id || 0,
           observacion: data.Observación || '',
           cdep_id: data.cdep_id || 0,
           ccli_id: data.ccli_id || 0,
@@ -132,13 +132,13 @@ const handleSubmit = async () => {
     isSubmitting.value = true;
     console.log('Datos del formulario antes de enviar:', formData.value);
     const formDataToSend = new FormData();
-    formDataToSend.append('conr_tramite', props.consultoriaAEditar?.['N° Trámite'] || '');
+    formDataToSend.append('conr_tramite', String(props.consultoriaAEditar?.['N° Trámite'] || ''));
     formDataToSend.append('cdep_id', formData.value.cdep_id.toString());
     formDataToSend.append('ccli_id', formData.value.ccli_id.toString());
-    formDataToSend.append('conr_fecha_registro', props.consultoriaAEditar?.['Fecha registro'] || '');
+    formDataToSend.append('conr_fecha_registro', String(props.consultoriaAEditar?.['Fecha registro'] || ''));
     formDataToSend.append('conr_fecha_despacho', formData.value.fechaDespacho);
     formDataToSend.append('conr_asunto', formData.value.asunto);
-    formDataToSend.append('conre_id', formData.value.estado);
+    formDataToSend.append('conre_id', formData.value.estado.toString());
     formDataToSend.append('conr_observacion', formData.value.observacion);
 
     const response = await useApi.put(`/api/v1/consultoria/consultoria-registro-tramite?conr_tramite=${props.consultoriaAEditar?.['N° Trámite']}`, formDataToSend, {
