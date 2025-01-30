@@ -138,6 +138,15 @@ export function useConsultoria(pageSize = 10) {
     }
   };
 
+  const loadConsultoriasPorTramite = async (conr_tramite: string) => {
+    try {
+      const response = await useApi.get(`/api/v1/consultoria/consultoria-registro-tramite?conr_tramite=${conr_tramite}`);
+      console.log('Respuesta de la API (Trámite):', response.data);
+    } catch (error) {
+      console.error('Error cargando consultorías por trámite:', error);
+    }
+  };
+
   const deleteConsultoria = async (consultoria: Consultoria) => {
     const result = await Swal.fire({
       title: '¿Estás seguro?',
@@ -226,6 +235,7 @@ export function useConsultoria(pageSize = 10) {
 
   onMounted(async () => {
     await loadConsultorias();
+    await loadConsultoriasPorTramite('AA0009'); // Probar con el valor "AA0009"
   });
 
   return {
@@ -257,5 +267,6 @@ export function useConsultoria(pageSize = 10) {
     totalCancelado,
     totalConsultoriasDelMes,
     handleConsultoriaCreada,
+    loadConsultoriasPorTramite, // Añadir la nueva función al return
   };
 }
