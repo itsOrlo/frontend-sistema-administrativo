@@ -117,12 +117,19 @@ export function useConsultoria(pageSize = 10) {
       isLoading.value = true;
       await loadEstadosConsultoria(); // Cargar estados antes de cargar consultorías
       const response = await useApi.get('/api/v1/consultoria/consultoria-registro');
-      consultorias.value = response.data.sort((a: Consultoria, b: Consultoria) => 
-        Number(a.conr_id) - Number(b.conr_id)
-      );
+      
+      const consultoriasData = response.data.registros; // Ajustar para acceder a la propiedad 'registros'
+      
+      if (Array.isArray(consultoriasData)) {
+        consultorias.value = consultoriasData.sort((a: Consultoria, b: Consultoria) => 
+          Number(a.conr_id) - Number(b.conr_id)
+        );
 
-      if (consultorias.value.length > 0) {
-        cabecerasTabla.value = Object.keys(consultorias.value[0]);
+        if (consultorias.value.length > 0) {
+          cabecerasTabla.value = Object.keys(consultorias.value[0]);
+        }
+      } else {
+        throw new Error('La respuesta de la API no es un array');
       }
     } catch (error) {
       console.error('Error cargando consultorías:', error);
