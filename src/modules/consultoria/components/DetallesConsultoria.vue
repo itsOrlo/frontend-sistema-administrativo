@@ -24,7 +24,7 @@
             <p class="text-black dark:text-white"><strong>Fecha de Despacho:</strong> {{ consultoria['Fecha de despacho'] }}</p>
             <p class="text-black dark:text-white"><strong>Asunto:</strong> {{ consultoria.Asunto }}</p>
             <p class="text-black dark:text-white"><strong>Estado:</strong> {{ consultoria.Estado }}</p>
-            <p class="text-black dark:text-white"><strong>Observación:</strong> {{ consultoria.Observacion }}</p>
+            <p class="text-black dark:text-white"><strong>Observación:</strong> {{ consultoria.Observación }}</p>
           </div>
           <div class="flex justify-between mt-4">
             <button @click="copyAllDetails" class="bg-teal-500 text-white py-2 px-4 rounded hover:bg-teal-600 transition duration-200 flex items-center">

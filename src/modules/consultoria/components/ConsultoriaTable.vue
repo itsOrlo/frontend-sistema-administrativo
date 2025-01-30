@@ -83,7 +83,7 @@
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm text-gray-500 dark:text-gray-400">
-                {{ consultoria.Observacion }}
+                {{ formatEmptyColumn(consultoria.Observación ?? '', 10) }}
               </div>
             </td>
             <td v-if="mostrarBotones" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
