@@ -195,11 +195,14 @@ import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
 import { onMounted, ref, computed, onBeforeUnmount } from 'vue';
 import * as XLSX from 'xlsx';
 import DetallesConsultoria from './DetallesConsultoria.vue';
+import EditarConsultoria from './EditarConsultoria.vue';
 
 const autenticacionStore = useAutenticacionStore();
 const mostrarBotones = ref(false);
 const mostrarModalDetalles = ref(false);
 const consultoriaSeleccionada = ref<Consultoria | null>(null);
+const mostrarModalEditar = ref(false);
+const consultoriaAEditar = ref<Consultoria | null>(null);
 
 const { exportarTodasConsultorias, filtroEstadoConsultoria, estadosConsultoria } = useConsultoria();
 
@@ -310,10 +313,9 @@ const closeDropdowns = (event: MouseEvent) => {
   }
 };
 
-
 const handleActionChange = (action: 'editar' | 'eliminar' | 'detalles', consultoria: Consultoria) => {
   if (action === 'editar') {
-    emit('editar', consultoria);
+    emit('editar', consultoria.Trámite); // Emitir solo el valor 'Trámite'
   } else if (action === 'eliminar') {
     emit('eliminar', consultoria);
   } else if (action === 'detalles') {
@@ -321,6 +323,7 @@ const handleActionChange = (action: 'editar' | 'eliminar' | 'detalles', consulto
   }
   dropdownStates.value[consultoria.conr_id] = false; // Cierra el dropdown después de seleccionar
 };
+
 const hasRole = () => {
   return autenticacionStore.privilegio === 1; // Asegúrate de que esta lógica sea correcta para tu caso
 };

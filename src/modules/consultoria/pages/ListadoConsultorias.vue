@@ -67,6 +67,9 @@
           :cabecerasTabla="cabecerasTabla" @editar="editarConsultoria" @eliminar="deleteConsultoria"
           @cambiar-pagina="setPage" class="w-full" />
       </div>
+      <EditarConsultoria :mostrar-modal="mostrarModalEditar" :consultoria-a-editar="consultoriaSeleccionada"
+        :estados-consultoria="estadosConsultoria" @cerrar-modal="toggleEditModal(false)"
+        @consultoria-actualizada="handleConsultoriaActualizada" />
     </div>
 
     <CrearConsultoria :mostrar-modal="mostrarModalCrear" :dependencias="dependenciasFormateadas"
@@ -82,6 +85,7 @@ import { useDependencia } from '../composables/useDependencias';
 import DashboardLayout from '@/modules/dashboard/layouts/DashboardLayout.vue';
 import ConsultoriaTable from '../components/ConsultoriaTable.vue';
 import CrearConsultoria from '../components/CrearConsultoria.vue';
+import EditarConsultoria from '../components/EditarConsultoria.vue';
 import type { Consultoria } from '../composables/useConsultoria';
 import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
 import { onMounted, ref, computed } from 'vue';
@@ -98,6 +102,7 @@ const {
   currentPage,
   isLoading,
   mostrarModalCrear,
+  mostrarModalEditar,
   consultoriasPaginadas,
   totalPages,
   loadConsultorias,
@@ -108,6 +113,8 @@ const {
   totalFinalizado,
   totalNoFactible,
   totalPorDespachar,
+  estadosConsultoria,
+  editarConsultoria, // Asegurarse de incluir editarConsultoria
 } = useConsultoria();
 
 const {
@@ -127,17 +134,60 @@ const clientesFormateados = computed(() => {
   }, {} as Record<number, string>);
 });
 
-const editarConsultoria = (consultoria: Consultoria) => {
-  consultoriaSeleccionada.value = consultoria;
-  toggleEditModal(true, consultoria);
-};
-
 const handleConsultoriaCreada = async () => {
   await Promise.all([
     loadConsultorias(),
     loadClients(),
     loadDepends()
   ]);
+};
+
+const handleConsultoriaActualizada = async () => {
+  await Promise.all([
+    loadConsultorias(),
+    loadClients(),
+    loadDepends()
+  ]);
+};
+
+const actualizarConsultoria = async (consultoria: Consultoria) => {
+  try {
+    const formData = new FormData();
+    formData.append('conr_tramite', consultoria.Trámite);
+    formData.append('cdep_id', consultoria.Dependencia);
+    formData.append('ccli_id', consultoria['Empresa cliente']);
+    formData.append('conr_fecha_registro', consultoria['Fecha de registro']);
+    formData.append('conr_fecha_despacho', consultoria['Fecha de despacho'] || '');
+    formData.append('conr_asunto', consultoria.Asunto);
+    if (consultoria.conr_adjunto) {
+      formData.append('file', consultoria.conr_adjunto);
+    }
+    formData.append('conre_id', consultoria.Estado);
+    formData.append('conr_observacion', consultoria.Observación || '');
+
+    const response = await useApi.put(`/api/v1/consultoria/consultoria-registro-tramite?conr_tramite=${consultoria.Trámite}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+
+    if (response.status === 200) {
+      await Swal.fire({
+        icon: 'success',
+        title: '¡Consultoría actualizada!',
+        showConfirmButton: false,
+        timer: 2000,
+      });
+      await loadConsultorias();
+    }
+  } catch (error) {
+    console.error('Error al actualizar consultoría:', error);
+    await Swal.fire({
+      icon: 'error',
+      title: 'Error al actualizar consultoría',
+      text: 'Por favor, inténtalo de nuevo más tarde.',
+    });
+  }
 };
 
 const consultoriasFiltradas = computed(() => {

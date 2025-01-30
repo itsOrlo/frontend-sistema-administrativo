@@ -229,6 +229,23 @@ export function useConsultoria(pageSize = 10) {
     window.location.reload(); // Recargar la página
   };
 
+  const editarConsultoria = async (tramite: string) => {
+    try {
+      const response = await useApi.get(`/api/v1/consultoria/consultoria-registro-tramite?conr_tramite=${tramite}`);
+      console.log('Respuesta de la API (Trámite):', response.data);
+      const consultoria = response.data[0]; // Asegurarse de obtener el primer objeto del array
+      if (consultoria) {
+        console.log('Consultoria seleccionada:', consultoria);
+        consultoriaSeleccionada.value = consultoria;
+        toggleEditModal(true, consultoria);
+      } else {
+        console.error("Error: No se encontró la consultoría con el trámite especificado.");
+      }
+    } catch (error) {
+      console.error('Error al cargar la consultoría:', error);
+    }
+  };
+
   watch(searchTerm, () => {
     currentPage.value = 1;
   });
@@ -268,5 +285,6 @@ export function useConsultoria(pageSize = 10) {
     totalConsultoriasDelMes,
     handleConsultoriaCreada,
     loadConsultoriasPorTramite, // Añadir la nueva función al return
+    editarConsultoria,
   };
 }
