@@ -54,7 +54,7 @@
         </div>
       </div>
       <!-- Quick Actions -->
-      <div class="mt-12">
+      <div class="mt-12" v-if="mostrarBotones">
         <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
           Acciones Rápidas
         </h2>
@@ -108,6 +108,7 @@ import { useRouter } from 'vue-router';
 import CrearCliente from '../components/CrearCliente.vue';
 import CrearConsultoria from '../components/CrearConsultoria.vue';
 import CrearDependencia from '../components/CrearDependencia.vue';
+import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
 
 const { totalClientes, tiposEmpresa, loadClients, clientes } = useClients();
 const { dependenciasFormateadas, loadDepends, totalDependencias } = useDependencia();
@@ -119,6 +120,8 @@ const mostrarModalDependencia = ref(false);
 const clienteSeleccionado = ref(null);
 const dependenciaSeleccionado = ref(null);
 const router = useRouter();
+const mostrarBotones = ref(false);
+const autenticacionStore = useAutenticacionStore();
 
 const toggleCreateModal = (state: boolean) => {
   mostrarModalCrear.value = state;
@@ -148,6 +151,7 @@ onMounted(async () => {
     loadClients(),
     loadDepends()
   ]);
+  mostrarBotones.value = autenticacionStore.privilegio === 1;
 });
 </script>
 
