@@ -58,7 +58,7 @@
                   </path>
                 </svg>
               </button>
-              <div @click="router.push({ name: 'consultoria-clientes', replace: true })"
+              <div @click="router.push({ name: 'consultoriaClientes', replace: true })"
                 class="flex ms-2 md:me-24 cursor-pointer">
                 <img
                   src="https://res.cloudinary.com/dx7qfps6d/image/upload/v1689608536/dev-deploys/eqayqo984zyobeq6zzxf.png"
@@ -145,8 +145,7 @@
 import { ref, onMounted } from 'vue';
 import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
 import { useRouter } from 'vue-router';
-import { parseObjectRutas, removeRoutesOnLogout } from '../helpers/parse-object-rutas';
-import type { RutaInterface } from '../dto/menu-rutas-response.dto';
+import { removeRoutesOnLogout } from '../helpers/parse-object-rutas';
 import { initFlowbite } from 'flowbite';
 import { useThemeStore } from '@/stores/use-theme.store';
 
@@ -167,17 +166,22 @@ const logout = () => {
   router.push({ name: 'login', replace: true });
 };
 
-const rutas = ref<RutaInterface[]>([]);
+interface Ruta {
+  ruta_nombre: string;
+  ruta_ruta: string;
+  rutasHijas: Ruta[];
+}
 
-const fetchRoutes = async () => {
-  const rutasParseadas = await parseObjectRutas(router);
-  rutas.value = rutasParseadas;
-  store.updateRutas(rutas.value);
-};
+const rutas = ref<Ruta[]>([
+  { ruta_nombre: 'Empresas', ruta_ruta: '/listar', rutasHijas: [] },
+  { ruta_nombre: 'Dependencias', ruta_ruta: '/listarDependencias', rutasHijas: [] },
+  { ruta_nombre: 'Consultorías', ruta_ruta: '/listarConsultorias', rutasHijas: [] },
+  { ruta_nombre: 'Bienvenido', ruta_ruta: '/bienvenido', rutasHijas: [] },
+  { ruta_nombre: 'FAQ', ruta_ruta: '/faq', rutasHijas: [] }
+]);
 
 onMounted(() => {
   initFlowbite();
-  fetchRoutes();
   themeStore.initTheme();
 
   // Verificar si la página ya se ha recargado en esta sesión
@@ -190,9 +194,8 @@ onMounted(() => {
   }
 });
 
-const navigation = (routeName?: string) => {
-  if (!routeName || routeName === '') return;
-  // console.log("route name",routeName)
-  router.push({ name: routeName });
+const navigation = (routePath?: string) => {
+  if (!routePath || routePath === '') return;
+  router.push(routePath);
 };
 </script>

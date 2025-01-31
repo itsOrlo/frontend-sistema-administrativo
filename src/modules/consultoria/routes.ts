@@ -1,6 +1,6 @@
 import type { RouteRecordRaw } from 'vue-router';
 
-const routes: Array<RouteRecordRaw> = [
+export const routes: Array<RouteRecordRaw> = [
     {
         path: '/listar',
         name: 'listadoCliente',
