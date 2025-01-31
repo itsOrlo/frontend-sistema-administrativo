@@ -202,7 +202,7 @@ const mostrarBotones = ref(false);
 const mostrarModalDetalles = ref(false);
 const consultoriaSeleccionada = ref<Consultoria | null>(null);
 
-const { exportarTodasConsultorias, filtroEstadoConsultoria, estadosConsultoria } = useConsultoria();
+const { exportarTodasConsultorias, filtroEstadoConsultoria, estadosConsultoria, startDate, endDate } = useConsultoria();
 
 const props = defineProps({
   currentPage: {
@@ -227,7 +227,9 @@ const emit = defineEmits(['editar', 'eliminar', 'cambiar-pagina']);
 const consultoriasFiltradas = computed(() => {
   return props.consultorias.filter(consultoria => {
     const matchesEstado = filtroEstadoConsultoria.value === '' || consultoria.Estado === filtroEstadoConsultoria.value;
-    return matchesEstado;
+    const matchesDate = (!startDate.value || new Date(consultoria['Fecha de registro']) >= new Date(startDate.value)) &&
+                        (!endDate.value || new Date(consultoria['Fecha de registro']) <= new Date(endDate.value));
+    return matchesEstado && matchesDate;
   });
 });
 

@@ -58,6 +58,17 @@
         </button>
       </div>
 
+      <div class="flex flex-col md:flex-row justify-between gap-4 mb-6">
+        <div class="relative">
+          <label for="start-date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de registro desde:</label>
+          <input id="start-date" type="date" v-model="startDate" class="border border-gray-200 dark:border-gray-700 rounded-lg p-2" />
+        </div>
+        <div class="relative">
+          <label for="end-date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mt-2">Fecha de registro hasta:</label>
+          <input id="end-date" type="date" v-model="endDate" class="border border-gray-200 dark:border-gray-700 rounded-lg p-2" />
+        </div>
+      </div>
+
       <div v-if="isLoading" class="flex justify-center py-12">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
@@ -149,12 +160,19 @@ const handleConsultoriaActualizada = async () => {
   ]);
 };
 
+const startDate = ref('');
+const endDate = ref('');
 
 const consultoriasFiltradas = computed(() => {
   return consultoriasPaginadas.value.filter(consultoria => {
-    const matchesSearchTerm = consultoria.Trámite.toLowerCase().includes(searchTerm.value.toLowerCase());
+    const matchesSearchTerm = 
+      consultoria.Trámite.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+      consultoria.Dependencia.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+      consultoria['Empresa cliente'].toLowerCase().includes(searchTerm.value.toLowerCase());
     const matchesEstado = filtroEstadoConsultoria.value === '' || consultoria.Estado === filtroEstadoConsultoria.value;
-    return matchesSearchTerm && matchesEstado;
+    const matchesDate = (!startDate.value || new Date(consultoria['Fecha de registro']) >= new Date(startDate.value)) &&
+                        (!endDate.value || new Date(consultoria['Fecha de registro']) <= new Date(endDate.value));
+    return matchesSearchTerm && matchesEstado && matchesDate;
   });
 });
 

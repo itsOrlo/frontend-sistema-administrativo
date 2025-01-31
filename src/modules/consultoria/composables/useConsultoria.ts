@@ -27,17 +27,28 @@ export function useConsultoria(pageSize = 10) {
   const consultoriaSeleccionada = ref<Consultoria | null>(null);
   const filtroEstadoConsultoria = ref('');
   const estadosConsultoria = ref<{ conre_id: number; conre_nombre: string }[]>([]);
+  const startDate = ref('');
+  const endDate = ref('');
 
   const consultoriasFiltradas = computed(() => {
     let resultado = consultorias.value;
     if (searchTerm.value) {
       const term = searchTerm.value.toLowerCase();
       resultado = resultado.filter((consultoria) =>
-        Object.values(consultoria).join(' ').toLowerCase().includes(term)
+        consultoria.Trámite.toLowerCase().includes(term) ||
+        consultoria.Dependencia.toLowerCase().includes(term) ||
+        consultoria['Empresa cliente'].toLowerCase().includes(term)
       );
     }
     if (filtroEstadoConsultoria.value) {
       resultado = resultado.filter(consultoria => consultoria.Estado === filtroEstadoConsultoria.value);
+    }
+    if (startDate.value || endDate.value) {
+      resultado = resultado.filter(consultoria => {
+        const fechaRegistro = new Date(consultoria['Fecha de registro']);
+        return (!startDate.value || fechaRegistro >= new Date(startDate.value)) &&
+               (!endDate.value || fechaRegistro <= new Date(endDate.value));
+      });
     }
     return resultado;
   });
@@ -292,5 +303,7 @@ export function useConsultoria(pageSize = 10) {
     handleConsultoriaCreada,
     loadConsultoriasPorTramite, // Añadir la nueva función al return
     editarConsultoria,
+    startDate,
+    endDate,
   };
 }
