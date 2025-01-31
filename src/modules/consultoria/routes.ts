@@ -31,6 +31,12 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('./pages/BienvenidoUsuario.vue'),
         meta: { requiresAuth: true },
     },
+    {
+        path: '/faq',
+        name: 'faqPage',
+        component: () => import('./pages/FAQPage.vue'),
+        meta: { requiresAuth: true },
+    },
 ];
 
 export default routes;

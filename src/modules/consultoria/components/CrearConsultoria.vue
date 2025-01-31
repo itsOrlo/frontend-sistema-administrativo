@@ -130,12 +130,12 @@
                     <label for="archivo"
                       class="relative cursor-pointer bg-white dark:bg-gray-700 rounded-md font-medium text-blue-600 dark:text-blue-500 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
                       <span>Seleccionar un archivo</span>
-                      <input id="archivo" name="archivo" type="file" class="sr-only" @change="handleFileUpload" />
+                      <input id="archivo" name="archivo" type="file" class="sr-only" @change="validarArchivo" />
                     </label>
                     <p class="pl-1">o arrastrar y soltar</p>
                   </div>
                   <p class="text-xs text-gray-500 dark:text-gray-400">
-                    PNG, JPG, GIF hasta 10MB
+                    Solo se permiten archivos PDF.
                   </p>
                 </div>
               </div>
@@ -296,17 +296,27 @@ const onDrop = (event: DragEvent) => {
     }
 };
 
-const handleFileUpload = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const file = target.files?.[0];
-  if (file) {
-    formData.value.archivo = file;
-  }
-};
 
 //Función para eliminar el archivo seleccionado
 const eliminarArchivo = () => {
     formData.value.archivo = undefined;
+};
+
+const validarArchivo = async (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  const file = input.files ? input.files[0] : null;
+  if (file && file.type !== 'application/pdf') {
+    await Swal.fire({
+      icon: 'warning',
+      title: 'Archivo no permitido',
+      text: 'Solo se permiten archivos PDF.',
+    });
+    input.value = ''; // Limpiar el input
+  } else {
+    if (file) {
+      formData.value.archivo = file; // Asignar el archivo si es válido
+    }
+  }
 };
 
 const getDependenciaName = (id: unknown): string => {

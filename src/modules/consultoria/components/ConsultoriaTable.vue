@@ -60,7 +60,7 @@
             </td>
 
             <td v-if="mostrarBotones" class="px-6 py-4 whitespace-nowrap">
-              <a v-if="consultoria.conr_adjunto" :href="consultoria.conr_adjunto" target="_blank"
+              <a v-if="consultoria.conr_adjunto" :href="consultoria.conr_adjunto" download target="_blank"
                 class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded flex items-center shadow-md">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                   <path
@@ -98,7 +98,8 @@
                 </button>
                 <ul :id="`dropdown-menu-${consultoria.conr_id}`" v-if="dropdownStates[consultoria.conr_id]"
                   class="absolute z-10 bg-white border border-gray-300 rounded-md mt-1 w-full shadow-lg">
-                  <li @click="handleActionChange('editar', consultoria)"
+                  <li v-if="consultoria.Estado !== 'Finalizado' && consultoria.Estado !== 'No es factible'"
+                    @click="handleActionChange('editar', consultoria)"
                     class="flex items-center p-2 hover:bg-gray-100 cursor-pointer">
                     <i class="fa fa-pencil-alt mr-2"></i>
                     Editar
@@ -195,14 +196,11 @@ import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
 import { onMounted, ref, computed, onBeforeUnmount } from 'vue';
 import * as XLSX from 'xlsx';
 import DetallesConsultoria from './DetallesConsultoria.vue';
-import EditarConsultoria from './EditarConsultoria.vue';
 
 const autenticacionStore = useAutenticacionStore();
 const mostrarBotones = ref(false);
 const mostrarModalDetalles = ref(false);
 const consultoriaSeleccionada = ref<Consultoria | null>(null);
-const mostrarModalEditar = ref(false);
-const consultoriaAEditar = ref<Consultoria | null>(null);
 
 const { exportarTodasConsultorias, filtroEstadoConsultoria, estadosConsultoria } = useConsultoria();
 

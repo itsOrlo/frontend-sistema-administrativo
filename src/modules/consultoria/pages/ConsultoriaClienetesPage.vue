@@ -74,9 +74,9 @@
             <i class="fas fa-building mr-2"></i>
             Crear Dependencia
           </button>
-          <button :class="['action-button', { 'dark-action-button': isDarkMode, 'bg-purple-500': !isDarkMode }]">
-            <i class="fas fa-file-alt mr-2"></i>
-            Generar Reporte
+          <button @click="goToRoute('faqPage')" :class="['action-button', { 'dark-action-button': isDarkMode, 'bg-purple-500': !isDarkMode }]">
+            <i class="fas fa-question-circle mr-2"></i>
+            FAQ
           </button>
         </div>
       </div>

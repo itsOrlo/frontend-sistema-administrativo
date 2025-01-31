@@ -128,6 +128,18 @@ const handleClose = () => {
 const handleSubmit = async () => {
   if (isSubmitting.value) return;
 
+  // Validar que la fecha de despacho sea mayor a la fecha de registro
+  const fechaRegistro = new Date(props.consultoriaAEditar?.['Fecha registro'] || '');
+  const fechaDespacho = new Date(formData.value.fechaDespacho);
+  if (fechaDespacho <= fechaRegistro) {
+    await Swal.fire({
+      icon: 'error',
+      title: 'Error en las fechas',
+      text: 'La fecha de despacho debe ser mayor a la fecha de registro.',
+    });
+    return;
+  }
+
   try {
     isSubmitting.value = true;
     console.log('Datos del formulario antes de enviar:', formData.value);

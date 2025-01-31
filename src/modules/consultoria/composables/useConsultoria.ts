@@ -119,9 +119,15 @@ export function useConsultoria(pageSize = 10) {
       const response = await useApi.get('/api/v1/consultoria/consultoria-registro');
       
       const consultoriasData = response.data.registros; // Ajustar para acceder a la propiedad 'registros'
+      const dominio = response.data.dominio.trim(); // Obtener el dominio y eliminar espacios en blanco
       
       if (Array.isArray(consultoriasData)) {
-        consultorias.value = consultoriasData.sort((a: Consultoria, b: Consultoria) => 
+        consultorias.value = consultoriasData.map((consultoria: Consultoria) => {
+          if (consultoria.conr_adjunto) {
+            consultoria.conr_adjunto = `${dominio}${consultoria.conr_adjunto}`;
+          }
+          return consultoria;
+        }).sort((a: Consultoria, b: Consultoria) => 
           Number(a.conr_id) - Number(b.conr_id)
         );
 
