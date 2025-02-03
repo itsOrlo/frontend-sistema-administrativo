@@ -104,11 +104,6 @@
                     <i class="fa fa-pencil-alt mr-2"></i>
                     Editar
                   </li>
-                  <li @click="handleActionChange('eliminar', consultoria)"
-                    class="flex items-center p-2 hover:bg-gray-100 cursor-pointer">
-                    <i class="fa fa-trash mr-2"></i>
-                    Eliminar
-                  </li>
                   <li @click="handleActionChange('detalles', consultoria)"
                     class="flex items-center p-2 hover:bg-gray-100 cursor-pointer">
                     <i class="fa fa-file-alt mr-2"></i>
