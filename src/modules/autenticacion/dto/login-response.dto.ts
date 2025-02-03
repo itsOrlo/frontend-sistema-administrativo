@@ -1,6 +1,6 @@
 export interface UsuarioDto {
     usu_id: number;
-    usu_nombres: string;
+    usu_nombre: string;
     usu_apellidos: string;
     usu_usuario: string;
     usu_password: string;
@@ -29,6 +29,7 @@ export interface RutaDto {
     ruta_actualizada: string;
     ruta_padre: number;
     ruta_estado: boolean;
+    roru_privilegio: number;
     rutasHijas?: RutaDto[]; 
 }
 

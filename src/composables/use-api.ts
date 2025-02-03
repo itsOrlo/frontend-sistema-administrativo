@@ -1,16 +1,17 @@
+// useApi.js
 import axios from "axios";
 
-
 const useApi = axios.create({
-    baseURL: "http://172.16.10.5:4000",
-})
+  baseURL: "http://192.168.0.47:4000",
+});
 
-// useApi.interceptors.request.use((config) => {
-//     config.headers["apikey"] = 'documental'
-//     config.headers["apisecret"] = 'Documental2021file'
-//     config.headers["Content-Type"] = "application/json"
-//     return config
-// })
+// Interceptor para agregar el token a las peticiones
+useApi.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token'); // Obtener el token del localStorage
+  if (token) {
+    config.headers["Authorization"] = `Bearer ${token}`;
+  }
+  return config;
+});
 
-
-export { useApi }
+export { useApi };

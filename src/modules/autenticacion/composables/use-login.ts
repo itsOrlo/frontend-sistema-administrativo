@@ -4,6 +4,7 @@ import type { LoginResponseDto } from '../dto/login-response.dto';
 import { useApi } from '@/composables/use-api';
 import Swal from 'sweetalert2';
 import type { AxiosError } from 'axios';
+import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
 
 interface ServerError {
   message: string;
@@ -12,45 +13,63 @@ interface ServerError {
 }
 
 export const useLogin = () => {
+  const autenticacionStore = useAutenticacionStore();
+
   const mutation = useMutation({
     mutationFn: async (data: LoginDto) => {
-      const response = await useApi.post<LoginResponseDto>('/api/v1/auth/login', {
-        username: data.username,
-        password: data.password,
-      });
+      try {
+        const response = await useApi.post<LoginResponseDto>('/api/v1/auth/login', {
+          username: data.username,
+          password: data.password,
+        });
 
-      const { usuario, rol, rutas, token, message, statusCode } = response.data;
+        const { usuario, rol, rutas, token, message, statusCode } = response.data;
 
-      
-      if (statusCode === 400 && message) {
-        throw new Error(message); 
+        // Verificar la respuesta de la API
+        if (statusCode === 400 && message) {
+          console.error('Error en la respuesta del servidor:', message);
+          // Llamar a onLogginSuccess con error
+          autenticacionStore.onLogginSuccess(false, undefined, undefined, message);
+          return; // Detener la ejecución
+        }
+
+        // Si falta información importante en la respuesta
+        if (!usuario || !rol || !rutas || !token || !usuario.usu_nombre) {
+          console.error('Respuesta del servidor incompleta:', response.data);
+          // Llamar a onLogginSuccess con error
+          autenticacionStore.onLogginSuccess(false, undefined, undefined, 'La respuesta del servidor es incompleta.');
+          return; // Detener la ejecución
+        }
+
+        // Llamar a onLogginSuccess con éxito
+        autenticacionStore.onLogginSuccess(true, usuario.usu_nombre, rol.rol_id, undefined, rutas, token);
+
+        // Guardar el token y el privilegio en el localStorage
+        localStorage.setItem('token', token);
+        localStorage.setItem('privilege', rol.rol_id.toString()); // Asumiendo que rol_id es el privilegio
+
+        return response.data;
+      } catch (error) {
+        console.error('Error durante la solicitud de login:', error);
+        throw error;
       }
-
-      // Si falta información importante en la respuesta
-      if (!usuario || !rol || !rutas || !token) {
-        throw new Error('La respuesta del servidor es incompleta.');
-      }
-
-      return response.data;
     },
 
     onError: (error) => {
       // Verificar si el error es de Axios
       if ((error as AxiosError).response) {
         const axiosError = error as AxiosError;
-        const data = axiosError.response?.data as ServerError; // Aquí hacemos un type assertion
+        const data = axiosError.response?.data as ServerError;
         const serverMessage = data?.message || 'Ocurrió un error inesperado';
 
         console.error('Error durante el login:', serverMessage);
 
-        // Mostrar el mensaje de error del servidor en SweetAlert
         Swal.fire({
           title: 'Error',
-          text: serverMessage, // Mostramos el mensaje de error personalizado del servidor
+          text: serverMessage,
           icon: 'error',
         });
       } else if (error instanceof Error) {
-        // Si no es un error de Axios, pero es un error genérico
         console.error('Error durante el login:', error.message);
 
         Swal.fire({
@@ -59,7 +78,6 @@ export const useLogin = () => {
           icon: 'error',
         });
       } else {
-        // Si es otro tipo de error no esperado
         console.error('Error inesperado durante el login:', error);
 
         Swal.fire({
@@ -73,4 +91,3 @@ export const useLogin = () => {
 
   return mutation;
 };
-
