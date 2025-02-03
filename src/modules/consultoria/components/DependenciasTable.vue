@@ -38,7 +38,7 @@
 
     <!-- Botón para exportar a Excel -->
     <div class="mt-4 flex justify-end">
-      <button v-if="mostrarBotones" @click="exportarTodasDependencias"
+      <button v-if="mostrarBotones" @click="exportarExcel"
         class="bg-green-600 text-gray-100 hover:bg-green-800 font-bold py-2 px-4 rounded flex items-center">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
           <path
@@ -94,25 +94,20 @@ import type { PropType } from 'vue';
 import type { Dependencia } from '../composables/useDependencias';
 import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
 import { onMounted, ref, computed } from 'vue';
+import * as XLSX from 'xlsx';
 import { useDependencia } from '../composables/useDependencias';
-
 
 const autenticacionStore = useAutenticacionStore();
 const mostrarBotones = ref(false);
-const { exportarTodasDependencias } = useDependencia();
 
 // Computed property para determinar si se deben mostrar los botones
 onMounted(() => {
-  /* console.log('Nombre de usuario:', autenticacionStore.nombre);
-  console.log('privilegio:', autenticacionStore.privilegio); */
   mostrarBotones.value = autenticacionStore.privilegio === 1;
 });
 
 // Computed property para las cabeceras visibles
 const cabecerasVisibles = computed(() => {
-
   return props.cabecerasTabla;
-
 });
 
 const props = defineProps({
@@ -134,4 +129,28 @@ const props = defineProps({
   },
 });
 defineEmits(['editar', 'eliminar', 'cambiar-pagina']);
+
+const { loadDepends, dependencias } = useDependencia();
+
+const exportarExcel = async () => {
+  try {
+    await loadDepends();
+    const datosParaExportar = dependencias.value.map((dependencia) => {
+      const { cdep_id, cdep_dependencia, cdep_fecha_registro, cdep_estado } = dependencia;
+      return {
+        ID: cdep_id,
+        Dependencia: cdep_dependencia,
+        'Fecha de Registro': cdep_fecha_registro,
+        Estado: cdep_estado === 1 ? 'Activo' : 'Inactivo'
+      };
+    });
+
+    const ws = XLSX.utils.json_to_sheet(datosParaExportar);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Dependencias');
+    XLSX.writeFile(wb, 'dependencias.xlsx');
+  } catch (error) {
+    console.error('Error exportando a Excel:', error);
+  }
+};
 </script>
