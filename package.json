@@ -21,7 +21,7 @@
     "flowbite": "^2.4.1",
     "pinia": "^2.2.1",
     "pinia-plugin-persistedstate": "^3.2.1",
-    "sweetalert2": "^11.14.3",
+    "sweetalert2": "^11.16.0",
     "toastr": "^2.1.4",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3",

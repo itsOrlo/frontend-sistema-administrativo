@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import autenticacionRoutes from '../modules/autenticacion/routes';
 import dashboardRoutes from '../modules/dashboard/routes';
 import consultoriaRoute from '@/modules/consultoria/routes'
+import mantenimientoRoute from '@/modules/mantenimiento/routes'
 
 const router = createRouter({
   history: createWebHistory(/*import.meta.env.BASE_URL*/),
@@ -9,6 +10,8 @@ const router = createRouter({
     ...autenticacionRoutes,
     ...dashboardRoutes,
     ...consultoriaRoute,
+    ...mantenimientoRoute,
+
     {
       path: '/:catchAll(.*)',
       name: 'not-found',
