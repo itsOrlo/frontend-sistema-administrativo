@@ -28,6 +28,11 @@
               </div>
             </div>
 
+            <div v-if="mostrarAlerta" class="flex items-center text-red-600 text-sm mt-2">
+              <i class="fa fa-info-circle mr-2"></i>
+              Recuerde guardar cambios para cambiar el estado de la consultoría.
+            </div>
+
             <div class="flex justify-end gap-3 pt-4">
               <button type="button" @click="handleClose"
                 class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -57,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
+import { ref, watch } from 'vue';
 import { useApi } from '@/composables/use-api';
 import Swal from 'sweetalert2';
 import type { Consultoria } from '../composables/useConsultoria';
@@ -81,15 +86,8 @@ const formData = ref({
   estadoNombre: '',
 });
 const mostrarModalActividad = ref(false);
+const mostrarAlerta = ref(false);
 
-const estadosFiltrados = computed(() => {
-  return props.estadosConsultoria.filter(estado => {
-    if (estado.conre_nombre === 'Por despachar') {
-      return props.consultoriaAEditar?.conre_id === estado.conre_id;
-    }
-    return true;
-  });
-});
 
 watch(
   () => props.consultoriaAEditar,
@@ -149,6 +147,7 @@ const handleActividadAnadida = (estado: number) => {
   const estadoObj = props.estadosConsultoria.find(e => e.conre_id === estado);
   formData.value.estado = estado;
   formData.value.estadoNombre = estadoObj ? estadoObj.conre_nombre : '';
+  mostrarAlerta.value = true;
 };
 </script>
 

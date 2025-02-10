@@ -220,7 +220,7 @@ export function useConsultoria(pageSize = 10) {
         Dependencia,
         'Empresa cliente': EmpresaCliente,
         'Fecha de registro': FechaRegistro,
-        'Fecha de despacho': FechaDespacho,
+        
         Asunto,
         conr_adjunto,
         Estado,
@@ -230,7 +230,7 @@ export function useConsultoria(pageSize = 10) {
         Dependencia,
         'Empresa cliente': EmpresaCliente,
         'Fecha de registro': FechaRegistro,
-        'Fecha de despacho': FechaDespacho,
+ 
         Asunto,
         Archivo: conr_adjunto ? 'Disponible' : 'No disponible',
         Estado,
