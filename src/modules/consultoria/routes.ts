@@ -37,6 +37,12 @@ export const routes: Array<RouteRecordRaw> = [
         component: () => import('./pages/FAQPage.vue'),
         meta: { requiresAuth: true },
     },
+    {
+        path: '/centro-actividades/:tramite',
+        name: 'centroActividades',
+        component: () => import('./pages/CentroActividades.vue'),
+        meta: { requiresAuth: true },
+    },
 ];
 
 export default routes;

@@ -72,7 +72,7 @@
 
     <!-- Botón para exportar a Excel -->
     <div class="mt-4 flex justify-end">
-      <button v-if="mostrarBotones" @click="exportarExcel" class="bg-green-600 text-gray-100 hover:bg-green-800 font-bold py-2 px-4 rounded flex items-center">
+      <button @click="exportarExcel" class="bg-green-600 text-gray-100 hover:bg-green-800 font-bold py-2 px-4 rounded flex items-center">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
           <path d="M3 3a2 2 0 012-2h10a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V3zm2 0v14h10V3H5zm3 4h4v2H8V7zm0 4h4v2H8v-2z" />
         </svg>

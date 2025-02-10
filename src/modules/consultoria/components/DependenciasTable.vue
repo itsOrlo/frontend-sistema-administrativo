@@ -38,7 +38,7 @@
 
     <!-- Botón para exportar a Excel -->
     <div class="mt-4 flex justify-end">
-      <button v-if="mostrarBotones" @click="exportarExcel"
+      <button @click="exportarExcel"
         class="bg-green-600 text-gray-100 hover:bg-green-800 font-bold py-2 px-4 rounded flex items-center">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
           <path
@@ -130,12 +130,12 @@ const props = defineProps({
 });
 defineEmits(['editar', 'eliminar', 'cambiar-pagina']);
 
-const { loadDepends, dependencias } = useDependencia();
+const { loadDepends, dependencias: dependenciasData } = useDependencia();
 
 const exportarExcel = async () => {
   try {
     await loadDepends();
-    const datosParaExportar = dependencias.value.map((dependencia) => {
+    const datosParaExportar = dependenciasData.value.map((dependencia) => {
       const { cdep_id, cdep_dependencia, cdep_fecha_registro, cdep_estado } = dependencia;
       return {
         ID: cdep_id,

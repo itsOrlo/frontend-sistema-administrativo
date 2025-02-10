@@ -21,16 +21,19 @@
             <p class="text-black dark:text-white"><strong>Dependencia:</strong> {{ consultoria.Dependencia }}</p>
             <p class="text-black dark:text-white"><strong>Empresa Cliente:</strong> {{ consultoria['Empresa cliente'] }}</p>
             <p class="text-black dark:text-white"><strong>Fecha de Registro:</strong> {{ consultoria['Fecha de registro'] }}</p>
-            <p class="text-black dark:text-white"><strong>Fecha de Despacho:</strong> {{ consultoria['Fecha de despacho'] }}</p>
             <p class="text-black dark:text-white"><strong>Asunto:</strong> {{ consultoria.Asunto }}</p>
             <p class="text-black dark:text-white"><strong>Estado:</strong> {{ consultoria.Estado }}</p>
-            <p class="text-black dark:text-white"><strong>Observación:</strong> {{ consultoria.Observación }}</p>
           </div>
           <div class="flex justify-between mt-4">
             <button @click="copyAllDetails" class="bg-teal-500 text-white py-2 px-4 rounded hover:bg-teal-600 transition duration-200 flex items-center">
               <i class="fas fa-copy mr-1"></i> Copiar todos los detalles
             </button>
-            <button @click="handleClose" class="bg-gray-300 dark:bg-gray-700 text-black dark:text-white py-2 px-4 rounded hover:bg-gray-400 dark:hover:bg-gray-600 transition duration-200">
+            <router-link :to="{ name: 'centroActividades', params: { tramite: consultoria.Trámite } }" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200 flex items-center">
+              <i class="fas fa-tasks mr-1"></i> Ver Actividades
+            </router-link>
+          </div>
+          <div class="mt-4 flex justify-center">
+            <button @click="handleClose" class="bg-gray-300 dark:bg-gray-700 text-black dark:text-white py-2 px-4 rounded hover:bg-gray-400 dark:hover:bg-gray-600 transition duration-200 w-full">
               <i class="fas fa-times mr-1"></i> Cerrar
             </button>
           </div>
@@ -57,6 +60,7 @@ const emit = defineEmits<{
 const handleClose = () => {
   emit('cerrar-modal');
 };
+
 
 // Configuración de Toastr
 toastr.options = {

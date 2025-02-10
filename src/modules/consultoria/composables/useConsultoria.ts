@@ -159,8 +159,10 @@ export function useConsultoria(pageSize = 10) {
     try {
       const response = await useApi.get(`/api/v1/consultoria/consultoria-registro-tramite?conr_tramite=${conr_tramite}`);
       console.log('Respuesta de la API (Trámite):', response.data);
+      return response.data;
     } catch (error) {
       console.error('Error cargando consultorías por trámite:', error);
+      return [];
     }
   };
 

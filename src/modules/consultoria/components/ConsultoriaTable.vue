@@ -50,23 +50,15 @@
               </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-500 dark:text-gray-400">
-                {{ formatEmptyColumn2(consultoria['Fecha de despacho'] ?? '', 10) }}
-              </div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm text-gray-500 dark:text-gray-400">{{ formatEmptyColumn(consultoria.Asunto, 10) }}
               </div>
             </td>
 
-            <td v-if="mostrarBotones" class="px-6 py-4 whitespace-nowrap">
-              <a v-if="consultoria.conr_adjunto" :href="consultoria.conr_adjunto" download target="_blank"
-                class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded flex items-center shadow-md">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                  <path
-                    d="M10 0a2 2 0 00-2 2v8.586l-3.293-3.293A2 2 0 002 8.586l6 6a2 2 0 002 0l6-6a2 2 0 00-1.414-3.414L12 10.586V2a2 2 0 00-2-2z" />
-                </svg>
-                Descargar
+            <td v-if="mostrarBotones" class="px-6 py-5">
+              <a v-if="consultoria.conr_adjunto" :href="consultoria.conr_adjunto" target="_blank"
+                class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-1 px-7 rounded flex items-center justify-center shadow-md">
+                <i class="fa fa-eye mr-1"></i>
+                Ver
               </a>
               <span v-else class="text-gray-500 dark:text-gray-400">No disponible</span>
             </td>
@@ -79,11 +71,6 @@
                 'bg-gray-500 text-gray-100': consultoria.Estado === 'Por despachar',
               }" class="inline-block px-3 py-1 rounded-full font-semibold">
                 {{ consultoria.Estado }}
-              </div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-500 dark:text-gray-400">
-                {{ formatEmptyColumn(consultoria.Observación ?? '', 10) }}
               </div>
             </td>
             <td v-if="mostrarBotones" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
@@ -119,7 +106,7 @@
     <!-- End Table -->
 
     <!-- Botón para exportar a Excel -->
-    <div class="mt-4 flex justify-end gap-2" v-if="hasRole()">
+    <div class="mt-4 flex justify-end gap-2">
       <button @click="exportarTodasConsultorias"
         class="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded flex items-center shadow-md">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -239,13 +226,8 @@ onBeforeUnmount(() => {
 
 // Computed property para las cabeceras visibles
 const cabecerasVisibles = computed(() => {
-  if (!mostrarBotones.value) {
-    // Excluir la sexta cabecera
-    return props.cabecerasTabla.filter((_, index) => index !== 6).slice(0, -1);
-  } else {
-    // Retorna todas las cabeceras excepto la última
-    return props.cabecerasTabla;
-  }
+  const cabecerasExcluidas = ['Fecha de despacho', 'Observación'];
+  return props.cabecerasTabla.filter(cabecera => !cabecerasExcluidas.includes(cabecera));
 });
 
 const exportarExcel = () => {
@@ -319,9 +301,7 @@ const handleActionChange = (action: 'editar' | 'eliminar' | 'detalles', consulto
   dropdownStates.value[consultoria.conr_id] = false; // Cierra el dropdown después de seleccionar
 };
 
-const hasRole = () => {
-  return autenticacionStore.privilegio === 1; // Asegúrate de que esta lógica sea correcta para tu caso
-};
+
 const formatEmptyColumn = (texto: string, maxLength: number) => {
   if (!texto) return 'N/A';
   return texto.length > maxLength ? texto.substring(0, maxLength) + '...' : texto;
