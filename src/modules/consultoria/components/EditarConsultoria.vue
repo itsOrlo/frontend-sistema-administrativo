@@ -18,12 +18,14 @@
               <label for="estado" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Estado:
               </label>
-              <select id="estado" v-model="formData.estado"
-                class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 py-2 px-3 text-sm leading-5 text-gray-900 dark:text-gray-300 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
-                <option v-for="estado in estadosFiltrados" :key="estado.conre_id" :value="estado.conre_id">
-                  {{ estado.conre_nombre }}
-                </option>
-              </select>
+              <div :class="{
+                'bg-yellow-400 text-gray-100': formData.estadoNombre === 'En marcha',
+                'bg-green-400 text-gray-100': formData.estadoNombre === 'Finalizado',
+                'bg-red-500 text-gray-100': formData.estadoNombre === 'No es factible',
+                'bg-gray-500 text-gray-100': formData.estadoNombre === 'Por despachar',
+              }" class="inline-block rounded-md py-2 px-3 text-sm leading-5">
+                {{ formData.estadoNombre }}
+              </div>
             </div>
 
             <div class="flex justify-end gap-3 pt-4">
@@ -76,6 +78,7 @@ const emit = defineEmits<{
 const isSubmitting = ref(false);
 const formData = ref({
   estado: 0,
+  estadoNombre: '',
 });
 const mostrarModalActividad = ref(false);
 
@@ -92,8 +95,10 @@ watch(
   () => props.consultoriaAEditar,
   (newConsultoria) => {
     if (newConsultoria) {
+      const estado = props.estadosConsultoria.find(e => e.conre_id === newConsultoria.conre_id);
       formData.value = {
         estado: Number(newConsultoria.conre_id) || 0,
+        estadoNombre: estado ? estado.conre_nombre : '',
       };
     }
   },
@@ -141,7 +146,9 @@ const handleSubmit = async () => {
 };
 
 const handleActividadAnadida = (estado: number) => {
+  const estadoObj = props.estadosConsultoria.find(e => e.conre_id === estado);
   formData.value.estado = estado;
+  formData.value.estadoNombre = estadoObj ? estadoObj.conre_nombre : '';
 };
 </script>
 
@@ -159,5 +166,11 @@ const handleActividadAnadida = (estado: number) => {
 .swal2-popup-custom {
   width: 500px !important;
   max-width: 90%;
+}
+
+/* Añadir estilos para el estado */
+.inline-block {
+  display: inline-block;
+  max-width: fit-content;
 }
 </style>

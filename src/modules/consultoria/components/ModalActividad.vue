@@ -13,7 +13,7 @@
         <div class="p-6">
           <div class="text-center mb-4">
             <h1 class="text-xl font-bold">Trámite: {{ props.consultoriaAEditar?.['N° Trámite'] }}</h1>
-            <p class="text-sm">Estado actual: {{ getEstadoNombre(props.consultoriaAEditar?.conre_id) }}</p>
+            <p class="text-sm">Estado actual: {{ getEstadoNombre(Number(props.consultoriaAEditar?.conre_id) || undefined) }}</p>
           </div>
           <form @submit.prevent="handleAddActivity" class="space-y-4">
             <div class="form-group">
@@ -29,7 +29,7 @@
               </label>
               <select id="estado" v-model="formValues.estado"
                 class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 py-2 px-3 text-sm leading-5 text-gray-900 dark:text-gray-300 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
-                <option v-for="estado in estadosConsultoria" :key="estado.conre_id" :value="estado.conre_id">
+                <option v-for="estado in estadosFiltrados" :key="estado.conre_id" :value="estado.conre_id">
                   {{ estado.conre_nombre }}
                 </option>
               </select>
@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import Swal from 'sweetalert2';
 import { useActivities } from '../composables/useActivities';
 import type { Consultoria } from '../composables/useConsultoria';
@@ -111,7 +111,7 @@ const handleAddActivity = async () => {
 
   try {
     const fechaDespacho = new Date(formValues.value.fecha);
-    fechaDespacho.setDate(fechaDespacho.getDate());
+    fechaDespacho.setDate(fechaDespacho.getDate()+1);
 
     await createActivity({
       conr_tramite: String(props.consultoriaAEditar['N° Trámite']),
@@ -144,6 +144,15 @@ const getEstadoNombre = (conre_id: number | undefined) => {
   const estado = props.estadosConsultoria.find(e => e.conre_id === conre_id);
   return estado ? estado.conre_nombre : 'Desconocido';
 };
+
+const estadosFiltrados = computed(() => {
+  return props.estadosConsultoria.filter(estado => {
+    if (estado.conre_nombre === 'Por despachar') {
+      return props.consultoriaAEditar?.conre_id === estado.conre_id;
+    }
+    return true;
+  });
+});
 </script>
 
 <style scoped>

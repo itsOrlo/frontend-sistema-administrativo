@@ -13,16 +13,16 @@
       <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 shadow-lg rounded-lg">
         <thead class="bg-gray-50 dark:bg-gray-800">
           <tr>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Fecha de Despacho</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Estado</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Observación</th>
+            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Fecha de Despacho</th>
+            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Estado</th>
+            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Observación</th>
           </tr>
         </thead>
         <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
           <tr v-for="actividad in paginatedActivities" :key="actividad.conrd_id" class="hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200">
-            <td class="px-6 py-4 whitespace-nowrap text-gray-800 dark:text-gray-300">{{ formatDate(actividad.conr_fecha_despacho) }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-gray-800 dark:text-gray-300">{{ actividad.conre_nombre }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-gray-800 dark:text-gray-300">{{ actividad.conr_observacion }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-center text-gray-800 dark:text-gray-300">{{ formatDate(actividad.conr_fecha_despacho) }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-center text-gray-800 dark:text-gray-300">{{ actividad.conre_nombre }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-center text-gray-800 dark:text-gray-300">{{ actividad.conr_observacion }}</td>
           </tr>
         </tbody>
       </table>
