@@ -55,10 +55,10 @@
             </td>
 
             <td v-if="mostrarBotones" class="px-6 py-5">
-              <a v-if="consultoria.conr_adjunto" :href="consultoria.conr_adjunto" target="_blank"
+              <a v-if="consultoria.conr_adjunto" :href="consultoria.conr_adjunto" download
                 class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-1 px-7 rounded flex items-center justify-center shadow-md">
-                <i class="fa fa-eye mr-1"></i>
-                Ver
+                <i class="fa fa-download mr-1"></i>
+                Descargar
               </a>
               <span v-else class="text-gray-500 dark:text-gray-400">No disponible</span>
             </td>

@@ -135,7 +135,7 @@ export function useConsultoria(pageSize = 10) {
       if (Array.isArray(consultoriasData)) {
         consultorias.value = consultoriasData.map((consultoria: Consultoria) => {
           if (consultoria.conr_adjunto) {
-            consultoria.conr_adjunto = `${dominio}${consultoria.conr_adjunto}`;
+            consultoria.conr_adjunto = `${dominio.replace(/\/$/, '')}/${consultoria.conr_adjunto.replace(/^\//, '')}`;
           }
           return consultoria;
         }).sort((a: Consultoria, b: Consultoria) => 

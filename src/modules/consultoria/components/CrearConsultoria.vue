@@ -135,7 +135,7 @@
                     <p class="pl-1">o arrastrar y soltar</p>
                   </div>
                   <p class="text-xs text-gray-500 dark:text-gray-400">
-                    Solo se permiten archivos PDF.
+                    Solo se permiten archivos de hasta 5MB.
                   </p>
                 </div>
               </div>
@@ -305,11 +305,11 @@ const eliminarArchivo = () => {
 const validarArchivo = async (event: Event) => {
   const input = event.target as HTMLInputElement;
   const file = input.files ? input.files[0] : null;
-  if (file && file.type !== 'application/pdf') {
+  if (file && file.size > 5 * 1024 * 1024) { // 5MB en bytes
     await Swal.fire({
       icon: 'warning',
-      title: 'Archivo no permitido',
-      text: 'Solo se permiten archivos PDF.',
+      title: 'Archivo demasiado grande',
+      text: 'Solo se permiten archivos de hasta 5MB.',
     });
     input.value = ''; // Limpiar el input
   } else {
