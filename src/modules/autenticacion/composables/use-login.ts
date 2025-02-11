@@ -23,46 +23,48 @@ export const useLogin = () => {
           password: data.password,
         });
 
-        const { usuario, rol, rutas, token, message, statusCode } = response.data;
+        console.log("✅ Respuesta de la API:", response.data);
 
-        // Verificar la respuesta de la API
-        if (statusCode === 400 && message) {
-          console.error('Error en la respuesta del servidor:', message);
-          // Llamar a onLogginSuccess con error
-          autenticacionStore.onLogginSuccess(false, undefined, undefined, message);
+        const { usuario, rol, rutas, token, message } = response.data;
+
+        // Si la API devuelve un mensaje de error, mostrar alerta
+        if (message) {
+          console.error('⚠️ Error en la respuesta del servidor:', message);
+          autenticacionStore.onLogginSuccess(false, undefined, undefined, [], message);
           return; // Detener la ejecución
         }
 
-        // Si falta información importante en la respuesta
-        if (!usuario || !rol || !rutas || !token || !usuario.usu_nombre) {
-          console.error('Respuesta del servidor incompleta:', response.data);
-          // Llamar a onLogginSuccess con error
-          autenticacionStore.onLogginSuccess(false, undefined, undefined, 'La respuesta del servidor es incompleta.');
+        // Validar si la respuesta de la API tiene todos los campos necesarios
+        if (!usuario || !rol || !token || !usuario.usu_nombre) {
+          console.error('⚠️ Respuesta del servidor incompleta:', response.data);
+          autenticacionStore.onLogginSuccess(false, undefined, undefined, [], 'La respuesta del servidor es incompleta.');
           return; // Detener la ejecución
         }
+
+        // 🔹 Si rutas está undefined, asignar un array vacío
+        const rutasFinal = rutas ?? [];
 
         // Llamar a onLogginSuccess con éxito
-        autenticacionStore.onLogginSuccess(true, usuario.usu_nombre, rol.rol_id, undefined, rutas, token);
+        autenticacionStore.onLogginSuccess(true, usuario, rol, rutasFinal, token);
 
-        // Guardar el token y el privilegio en el localStorage
+        // Guardar el token y el privilegio en localStorage
         localStorage.setItem('token', token);
-        localStorage.setItem('privilege', rol.rol_id.toString()); // Asumiendo que rol_id es el privilegio
+        localStorage.setItem('privilege', rol.rol_id.toString());
 
         return response.data;
       } catch (error) {
-        console.error('Error durante la solicitud de login:', error);
+        console.error('❌ Error durante la solicitud de login:', error);
         throw error;
       }
     },
 
     onError: (error) => {
-      // Verificar si el error es de Axios
       if ((error as AxiosError).response) {
         const axiosError = error as AxiosError;
         const data = axiosError.response?.data as ServerError;
         const serverMessage = data?.message || 'Ocurrió un error inesperado';
 
-        console.error('Error durante el login:', serverMessage);
+        console.error('❌ Error durante el login:', serverMessage);
 
         Swal.fire({
           title: 'Error',
@@ -70,7 +72,7 @@ export const useLogin = () => {
           icon: 'error',
         });
       } else if (error instanceof Error) {
-        console.error('Error durante el login:', error.message);
+        console.error('❌ Error durante el login:', error.message);
 
         Swal.fire({
           title: 'Error',
@@ -78,7 +80,7 @@ export const useLogin = () => {
           icon: 'error',
         });
       } else {
-        console.error('Error inesperado durante el login:', error);
+        console.error('❌ Error inesperado durante el login:', error);
 
         Swal.fire({
           title: 'Error inesperado',

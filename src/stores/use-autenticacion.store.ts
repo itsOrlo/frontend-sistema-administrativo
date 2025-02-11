@@ -1,22 +1,26 @@
 import { defineStore } from 'pinia';
 import { ref, onMounted } from 'vue';
-import type { RutaDto } from '@/modules/autenticacion/dto/login-response.dto';
+import type { RutaInterface } from 'src/modules/dashboard/dto/menu-rutas-response.dto';
+import { useRouter } from 'vue-router';
+import { fetchRoutes, removeRoutesOnLogout } from '@/utils/route-utils';
 
 export const useAutenticacionStore = defineStore('autenticacion', () => {
-  const privilegio = ref(0); // Privilegio
-
+  const privilegio = ref(0);
   const loginStatus = ref(false);
   const nombre = ref('');
-
   const rolId = ref(-1);
-  const rutas = ref<RutaDto[]>([]);
+  const rutas = ref<RutaInterface[]>([]);
   const token = ref('');
-
+  
   const showModal = ref(false);
   const messageError = ref('');
   const titleError = ref('');
 
+  const router = useRouter();
+
   onMounted(() => {
+    console.log("🔄 Restaurando autenticación desde localStorage...");
+
     const storedPrivilegio = localStorage.getItem('privilegio');
     if (storedPrivilegio) {
       privilegio.value = parseInt(storedPrivilegio, 10);
@@ -26,41 +30,63 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
     if (storedNombreUsuario) {
       nombre.value = storedNombreUsuario;
     }
+
+    const storedToken = localStorage.getItem('token');
+    if (storedToken) {
+      token.value = storedToken;
+    }
+
+    // 🔹 Restaurar rutas desde localStorage y agregarlas a Vue Router
+    const storedRutas = localStorage.getItem('rutas');
+    if (storedRutas) {
+      rutas.value = JSON.parse(storedRutas);
+      console.log("✅ Rutas restauradas desde localStorage:", rutas.value);
+
+      // 🔹 Registrar rutas en Vue Router
+      if (rutas.value.length > 0) {
+        fetchRoutes(router, rutas.value);
+      }
+    }
   });
 
   const onLogginSuccess = (
     success: boolean,
-    nombreParam?: string,
-    rolIdParam?: number,
-    message?: string,
-    rutasParam?: any[],
-    tokenParam?: string,
+    usuario?: { usu_nombre: string },
+    rol?: { rol_id: number },
+    rutasParam: RutaInterface[] = [],
+    tokenParam?: string
   ) => {
-    if (success === true) {
+    if (!rutasParam) {
+      console.error("⚠️ rutasParam es undefined en onLogginSuccess");
+      rutasParam = [];
+    }
+  
+    if (success) {
       loginStatus.value = true;
-      nombre.value = nombreParam ? nombreParam : '';
-      rolId.value = rolIdParam ? rolIdParam : -1;
+      nombre.value = usuario?.usu_nombre || '';
+      rolId.value = rol?.rol_id || -1;
       messageError.value = '';
       titleError.value = '';
       showModal.value = false;
-
-      if (rutasParam) {
-        rutas.value = rutasParam;
-        // Obtener el privilegio (adaptar la lógica según tu API)
-        const privilegioValor = rutasParam.some((ruta) => ruta.roru_privilegio === 1) ? 1 : 0;
-        privilegio.value = privilegioValor; // Guardar el privilegio en el store
-      } else {
-        // Manejar el caso en que rutasParam sea undefined
-        console.error('rutasParam es undefined');
-        // Puedes asignar un valor por defecto a rutas.value, por ejemplo:
-        rutas.value = [];
+  
+      rutas.value = rutasParam;
+      privilegio.value = rutasParam.some(ruta => ruta.roru_privilegio === 1) ? 1 : 0;
+  
+      if (tokenParam) {
+        token.value = tokenParam;
+        localStorage.setItem('token', tokenParam);
       }
+  
+      // 🔹 Guardar rutas en `localStorage` para persistencia
+      localStorage.setItem('rutas', JSON.stringify(rutasParam));
 
-      console.log('Privilegio actualizado:', privilegio.value); // Agregar este console.log
-      token.value = tokenParam || '';
+      // 🔹 Registrar rutas dinámicas en Vue Router
+      fetchRoutes(router, rutasParam);
+
+      console.log('✅ Privilegio actualizado:', privilegio.value);
     } else {
       showModal.value = true;
-      messageError.value = message ?? '-';
+      messageError.value = 'Error en la autenticación';
       titleError.value = 'Error';
       loginStatus.value = false;
     }
@@ -68,7 +94,7 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
 
   const onLogginError = (error?: string) => {
     showModal.value = true;
-    messageError.value = error ? error : 'Error al iniciar sesión';
+    messageError.value = error || 'Error al iniciar sesión';
     titleError.value = 'Error';
     loginStatus.value = false;
   };
@@ -78,24 +104,33 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
   };
 
   const onLogout = () => {
+    console.log("🔴 Cerrando sesión...");
+
     loginStatus.value = false;
     nombre.value = '';
     rolId.value = -1;
     rutas.value = [];
     token.value = '';
 
-    localStorage.removeItem('usuarioId');
     localStorage.removeItem('usuario');
     localStorage.removeItem('token');
     localStorage.removeItem('rutas');
+    localStorage.removeItem('privilegio');
+
+    // 🔹 Eliminar rutas de Vue Router dinámicamente
+    removeRoutesOnLogout(router);
+    
+    // Redirigir a la pantalla de login
+    router.replace({ name: 'login' });
   };
 
-  const updateRutas = (rutasParam: any) => {
+  const updateRutas = (rutasParam: RutaInterface[]) => {
     rutas.value = rutasParam;
+    localStorage.setItem('rutas', JSON.stringify(rutasParam));
+    fetchRoutes(router, rutasParam);
   };
 
   return {
-    // state
     loginStatus,
     nombre,
     privilegio,
@@ -105,7 +140,6 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
     showModal,
     messageError,
     titleError,
-    // actions
     onLogginSuccess,
     onLogginError,
     closeModal,
