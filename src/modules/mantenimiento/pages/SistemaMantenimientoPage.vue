@@ -1,27 +1,26 @@
 <template>
   <DashboardLayout>
-    <!-- 📌 PRIMER CONTENEDOR: BARRA Y MENÚ -->
+    <!-- PRIMER CONTENEDOR: BARRA Y MENÚ -->
     <div class="relative z-10">
       <!-- Barra superior azul -->
       <div class="mt-3 flex items-center bg-sky-400 px-4 py-2 text-white text-lg font-bold">
         <div class="flex items-center bg-gray-800 px-3 py-2 rounded-md">
           <img src="/logopuce-si1.png" alt="PUCE Sede Ibarra" class="h-10" />
         </div>
-        <div class="flex items-center gap-2 ml-4">
-          <i class="fas fa-tools text-white text-2xl"></i>
-          <span class="text-white text-xl font-semibold">Sistema Mantenimiento</span>
+        <div class="flex items-center gap-3 ml-4">
+          <i class="fas fa-tools text-white text-4xl"></i>
+          <span class="text-white text-4xl font-bold">Sistema Mantenimiento</span>
         </div>
       </div>
 
       <!-- Menú principal -->
       <div ref="menuRef" class="relative z-10">
-        <div
-          class="bg-gray-800 text-white py-3 px-6 flex items-center cursor-pointer"
-          @click="toggleMenu"
-        >
-          <i class="fas fa-briefcase mr-2"></i>
-          <span class="font-bold text-lg">SISTEMA MANTENIMIENTO</span>
-          <i class="fas fa-chevron-right ml-2"></i>
+        <div class="bg-gray-800 text-white py-3 px-6 flex items-center">
+          <div class="flex items-center cursor-pointer" @click="toggleMenu">
+            <i class="fas fa-briefcase mr-2"></i>
+            <span class="font-bold text-lg">SISTEMA MANTENIMIENTO</span>
+            <i class="fas fa-chevron-right ml-2"></i>
+          </div>
         </div>
 
         <!-- Menú desplegable -->
@@ -55,7 +54,7 @@
       </div>
     </div>
 
-    <!-- 📌 SEGUNDO CONTENEDOR: IMAGEN DE FONDO FUNCIONAL -->
+    <!-- SEGUNDO CONTENEDOR: IMAGEN DE FONDO FUNCIONAL -->
     <div class="relative mt-16 flex justify-center items-center min-h-[200px]">
       <!-- Imagen de fondo asegurada -->
       <div
