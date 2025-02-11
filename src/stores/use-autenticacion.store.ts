@@ -1,7 +1,7 @@
-import { defineStore } from 'pinia';
-import { ref, onMounted } from 'vue';
+import { defineStore } from 'pinia'; 
+import { ref, onMounted, watch } from 'vue';
 import type { RutaInterface } from 'src/modules/dashboard/dto/menu-rutas-response.dto';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { fetchRoutes, removeRoutesOnLogout } from '@/utils/route-utils';
 
 export const useAutenticacionStore = defineStore('autenticacion', () => {
@@ -17,10 +17,12 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
   const titleError = ref('');
 
   const router = useRouter();
+  const route = useRoute(); // Obtiene la ruta actual
 
   onMounted(() => {
     console.log("🔄 Restaurando autenticación desde localStorage...");
 
+    // 🔹 Restaurar el privilegio guardado
     const storedPrivilegio = localStorage.getItem('privilegio');
     if (storedPrivilegio) {
       privilegio.value = parseInt(storedPrivilegio, 10);
@@ -47,6 +49,14 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
         fetchRoutes(router, rutas.value);
       }
     }
+
+    // 🔹 Mostrar privilegio cuando cambia de página
+    console.log(`🚀 Página actual: ${route.path} | Privilegio: ${privilegio.value}`);
+  });
+
+  // 🔹 Detectar cambios en la ruta y mostrar el privilegio
+  watch(() => route.path, (newPath) => {
+    console.log(`🔄 Cambió de ruta a: ${newPath} | Privilegio: ${privilegio.value}`);
   });
 
   const onLogginSuccess = (
@@ -71,19 +81,16 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
   
       rutas.value = rutasParam;
       privilegio.value = rutasParam.some(ruta => ruta.roru_privilegio === 1) ? 1 : 0;
-  
-      if (tokenParam) {
-        token.value = tokenParam;
-        localStorage.setItem('token', tokenParam);
-      }
-  
-      // 🔹 Guardar rutas en `localStorage` para persistencia
+
+      // 🔹 Guardar en `localStorage`
+      localStorage.setItem('privilegio', privilegio.value.toString());
+      localStorage.setItem('token', tokenParam || '');
       localStorage.setItem('rutas', JSON.stringify(rutasParam));
 
       // 🔹 Registrar rutas dinámicas en Vue Router
       fetchRoutes(router, rutasParam);
 
-      console.log('✅ Privilegio actualizado:', privilegio.value);
+      console.log(`✅ Privilegio actualizado: ${privilegio.value}`);
     } else {
       showModal.value = true;
       messageError.value = 'Error en la autenticación';
@@ -120,8 +127,11 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
     // 🔹 Eliminar rutas de Vue Router dinámicamente
     removeRoutesOnLogout(router);
     
-    // Redirigir a la pantalla de login
-    router.replace({ name: 'login' });
+    // 🔹 Redirigir a la pantalla de login y recargar la app
+    router.replace({ name: 'login' }).then(() => {
+      console.log("🔄 Recargando la aplicación después del logout...");
+      window.location.reload();
+    });
   };
 
   const updateRutas = (rutasParam: RutaInterface[]) => {
