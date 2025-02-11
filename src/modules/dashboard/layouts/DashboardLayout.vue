@@ -1,7 +1,7 @@
-<template> 
+<template>
+
   <div class="relative min-h-screen bg-white dark:bg-gray-900">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
     <!-- Overlay -->
     <div v-if="sidebarOpen" class="fixed inset-0 bg-gray-500 bg-opacity-30 backdrop-blur-sm z-30"
       @click="toggleSidebar"></div>
@@ -13,16 +13,16 @@
     ]" aria-label="Sidebar">
       <div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
         <ul class="space-y-2 font-medium">
-          <!-- Rutas dinámicas -->
-          <li v-for="(item, index) in store.rutas" :key="index">
-            <a @click="navigation(item.ruta_url)"
+          <!-- Rutas -->
+          <li v-for="(item, index) in rutas" :key="index">
+            <a @click="navigation(item.ruta_ruta)"
               class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 hover:cursor-pointer dark:hover:bg-gray-700 group">
               <span class="ms-1">{{ item.ruta_nombre }}</span>
             </a>
             <div v-if="item.rutasHijas?.length">
               <ul>
                 <li v-for="(subItem, subIndex) in item.rutasHijas" :key="subIndex">
-                  <a @click="navigation(subItem.ruta_url)"
+                  <a @click="navigation(subItem.ruta_ruta)" :href="subItem.ruta_ruta"
                     class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 hover:cursor-pointer dark:hover:bg-gray-700 group">
                     <span class="ms-4 font-thin">{{ subItem.ruta_nombre }}</span>
                   </a>
@@ -30,15 +30,13 @@
               </ul>
             </div>
           </li>
-
-          <!-- Botón de Cerrar Sesión al final de la lista -->
-          <li class="mt-4">
-            <button @click="logout"
-              class="w-full flex items-center p-2 text-white bg-blue-700 rounded-lg dark:bg-gray-700 dark:text-gray-300 hover:bg-blue-500 dark:hover:bg-gray-600">
-              <i class="fas fa-sign-out-alt mr-2"></i> Cerrar Sesión
-            </button>
-          </li>
         </ul>
+        <div class="absolute bottom-0 w-full p-4">
+          <button @click="logout"
+            class="w-full px-4 py-2 text-sm text-white bg-blue-700 rounded-lg dark:bg-gray-700 dark:text-gray-300 hover:bg-blue-500 dark:hover:bg-gray-600">
+            <i class="fas fa-sign-out-alt mr-2"></i> Cerrar Sesión
+          </button>
+        </div>
       </div>
     </aside>
 
@@ -50,10 +48,11 @@
           <div class="flex items-center justify-between">
             <!-- Logo -->
             <div class="flex items-center justify-start rtl:justify-end">
-              <button @click="toggleSidebar"
+              <button @click="toggleSidebar" aria-controls="logo-sidebar" type="button"
                 class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
                 <span class="sr-only">Open sidebar</span>
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg">
                   <path clip-rule="evenodd" fill-rule="evenodd"
                     d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z">
                   </path>
@@ -61,12 +60,11 @@
               </button>
               <div @click="router.push({ name: 'consultoriaClientes', replace: true })"
                 class="flex ms-2 md:me-24 cursor-pointer">
-                <img src="https://res.cloudinary.com/dx7qfps6d/image/upload/v1689608536/dev-deploys/eqayqo984zyobeq6zzxf.png"
+                <img
+                  src="https://res.cloudinary.com/dx7qfps6d/image/upload/v1689608536/dev-deploys/eqayqo984zyobeq6zzxf.png"
                   class="h-11 me-3" alt="Puce Ibarra Logo" />
               </div>
             </div>
-
-            <!-- Usuario -->
             <!-- Icon Profile -->
             <div class="flex items-center">
               <div class="flex items-center ms-3">
@@ -136,7 +134,6 @@
         </div>
       </nav>
 
-      <!-- Contenido dinámico -->
       <div class="pt-14 bg-white dark:bg-gray-900">
         <slot />
       </div>
@@ -164,18 +161,41 @@ const toggleSidebar = () => {
 const logout = () => {
   store.onLogout();
   removeRoutesOnLogout(router);
-  localStorage.removeItem('token');
-  sessionStorage.clear();
+  localStorage.removeItem('token'); // Eliminar el token del localStorage
+  sessionStorage.clear(); // Limpiar el sessionStorage
   router.push({ name: 'login', replace: true });
 };
+
+interface Ruta {
+  ruta_nombre: string;
+  ruta_ruta: string;
+  rutasHijas: Ruta[];
+}
+
+const rutas = ref<Ruta[]>([
+  { ruta_nombre: 'Empresas', ruta_ruta: '/listar', rutasHijas: [] },
+  { ruta_nombre: 'Dependencias', ruta_ruta: '/listarDependencias', rutasHijas: [] },
+  { ruta_nombre: 'Consultorías', ruta_ruta: '/listarConsultorias', rutasHijas: [] },
+  { ruta_nombre: 'Bienvenido', ruta_ruta: '/bienvenido', rutasHijas: [] },
+  { ruta_nombre: 'FAQ', ruta_ruta: '/faq', rutasHijas: [] }
+]);
+
+onMounted(() => {
+  initFlowbite();
+  themeStore.initTheme();
+
+  // Verificar si la página ya se ha recargado en esta sesión
+  if (!sessionStorage.getItem('pageReloaded')) {
+    // Recargar la página 
+    location.reload();
+
+    // Guardar un valor en sessionStorage para indicar que la página ya se ha recargado
+    sessionStorage.setItem('pageReloaded', 'true');
+  }
+});
 
 const navigation = (routePath?: string) => {
   if (!routePath || routePath === '') return;
   router.push(routePath);
 };
-
-onMounted(() => {
-  initFlowbite();
-  themeStore.initTheme();
-});
 </script>

@@ -63,7 +63,7 @@ import DashboardLayout from '@/modules/dashboard/layouts/DashboardLayout.vue';
 }
 
 .welcome-message {
-  @apply p-6 rounded-lg shadow-sm border bg-white mx-auto max-w-3xl;
+  @apply p-6 rounded-lg shadow-sm border bg-white dark:bg-gray-800 mx-auto max-w-3xl;
 }
 
 .welcome-image {
@@ -93,11 +93,11 @@ import DashboardLayout from '@/modules/dashboard/layouts/DashboardLayout.vue';
 }
 
 .nav-item {
-  @apply mb-6 p-4 rounded-lg shadow-sm border bg-white flex items-center cursor-pointer hover:bg-gray-100 transition-colors duration-200;
+  @apply mb-6 p-4 rounded-lg shadow-sm border bg-white dark:bg-gray-800 flex items-center cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200;
 }
 
 .nav-link {
-  @apply text-blue-500 text-xl font-semibold flex items-center w-full;
+  @apply text-blue-500 dark:text-blue-400 text-xl font-semibold flex items-center w-full;
 }
 
 .nav-description {
