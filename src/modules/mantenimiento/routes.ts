@@ -2,9 +2,9 @@ import type { RouteRecordRaw } from 'vue-router';
 
 export const routes: Array<RouteRecordRaw> = [
   {
-    path: '/sistemaMantenimiento',
-    name: 'SistemaMantenimientoPage',
-    component: () => import('./pages/SistemaMantenimientoPage.vue'),
+    path: '/mantenimiento',
+    name: 'mantenimiento',
+    component: () => import('./pages/MantenimientoPage.vue'),
     meta: { requiresAuth: true },
   },
 ];
