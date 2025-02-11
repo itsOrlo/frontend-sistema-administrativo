@@ -101,13 +101,14 @@ export const setupDynamicRoutes = async (router: Router) => {
   console.log('✅ Rutas dinámicas configuradas correctamente.');
 };
 
-// 🔹 Función para eliminar rutas dinámicas al cerrar sesión
+// 🔹 Función mejorada para eliminar rutas dinámicas al cerrar sesión
 export const removeRoutesOnLogout = (router: Router) => {
   console.log('🗑 Eliminando rutas dinámicas al cerrar sesión...');
 
+  // 🔹 Obtener rutas existentes y eliminarlas si no son rutas básicas
   router.getRoutes().forEach((route) => {
     const rutasExcluidas = ['dashboard', 'login', 'not-found']; // Rutas que no se eliminan
-    if (!rutasExcluidas.includes(route.name as string)) {
+    if (route.name && !rutasExcluidas.includes(route.name as string)) {
       console.log(`❌ Eliminando ruta: ${String(route.name)}`);
       router.removeRoute(route.name as string);
     }
@@ -116,8 +117,13 @@ export const removeRoutesOnLogout = (router: Router) => {
   // 🔹 Limpiar rutas del LocalStorage
   localStorage.removeItem('rutas');
 
-  // 🔹 Redirigir al login después de cerrar sesión
-  router.replace({ name: 'login' });
+  console.log('✅ Rutas eliminadas correctamente.');
 
-  console.log('✅ Rutas eliminadas y redirigido a login.');
+  // 🔹 Redirigir al login después de cerrar sesión
+  setTimeout(() => {
+    router.replace({ name: 'login' }).then(() => {
+      console.log('🔄 Recargando la aplicación para limpiar caché de rutas...');
+      window.location.reload(); // 🔥 Recarga la app para limpiar rutas en memoria
+    });
+  }, 500);
 };
