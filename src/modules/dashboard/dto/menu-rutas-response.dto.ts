@@ -1,16 +1,34 @@
 export interface MenuRutasResponseDto {
-    success: boolean;
-    rutas:   RutaInterface[];
+    usuario: UsuarioInterface;
+    rol: RolInterface;
+    rutas: RutaInterface[];
+    token: string;
+}
+
+export interface UsuarioInterface {
+    usu_id: number;
+    usu_nombre: string;
+    usu_apellido: string;
+    usu_usuario: string;
+}
+
+export interface RolInterface {
+    rol_id: number;
+    rol_nombre: string;
+    rol_descricion: string;
+    rol_estado: boolean;
+    rol_creado: string; // ISO date format (ej: "2024-09-30T16:57:31.390Z")
+    rol_actualizado: string;
 }
 
 export interface RutaInterface {
-    ruta_id: number;             // Cambia id a ruta_id
-    ruta_nombre: string;         // Cambia nombre a ruta_nombre
-    ruta_url: string;            // Cambia path a ruta_url
-    ruta_ruta: string;           // Cambia ruta a ruta_ruta
-    ruta_component: string;      // Cambia component a ruta_component
-    ruta_padre: number;          // Cambia padre a ruta_padre
-    ruta_indexed: boolean;       // Cambia indexeddb a ruta_indexed
-    ruta_estado?: boolean;       // Agrega si es necesario
-    rutasHijas?: RutaInterface[]; // Mantén rutasHijas
+    ruta_id: number;
+    ruta_padre: number;
+    ruta_nombre: string;
+    ruta_ruta: string;
+    ruta_url: string;
+    ruta_component: string;
+    ruta_indexed: boolean;
+    roru_privilegio: number;
+    rutasHijas?: RutaInterface[]; // Si hay rutas anidadas
 }
