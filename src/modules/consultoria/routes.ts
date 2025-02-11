@@ -32,6 +32,7 @@ export const routes: Array<RouteRecordRaw> = [
         meta: { requiresAuth: true },
     },
     {
+        /* rev */
         path: '/faq',
         name: 'faq',
         component: () => import('./pages/FaqPage.vue'),
