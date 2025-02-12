@@ -36,6 +36,12 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
       token.value = storedToken;
     }
 
+    // 🔹 Restaurar rolId desde localStorage
+    const storedRolId = localStorage.getItem('rolId');
+    if (storedRolId) {
+      rolId.value = parseInt(storedRolId, 10);
+    }
+
     // 🔹 Restaurar rutas desde localStorage y agregarlas a Vue Router
     const storedRutas = localStorage.getItem('rutas');
     if (storedRutas) {
@@ -65,6 +71,7 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
       loginStatus.value = true;
       nombre.value = usuario?.usu_nombre || '';
       rolId.value = rol?.rol_id || -1;
+      localStorage.setItem('rolId', rolId.value.toString());
       messageError.value = '';
       titleError.value = '';
       showModal.value = false;
@@ -116,6 +123,7 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
     localStorage.removeItem('token');
     localStorage.removeItem('rutas');
     localStorage.removeItem('privilegio');
+    localStorage.removeItem('rolId');
 
     // 🔹 Eliminar rutas de Vue Router dinámicamente
     removeRoutesOnLogout(router);

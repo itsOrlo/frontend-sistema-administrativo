@@ -158,7 +158,6 @@ export function useConsultoria(pageSize = 10) {
   const loadConsultoriasPorTramite = async (conr_tramite: string) => {
     try {
       const response = await useApi.get(`/api/v1/consultoria/consultoria-registro-tramite?conr_tramite=${conr_tramite}`);
-      console.log('Respuesta de la API (Trámite):', response.data);
       return response.data;
     } catch (error) {
       console.error('Error cargando consultorías por trámite:', error);
@@ -251,7 +250,6 @@ export function useConsultoria(pageSize = 10) {
   const editarConsultoria = async (tramite: string) => {
     try {
       const response = await useApi.get(`/api/v1/consultoria/consultoria-registro-tramite?conr_tramite=${tramite}`);
-      console.log('Respuesta de la API (Trámite):', response.data);
       const consultoria = response.data[0]; // Asegurarse de obtener el primer objeto del array
       if (consultoria) {
         console.log('Consultoria seleccionada:', consultoria);
