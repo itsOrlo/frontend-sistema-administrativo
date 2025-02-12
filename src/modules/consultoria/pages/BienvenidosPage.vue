@@ -103,4 +103,21 @@ import DashboardLayout from '@/modules/dashboard/layouts/DashboardLayout.vue';
 .nav-description {
   @apply text-gray-600 dark:text-gray-300 mt-1 ml-8 flex-grow text-sm;
 }
+
+/* Modo oscuro */
+.dark .bg-white {
+  background-color: #2d3748;
+}
+
+.dark .text-black {
+  color: #e2e8f0;
+}
+
+.dark .bg-gray-300 {
+  background-color: #4a5568;
+}
+
+.dark .hover\:bg-gray-400:hover {
+  background-color: #718096;
+}
 </style>

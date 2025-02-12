@@ -78,6 +78,7 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
   
       rutas.value = rutasParam;
       privilegio.value = rutasParam.some(ruta => ruta.roru_privilegio === 1) ? 1 : 0;
+      localStorage.setItem('privilegio', privilegio.value.toString());
   
       if (tokenParam) {
         token.value = tokenParam;
