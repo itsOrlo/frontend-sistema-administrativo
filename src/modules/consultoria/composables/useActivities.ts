@@ -5,14 +5,24 @@ interface Activity {
   conr_fecha_despacho: string;
   conre_id: number;
   conr_observacion: string;
+  file?: File;
 }
 
 export function useActivities() {
   const createActivity = async (activity: Activity) => {
     try {
-      const response = await useApi.post('/api/v1/consultoria/consultoria-registro-tramite-detalle', activity, {
+      const formData = new FormData();
+      formData.append('conr_tramite', activity.conr_tramite);
+      formData.append('conr_fecha_despacho', activity.conr_fecha_despacho);
+      formData.append('conre_id', activity.conre_id.toString());
+      formData.append('conr_observacion', activity.conr_observacion);
+      if (activity.file) {
+        formData.append('file', activity.file);
+      }
+
+      const response = await useApi.post('/api/v1/consultoria/consultoria-registro-tramite-detalle', formData, {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'multipart/form-data'
         }
       });
       return response.data;
@@ -25,7 +35,7 @@ export function useActivities() {
   const getActivitiesByTramite = async (tramite: string) => {
     try {
       const response = await useApi.get(`/api/v1/consultoria/consultoria-registro-tramite-detalle?conr_tramite=${tramite}`);
-      return response.data;
+      return response.data.registros;
     } catch (error) {
       console.error('Error al obtener actividades:', error);
       throw error;

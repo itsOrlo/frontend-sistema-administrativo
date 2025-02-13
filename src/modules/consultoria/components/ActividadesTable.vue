@@ -16,6 +16,7 @@
             <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Fecha de Despacho</th>
             <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Estado</th>
             <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Observación</th>
+            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Adjunto</th>
           </tr>
         </thead>
         <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
@@ -23,6 +24,14 @@
             <td class="px-6 py-4 whitespace-nowrap text-center text-gray-800 dark:text-gray-300">{{ formatDate(actividad.conr_fecha_despacho) }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-center text-gray-800 dark:text-gray-300">{{ actividad.conre_nombre }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-center text-gray-800 dark:text-gray-300">{{ actividad.conr_observacion }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-center text-gray-800 dark:text-gray-300">
+              <a v-if="actividad.conrd_adjunto" :href="`${dominio}/${actividad.conrd_adjunto}`" target="_blank" class="text-blue-500 hover:underline">
+                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+                  <i class="fa fa-download mr-2"></i> Descargar
+                </button>
+              </a>
+              <span v-else>No adjunto</span>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -77,12 +86,14 @@ interface Actividad {
   conr_fecha_despacho: string;
   conre_nombre: string;
   conr_observacion: string;
+  conrd_adjunto: string;
 }
 
 const actividades = ref<Actividad[]>([]);
 const searchQuery = ref('');
 const currentPage = ref(1);
 const itemsPerPage = 10;
+const dominio = 'https://192.168.0.46/documental_dev';
 
 const { getActivitiesByTramite } = useActivities();
 
@@ -103,9 +114,10 @@ const filteredActivities = computed(() => {
 });
 
 const paginatedActivities = computed(() => {
+  const activities = Array.isArray(filteredActivities.value) ? filteredActivities.value : [];
   const start = (currentPage.value - 1) * itemsPerPage;
   const end = start + itemsPerPage;
-  return filteredActivities.value.slice(start, end);
+  return activities.slice(start, end);
 });
 
 const totalPages = computed(() => {
@@ -119,7 +131,8 @@ const changePage = (page: number) => {
 };
 
 onMounted(async () => {
-  actividades.value = await getActivitiesByTramite(props.tramite);
+  const data = await getActivitiesByTramite(props.tramite);
+  actividades.value = data;
 });
 </script>
 

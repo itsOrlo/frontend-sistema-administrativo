@@ -42,6 +42,13 @@
                 class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 py-2 px-3 text-sm leading-5 text-gray-900 dark:text-gray-300 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 placeholder="Escribe aquí..."></textarea>
             </div>
+            <div class="form-group">
+              <label for="file" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Archivo Adjunto:
+              </label>
+              <input id="file" type="file" @change="handleFileChange"
+                class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 py-2 px-3 text-sm leading-5 text-gray-900 dark:text-gray-300 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+            </div>
             <div class="flex justify-end gap-3 pt-4">
               <button type="button" @click="handleClose"
                 class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -82,6 +89,7 @@ const formValues = ref({
   estado: props.consultoriaAEditar?.conre_id || props.estadosConsultoria[0]?.conre_id || 0,
   observacion: '',
 });
+const selectedFile = ref<File | null>(null);
 
 watch(
   () => props.consultoriaAEditar,
@@ -97,6 +105,13 @@ const { createActivity } = useActivities();
 
 const handleClose = () => {
   emit('cerrar-modal');
+};
+
+const handleFileChange = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (target.files && target.files.length > 0) {
+    selectedFile.value = target.files[0];
+  }
 };
 
 const handleAddActivity = async () => {
@@ -118,6 +133,7 @@ const handleAddActivity = async () => {
       conr_fecha_despacho: fechaDespacho.toISOString().split('T')[0],
       conre_id: Number(formValues.value.estado),
       conr_observacion: formValues.value.observacion,
+      file: selectedFile.value || undefined,
     });
 
     emit('actividad-anadida', Number(formValues.value.estado));
