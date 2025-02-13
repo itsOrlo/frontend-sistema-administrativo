@@ -19,7 +19,7 @@
         <thead class="bg-gray-50 dark:bg-gray-800 ">
           <tr>
             <!-- Asignado dinámico de cabecera -->
-            <th v-for="(cabecera, index) in cabecerasVisibles" :key="index" scope="col"
+            <th v-for="(cabecera, index) in cabecerasFiltradas" :key="index" scope="col"
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               {{ cabecera }}
             </th>
@@ -227,7 +227,18 @@ onBeforeUnmount(() => {
 // Computed property para las cabeceras visibles
 const cabecerasVisibles = computed(() => {
   const cabecerasExcluidas = ['Fecha de despacho', 'Observación'];
-  return props.cabecerasTabla.filter(cabecera => !cabecerasExcluidas.includes(cabecera));
+  return props.cabecerasTabla.filter((cabecera, index) => {
+    if (autenticacionStore.privilegio === 0 && ( index == 9)) {
+      return false;
+    }
+    return !cabecerasExcluidas.includes(cabecera);
+  });
+});
+
+const cabecerasFiltradas = computed(() => {
+  return cabecerasVisibles.value.filter((cabecera, index) => {
+    return !(mostrarBotones.value === false && (index === 5 || index === 7));
+  });
 });
 
 const exportarExcel = () => {
