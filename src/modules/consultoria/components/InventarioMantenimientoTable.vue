@@ -3,8 +3,10 @@
     <!-- Encabezado -->
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-xl font-bold text-blue-600">Datos Inventario: {{ inventario.length }}</h2>
-      <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-        + Agregar Inventario
+
+      <!-- Botón Agregar Inventario -->
+      <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 flex items-center gap-2">
+        <i class="fas fa-plus"></i> Agregar Inventario
       </button>
     </div>
 
@@ -31,13 +33,10 @@
     <!-- Tabla -->
     <div class="overflow-x-auto bg-white shadow-md rounded-lg">
       <table class="w-full border-collapse border border-gray-300">
-        <thead class="bg-gray-100">
+        <!-- Encabezado -->
+        <thead style="background-color: #f5f5f5">
           <tr>
-            <th
-              v-for="columna in columnasSeleccionadas"
-              :key="columna"
-              class="border border-gray-300 px-4 py-2 text-left"
-            >
+            <th v-for="columna in columnasSeleccionadas" :key="columna" class="border border-gray-300 px-4 py-2 text-left">
               {{ columna }}
             </th>
             <!-- Columnas de acciones -->
@@ -48,23 +47,19 @@
         </thead>
         <tbody>
           <tr
-            v-for="(fila, index) in inventario"
+            v-for="(fila, index) in filasPaginadas"
             :key="index"
-            :class="{
-              'bg-green-100': fila.estado === 'APROBADO AUTOMATICO',
-              'bg-yellow-100': fila.estado === 'ENVIADO',
-            }"
+            :style="{ backgroundColor: colorForEstadoMantenimiento(fila['Estado Mantenimiento']) }"
           >
-            <td
-              v-for="columna in columnasSeleccionadas"
-              :key="columna"
-              class="border border-gray-300 px-4 py-2"
-            >
-              {{ fila[columna] }}
+            <td v-for="columna in columnasSeleccionadas" :key="columna" class="border border-gray-300 px-4 py-2">
+              {{ fila[columna as keyof InventarioItem] }}
             </td>
             <!-- Botones de acciones -->
             <td class="border border-gray-300 px-4 py-2">
-              <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+              <button
+                @click="abrirModalEditar"
+                class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+              >
                 Editar
               </button>
             </td>
@@ -84,25 +79,44 @@
     </div>
 
     <!-- Paginación -->
-    <div class="flex justify-center mt-4">
-      <button class="px-3 py-1 border rounded-md mx-1">1</button>
-      <button class="px-3 py-1 border rounded-md mx-1">2</button>
+    <div class="flex justify-center mt-4 gap-2">
+      <button
+        v-for="pagina in totalPaginas"
+        :key="pagina"
+        @click="paginaActual = pagina"
+        class="px-3 py-1 border rounded-md"
+        :class="pagina === paginaActual ? 'bg-blue-500 text-white' : 'bg-gray-100'"
+      >
+        {{ pagina }}
+      </button>
     </div>
+
+    <!-- Componente Modal: Se abre al hacer clic en Editar -->
+    <ActualizarEquipoMantenimientoModal
+      :visible="modalVisible"
+      @update:visible="modalVisible = $event"
+    />
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from 'vue';
+import type { InventarioItem } from '@/modules/consultoria/dto/InventarioItem.dto';
+import ActualizarEquipoMantenimientoModal from '@/modules/consultoria/components/ActualizarEquipoMantenimientoModal.vue';
+
+// Estado de la paginación
+const paginaActual = ref<number>(1);
+const filasPorPagina = 4;
 
 // Estado para seleccionar la vista (BÁSICA o COMPLETA)
-const vistaSeleccionada = ref('basica');
+const vistaSeleccionada = ref<string>('basica');
 
 // Definir columnas para ambas vistas
-const columnasBasica = [
+const columnasBasica: string[] = [
   'ID',
   'Ubicacion',
   'Dependencia',
-  'Nombre Pc',
+  'NombrePc',
   'Monitor Marca',
   'Monitor Modelo',
   'Monitor Codigo',
@@ -116,17 +130,8 @@ const columnasBasica = [
   'Observaciones',
 ];
 
-const columnasCompleta = [
-  'ID',
-  'Ubicacion',
-  'Dependencia',
-  'Nombre Pc',
-  'Monitor Marca',
-  'Monitor Modelo',
-  'Monitor Codigo',
-  'Marca Cpu',
-  'Modelo Cpu',
-  'Codigo Cpu',
+const columnasCompleta: string[] = [
+  ...columnasBasica,
   'Marca Procesador',
   'Capacidad Procesador',
   'Marca Ram',
@@ -137,21 +142,15 @@ const columnasCompleta = [
   'Estado Disco Actual',
   'Teclado',
   'Mouse',
-  'Usuario',
-  'Disco Solido',
   'Fecha Compra',
-  'Estado Mantenimiento',
-  'Técnico y Fecha Mantenimiento',
-  'Observaciones',
 ];
 
-// Computed property para cambiar las columnas según la vista seleccionada
-const columnasSeleccionadas = computed(() =>
-  vistaSeleccionada.value === 'completa' ? columnasCompleta : columnasBasica,
+// Computed: Seleccionar columnas según la vista
+const columnasSeleccionadas = computed<string[]>(() =>
+  vistaSeleccionada.value === 'completa' ? columnasCompleta : columnasBasica
 );
 
-// Datos de ejemplo (debes reemplazar con datos reales)
-const inventario = ref([
+const inventario = ref<InventarioItem[]>([
   {
     ID: '425',
     Ubicacion: '3.2.1',
@@ -163,30 +162,49 @@ const inventario = ref([
     'Marca Cpu': 'HP',
     'Modelo Cpu': 'Z230 Tower Workstation',
     'Codigo Cpu': '121015002693',
-    Usuario: 'jibarra',
+    'Marca Procesador': 'Intel',
+    'Capacidad Procesador': '3.5 GHz',
+    'Marca Ram': 'Kingston',
+    'Capacidad Ram': '16 GB',
+    'Marca Disco': 'Western Digital',
+    'Capacidad Disco': '1 TB',
+    'Estado Disco Antes': 'Bueno',
+    'Estado Disco Actual': 'Bueno',
+    Teclado: 'Logitech K120',
+    Mouse: 'Logitech M185',
+    Usuario: 'jibarrera@pucesi.edu.ec',
     'Disco Solido': 'SSD 240 GB',
+    'Fecha Compra': '2022-08-15',
     'Estado Mantenimiento': 'APROBADO AUTOMATICO',
     'Técnico y Fecha Mantenimiento': 'Lenin Mena 23/06/24',
-    Observaciones: 'APROBADO AUTOMATICO',
+    Observaciones: 'Revisión periódica completa',
     estado: 'APROBADO AUTOMATICO',
   },
-  {
-    ID: '648',
-    Ubicacion: 'BIENESTAR',
-    Dependencia: 'INGENIERIA',
-    NombrePc: 'PASANTEING3',
-    'Monitor Marca': 'HP',
-    'Monitor Modelo': 'V193',
-    'Monitor Codigo': '121015003066',
-    'Marca Cpu': 'HP',
-    'Modelo Cpu': 'Compaq 6300 Pro MT',
-    'Codigo Cpu': '121015002536',
-    Usuario: 'jibarra',
-    'Disco Solido': 'SSD 240 GB',
-    'Estado Mantenimiento': 'ENVIADO',
-    'Técnico y Fecha Mantenimiento': 'Diego Javier Baez Ruales 06/08/24',
-    Observaciones: 'Mantenimiento Aceptado',
-    estado: 'ENVIADO',
-  },
+  // ... (otros elementos del inventario)
 ]);
+
+// Computed: Filtrar filas para la página actual
+const filasPaginadas = computed<InventarioItem[]>(() => {
+  const inicio = (paginaActual.value - 1) * filasPorPagina;
+  return inventario.value.slice(inicio, inicio + filasPorPagina);
+});
+
+// Computed: Total de páginas
+const totalPaginas = computed<number>(() => Math.ceil(inventario.value.length / filasPorPagina));
+
+// Función para asignar color según el estado
+function colorForEstadoMantenimiento(estado: string | undefined) {
+  if (estado === 'ACEPTADO') return '#a5d0c7';
+  if (estado === 'ENVIADO') return '#ffe399';
+  if (estado === 'APROBADO AUTOMATICO') return '#e3e3e3';
+  return '#FFFFFF';
+}
+
+// Variable para controlar la visibilidad del modal
+const modalVisible = ref<boolean>(false);
+
+// Función para abrir el modal al hacer clic en "Editar"
+function abrirModalEditar() {
+  modalVisible.value = true;
+}
 </script>
