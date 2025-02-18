@@ -14,6 +14,12 @@ export const routes: Array<RouteRecordRaw> = [
         meta: { requiresAuth: true },
     },
     {
+        path: '/centro-actividades/:tramite',
+        name: 'centroActividades',
+        component: () => import('./pages/CentroActividades.vue'),
+        meta: { requiresAuth: true },
+    },
+    {
         path: '/dependencias',
         name: 'dependencias',
         component: () => import('./pages/DependenciasPage.vue'),

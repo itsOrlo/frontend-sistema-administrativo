@@ -46,6 +46,7 @@
 <script setup lang="ts">
 import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
+import { useRouter } from 'vue-router';
 
 interface Props {
   mostrarModal: boolean;
@@ -58,12 +59,14 @@ const emit = defineEmits<{
   'ver-actividades': [string];
 }>();
 
+const router = useRouter();
+
 const handleClose = () => {
   emit('cerrar-modal');
 };
 
 const verActividades = () => {
-  emit('ver-actividades', props.consultoria.Trámite);
+  router.push({ name: 'centroActividades', params: { tramite: props.consultoria.Trámite } });
 };
 
 // Configuración de Toastr
