@@ -1,11 +1,14 @@
 <template>
   <Transition name="fade">
     <div v-if="showModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div class="relative mx-4 w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-800 rounded-lg shadow-xl" @click.stop>
+      <div
+        class="relative mx-4 w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-800 rounded-lg shadow-xl"
+        @click.stop>
         <div class="bg-green-700 dark:bg-green-900 px-6 py-4 rounded-t-lg">
           <div class="flex items-center justify-between">
             <h2 class="text-lg font-bold text-white">Añadir Actividad</h2>
-            <button @click="handleClose" class="text-white hover:text-gray-200 focus:outline-none" aria-label="Cerrar modal">
+            <button @click="handleClose" class="text-white hover:text-gray-200 focus:outline-none"
+              aria-label="Cerrar modal">
               <span class="text-2xl text-white">&times;</span>
             </button>
           </div>
@@ -13,7 +16,8 @@
         <div class="p-6">
           <div class="text-center mb-4">
             <h1 class="text-xl font-bold">Trámite: {{ props.consultoriaAEditar?.['N° Trámite'] }}</h1>
-            <p class="text-sm">Estado actual: {{ getEstadoNombre(Number(props.consultoriaAEditar?.conre_id) || undefined) }}</p>
+            <p class="text-sm">Estado actual: {{ getEstadoNombre(Number(props.consultoriaAEditar?.conre_id) ||
+              undefined) }}</p>
           </div>
           <form @submit.prevent="handleAddActivity" class="space-y-4">
             <div class="form-group">
@@ -91,6 +95,8 @@ const formValues = ref({
 });
 const selectedFile = ref<File | null>(null);
 
+const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+
 watch(
   () => props.consultoriaAEditar,
   (newConsultoria) => {
@@ -110,7 +116,17 @@ const handleClose = () => {
 const handleFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement;
   if (target.files && target.files.length > 0) {
-    selectedFile.value = target.files[0];
+    const file = target.files[0];
+    if (file.size > MAX_FILE_SIZE) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'El archivo es demasiado grande. El tamaño máximo permitido es de 50MB.',
+      });
+      selectedFile.value = null;
+    } else {
+      selectedFile.value = file;
+    }
   }
 };
 
@@ -126,7 +142,7 @@ const handleAddActivity = async () => {
 
   try {
     const fechaDespacho = new Date(formValues.value.fecha);
-    fechaDespacho.setDate(fechaDespacho.getDate()+1);
+    fechaDespacho.setDate(fechaDespacho.getDate() + 1);
 
     await createActivity({
       conr_tramite: String(props.consultoriaAEditar['N° Trámite']),

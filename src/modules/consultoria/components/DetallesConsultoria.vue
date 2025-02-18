@@ -28,9 +28,9 @@
             <button @click="copyAllDetails" class="bg-teal-500 text-white py-2 px-4 rounded hover:bg-teal-600 transition duration-200 flex items-center">
               <i class="fas fa-copy mr-1"></i> Copiar todos los detalles
             </button>
-            <router-link :to="{ name: 'centroActividades', params: { tramite: consultoria.Trámite } }" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200 flex items-center">
+            <button @click="verActividades" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200 flex items-center">
               <i class="fas fa-tasks mr-1"></i> Ver Actividades
-            </router-link>
+            </button>
           </div>
           <div class="mt-4 flex justify-center">
             <button @click="handleClose" class="bg-gray-300 dark:bg-gray-700 text-black dark:text-white py-2 px-4 rounded hover:bg-gray-400 dark:hover:bg-gray-600 transition duration-200 w-full">
@@ -55,19 +55,19 @@ interface Props {
 const props = defineProps<Props>();
 const emit = defineEmits<{
   'cerrar-modal': [];
+  'ver-actividades': [string];
 }>();
 
 const handleClose = () => {
   emit('cerrar-modal');
 };
 
+const verActividades = () => {
+  emit('ver-actividades', props.consultoria.Trámite);
+};
 
 // Configuración de Toastr
 toastr.options = {
-  "closeButton": true,
-  "debug": false,
-  "newestOnTop": true,
-  "progressBar": true,
   "positionClass": "toast-top-right",
   "preventDuplicates": false,
   "onclick": undefined,

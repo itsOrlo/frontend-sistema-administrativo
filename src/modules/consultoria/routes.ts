@@ -22,7 +22,7 @@ export const routes: Array<RouteRecordRaw> = [
     {
         path: '/consultoria-listado',
         name: 'consultoria-listado',
-        component: () => import('./pages/ConsultoriaListadoPage.vue'),
+        component: () => import('./pages/ListadoConsultorias.vue'),
         meta: { requiresAuth: true },
     },
     {

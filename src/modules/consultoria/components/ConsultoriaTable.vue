@@ -55,10 +55,10 @@
             </td>
 
             <td v-if="mostrarBotones" class="px-6 py-5">
-              <a v-if="consultoria.conr_adjunto" :href="consultoria.conr_adjunto" download
+              <a v-if="consultoria.conr_adjunto" :href="consultoria.conr_adjunto" download target="_blank"
                 class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-1 px-7 rounded flex items-center justify-center shadow-md">
-                <i class="fa fa-download mr-1"></i>
-                Descargar
+                <i class="fa fa-eye mr-1"></i>
+                Ver
               </a>
               <span v-else class="text-gray-500 dark:text-gray-400">No disponible</span>
             </td>
@@ -166,7 +166,7 @@
     </div>
 
     <DetallesConsultoria v-if="mostrarModalDetalles" :mostrarModal="mostrarModalDetalles"
-      :consultoria="consultoriaSeleccionada" @cerrar-modal="cerrarModalDetalles" />
+      :consultoria="consultoriaSeleccionada" @cerrar-modal="cerrarModalDetalles" @ver-actividades="verActividades" />
   </div>
 </template>
 
@@ -277,6 +277,11 @@ const mostrarDetalles = (consultoria: Consultoria) => {
 const cerrarModalDetalles = () => {
   mostrarModalDetalles.value = false;
   consultoriaSeleccionada.value = null;
+};
+
+const verActividades = (tramite: string) => {
+  // Aquí puedes manejar la lógica para ver actividades basadas en el trámite
+  console.log('Ver actividades para el trámite:', tramite);
 };
 
 const dropdownStates = ref<Record<number, boolean>>({}); // Objeto para manejar el estado de cada fila
