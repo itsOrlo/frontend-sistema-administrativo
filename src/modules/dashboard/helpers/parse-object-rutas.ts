@@ -7,6 +7,19 @@ const obtenerRutasDesdeLocalStorage = (): RutaDto[] => {
   return rutasJSON ? (JSON.parse(rutasJSON) as RutaDto[]) : [];
 };
 
+// 🔹 Función para obtener y mostrar solo las rutas con ruta_padre === 7
+export const obtenerRutasConPadre7 = (): RutaDto[] => {
+  const rutas = obtenerRutasDesdeLocalStorage();
+  
+  console.log('🔍 Todas las rutas desde localStorage:', rutas);
+
+  const rutasFiltradas = rutas.filter((ruta) => ruta.ruta_padre === 7);
+
+  console.log('📌 Rutas con ruta_padre === 7:', rutasFiltradas);
+
+  return rutasFiltradas;
+};
+
 // 🔹 Función para generar una ruta válida y corregida
 const obtenerRutaValida = (ruta: string): string => {
   let rutaCorregida = ruta.trim();
@@ -99,6 +112,10 @@ export const setupDynamicRoutes = async (router: Router) => {
 
   await parseObjectRutas(router, rutas);
   console.log('✅ Rutas dinámicas configuradas correctamente.');
+
+  // 🔹 Obtener y mostrar rutas con padre 7 después de configurarlas
+  const rutasPadre7 = obtenerRutasConPadre7();
+  console.log('✅ Rutas con ruta_padre 7 después de configuración:', rutasPadre7);
 };
 
 // 🔹 Función mejorada para eliminar rutas dinámicas al cerrar sesión
@@ -127,3 +144,7 @@ export const removeRoutesOnLogout = (router: Router) => {
     });
   }, 500);
 };
+
+// 🔹 Ejecutar la función obtenerRutasConPadre7 inmediatamente después de definirla
+const rutasPadre7 = obtenerRutasConPadre7();
+console.log('✅ Rutas con ruta_padre 7 encontradas al inicio:', rutasPadre7);

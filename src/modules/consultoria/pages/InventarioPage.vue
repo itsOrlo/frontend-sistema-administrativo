@@ -1,107 +1,147 @@
 <template>
-    <DashboardLayout>
-      <div class="bienvenido-container">
-        <div class="welcome-message">
-          <img src="https://res.cloudinary.com/dw8oyuntj/image/upload/apusxpslr1qq9med9jaf" alt="Bienvenido"
-            class="welcome-image" />
-          <h1 class="text-3xl font-bold text-gray-800 dark:text-white">
-            Bienvenido al Sistema de Consultoría
-          </h1>
-          <p class="text-gray-600 dark:text-gray-300 mt-2">
-            Como usuario, podrá navegar por las siguientes secciones:
-          </p>
+  <DashboardLayout class="text-xs md:text-sm">
+    <!-- PRIMER CONTENEDOR: BARRA Y MENÚ -->
+    <div class="relative z-10">
+      <!-- Barra superior azul -->
+      <div class="mt-3 flex flex-wrap items-center bg-sky-400 px-4 py-2 text-white font-bold">
+        <div class="flex items-center bg-gray-800 px-3 py-2 rounded-md">
+          <img src="/logopuce-si1.png" alt="PUCE Sede Ibarra" class="h-10" />
         </div>
-        <div class="content-columns mt-8">
-          <div class="left-column">
-            <img src="https://res.cloudinary.com/dw8oyuntj/image/upload/vhgnv1vk3vu9n9acfdvk" alt="Próximamente" class="coming-soon-image" />
+        <div class="flex items-center gap-3 ml-4">
+          <!-- Ajusta el tamaño de los íconos y texto para pantallas pequeñas/grandes -->
+          <i class="fas fa-tools text-2xl md:text-4xl text-white"></i>
+          <span class="text-xl md:text-4xl font-bold text-white">
+            Sistema Mantenimiento
+          </span>
+        </div>
+      </div>
+
+      <!-- Menú principal -->
+      <div ref="menuRef" class="relative z-10">
+        <div class="bg-gray-800 text-white py-2 md:py-4 px-4 md:px-6 flex items-center">
+          <div
+            class="flex items-center cursor-pointer text-sm md:text-xl"
+            @click="toggleMenu"
+          >
+            <i class="fas fa-briefcase mr-2 md:mr-3 text-lg md:text-2xl"></i>
+            <span class="font-bold text-lg md:text-2xl">SISTEMA MANTENIMIENTO</span>
+            <i class="fas fa-chevron-right ml-2 md:ml-3 text-lg md:text-2xl"></i>
           </div>
-          <div class="navigation-list">
-            <ul>
-              <li class="nav-item">
-                <router-link to="/listar" class="nav-link">
-                  <i class="fas fa-users mr-2"></i>Listado de Clientes
-                  <p class="nav-description">Visualice todos los clientes registrados.</p>
-                  <i class="fas fa-chevron-right ml-auto"></i>
-                </router-link>
-              </li>
-              <li class="nav-item">
-                <router-link to="/consultoria-clientes" class="nav-link">
-                  <i class="fas fa-user-tie mr-2"></i>Consultoría de Clientes
-                  <p class="nav-description">Acceda a las consultas e insights.</p>
-                  <i class="fas fa-chevron-right ml-auto"></i>
-                </router-link>
-              </li>
-              <li class="nav-item">
-                <router-link to="/listarDependencias" class="nav-link">
-                  <i class="fas fa-building mr-2"></i>Listado de Dependencias
-                  <p class="nav-description">Acceda a las dependencias y sus relaciones.</p>
-                  <i class="fas fa-chevron-right ml-auto"></i>
-                </router-link>
-              </li>
-              <li class="nav-item">
-                <router-link to="/listarConsultorias" class="nav-link">
-                  <i class="fa fa-briefcase mr-2"></i>Listado de Consultorías
-                  <p class="nav-description">Revise, gestione y realice seguimiento de todas las consultorías.</p>
-                  <i class="fas fa-chevron-right ml-auto"></i>
-                </router-link>
-              </li>
-            </ul>
+        </div>
+
+        <!-- Menú desplegable dinámico -->
+        <div
+          v-if="menuOpen"
+          class="absolute bg-white shadow-lg mt-1 w-64 md:w-80 py-2 px-3 rounded-lg"
+        >
+          <div
+            v-for="(submenu, index) in menuItems"
+            :key="index"
+            class="relative group"
+          >
+            <div
+              class="flex items-center px-4 py-2 hover:bg-gray-200 cursor-pointer text-sm md:text-base font-bold"
+              @mouseover="openSubmenu(submenu)"
+              @click="navigateTo(submenu.ruta_url)"
+            >
+              <i class="fas fa-folder mr-2 md:mr-3 text-lg md:text-2xl"></i>
+              <span class="font-semibold">{{ submenu.ruta_nombre }}</span>
+            </div>
           </div>
         </div>
       </div>
-    </DashboardLayout>
-  </template>
-  
-  <script setup lang="ts">
-  import DashboardLayout from '@/modules/dashboard/layouts/DashboardLayout.vue';
-  </script>
-  
-  <style scoped lang="postcss">
-  .bienvenido-container {
-    padding: 2rem;
-    text-align: center;
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <!-- Ajusta el padding para pantallas pequeñas y grandes -->
+    <div class="p-3 md:p-6">
+      <!-- TÍTULO -->
+      <!-- Ajusta el tamaño de fuente en móviles vs. pantallas grandes -->
+      <h1 class="text-xl md:text-3xl font-bold">
+        <span class="text-black">Inventario</span>
+        <span class="text-gray-500 ml-1">Equipos de computo</span>
+      </h1>
+
+      <!-- FORMULARIO -->
+      <div class="bg-white shadow-md p-4 md:p-6 mt-4 rounded-md">
+        <label
+          for="catalogo"
+          class="block text-gray-700 font-bold text-sm md:text-base mb-2"
+        >
+          Catálogo
+        </label>
+        <select
+          id="catalogo"
+          class="border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-300
+                 h-10 md:h-12 px-2 md:px-3 text-xs md:text-sm w-full sm:w-64 md:w-72 appearance-none"
+        >
+          <option>[Seleccione]</option>
+        </select>
+      </div>
+
+      <!-- TABLA DE INVENTARIO -->
+      <div class="mt-4 md:mt-6">
+        <InventarioMantenimientoTable />
+      </div>
+    </div>
+  </DashboardLayout>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue';
+import { useRouter } from 'vue-router';
+import DashboardLayout from '@/modules/dashboard/layouts/DashboardLayout.vue';
+import { obtenerRutasConPadre7 } from '@/modules/dashboard/helpers/parse-object-rutas';
+import InventarioMantenimientoTable from '@/modules/consultoria/components/InventarioMantenimientoTable.vue';
+import type { Ruta } from '@/modules/consultoria/dto/RutaMantenimiento.dto';
+
+const router = useRouter();
+const menuOpen = ref<boolean>(false);
+const menuRef = ref<HTMLElement | null>(null);
+const menuItems = ref<Ruta[]>([]);
+
+// Alternar el menú
+const toggleMenu = (): void => {
+  menuOpen.value = !menuOpen.value;
+};
+
+// Abrir submenú cuando el usuario pasa el mouse
+const openSubmenu = (submenu: Ruta): void => {
+  menuItems.value.forEach((item) => {
+    if (item !== submenu) item.open = false;
+  });
+  submenu.open = true;
+};
+
+// Navegación a una ruta específica
+const navigateTo = (url: string): void => {
+  menuOpen.value = false;
+  router.push(url);
+};
+
+// Cerrar menú cuando se hace clic fuera
+const handleClickOutside = (event: Event): void => {
+  if (menuRef.value && !menuRef.value.contains(event.target as Node)) {
+    menuOpen.value = false;
   }
-  
-  .welcome-message {
-    @apply p-6 rounded-lg shadow-sm border bg-white mx-auto max-w-3xl;
-  }
-  
-  .welcome-image {
-    @apply mx-auto mb-4;
-    width: 250px;
-  }
-  
-  .content-columns {
-    @apply flex justify-center;
-  }
-  
-  .left-column {
-    @apply mr-8 flex justify-center;
-  }
-  
-  .coming-soon-image {
-    @apply mx-auto mb-4;
-    width: 280px;
-  }
-  
-  .navigation-list {
-    @apply flex justify-center;
-  }
-  
-  .navigation-list ul {
-    @apply list-none p-0;
-  }
-  
-  .nav-item {
-    @apply mb-6 p-4 rounded-lg shadow-sm border bg-white flex items-center cursor-pointer hover:bg-gray-100 transition-colors duration-200;
-  }
-  
-  .nav-link {
-    @apply text-blue-500 text-xl font-semibold flex items-center w-full;
-  }
-  
-  .nav-description {
-    @apply text-gray-600 dark:text-gray-300 mt-1 ml-8 flex-grow text-sm;
-  }
-  </style>
-  
+};
+
+// Obtener rutas dinámicamente al montar
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+
+  const rutasMantenimiento = obtenerRutasConPadre7();
+  console.log('🛠 Rutas de mantenimiento cargadas en el menú:', rutasMantenimiento);
+
+  menuItems.value = rutasMantenimiento.map((ruta: any) => ({
+    ruta_nombre: ruta.ruta_nombre,
+    ruta_url: ruta.ruta_url,
+    open: false,
+  }));
+});
+
+// Eliminar eventos al desmontar
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
+</script>
