@@ -72,7 +72,7 @@ import DashboardLayout from '@/modules/dashboard/layouts/DashboardLayout.vue';
 }
 
 .welcome-message {
-  @apply p-6 rounded-lg shadow-sm border bg-white mx-auto max-w-3xl;
+  @apply p-6 rounded-lg shadow-sm border bg-white dark:bg-gray-800 mx-auto max-w-3xl;
 }
 
 .welcome-image {
@@ -102,14 +102,31 @@ import DashboardLayout from '@/modules/dashboard/layouts/DashboardLayout.vue';
 }
 
 .nav-item {
-  @apply mb-6 p-4 rounded-lg shadow-sm border bg-white flex items-center cursor-pointer hover:bg-gray-100 transition-colors duration-200;
+  @apply mb-6 p-4 rounded-lg shadow-sm border bg-white dark:bg-gray-800 flex items-center cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200;
 }
 
 .nav-link {
-  @apply text-blue-500 text-xl font-semibold flex items-center w-full;
+  @apply text-blue-500 dark:text-blue-400 text-xl font-semibold flex items-center w-full;
 }
 
 .nav-description {
   @apply text-gray-600 dark:text-gray-300 mt-1 ml-8 flex-grow text-sm;
+}
+
+/* Modo oscuro */
+.dark .bg-white {
+  background-color: #2d3748;
+}
+
+.dark .text-black {
+  color: #e2e8f0;
+}
+
+.dark .bg-gray-300 {
+  background-color: #4a5568;
+}
+
+.dark .hover\:bg-gray-400:hover {
+  background-color: #718096;
 }
 </style>

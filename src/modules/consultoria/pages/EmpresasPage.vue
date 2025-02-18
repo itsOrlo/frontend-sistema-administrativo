@@ -1,107 +1,134 @@
 <template>
-    <DashboardLayout>
-      <div class="bienvenido-container">
-        <div class="welcome-message">
-          <img src="https://res.cloudinary.com/dw8oyuntj/image/upload/apusxpslr1qq9med9jaf" alt="Bienvenido"
-            class="welcome-image" />
-          <h1 class="text-3xl font-bold text-gray-800 dark:text-white">
-            Bienvenido al Sistema de Consultoría
-          </h1>
-          <p class="text-gray-600 dark:text-gray-300 mt-2">
-            Como usuario, podrá navegar por las siguientes secciones:
-          </p>
+  <DashboardLayout>
+    <div class="p-6">
+      <h2 class="text-2xl text-gray-700 dark:text-gray-300 font-bold mb-4">Clientes</h2>
+
+      <!-- Contadores de Tipo de Empresa -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+        <div class="stat-card bg-purple-500 text-white p-6 rounded-lg shadow-md flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-semibold">Empresas Públicas</h3>
+            <p class="text-3xl font-bold">{{ totalPublicas }}</p>
+          </div>
+          <i class="fas fa-building text-4xl"></i>
         </div>
-        <div class="content-columns mt-8">
-          <div class="left-column">
-            <img src="https://res.cloudinary.com/dw8oyuntj/image/upload/vhgnv1vk3vu9n9acfdvk" alt="Próximamente" class="coming-soon-image" />
+        <div class="stat-card bg-pink-500 text-white p-6 rounded-lg shadow-md flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-semibold">Empresas Privadas</h3>
+            <p class="text-3xl font-bold">{{ totalPrivadas }}</p>
           </div>
-          <div class="navigation-list">
-            <ul>
-              <li class="nav-item">
-                <router-link to="/listar" class="nav-link">
-                  <i class="fas fa-users mr-2"></i>Listado de Clientes
-                  <p class="nav-description">Visualice todos los clientes registrados.</p>
-                  <i class="fas fa-chevron-right ml-auto"></i>
-                </router-link>
-              </li>
-              <li class="nav-item">
-                <router-link to="/consultoria-clientes" class="nav-link">
-                  <i class="fas fa-user-tie mr-2"></i>Consultoría de Clientes
-                  <p class="nav-description">Acceda a las consultas e insights.</p>
-                  <i class="fas fa-chevron-right ml-auto"></i>
-                </router-link>
-              </li>
-              <li class="nav-item">
-                <router-link to="/listarDependencias" class="nav-link">
-                  <i class="fas fa-building mr-2"></i>Listado de Dependencias
-                  <p class="nav-description">Acceda a las dependencias y sus relaciones.</p>
-                  <i class="fas fa-chevron-right ml-auto"></i>
-                </router-link>
-              </li>
-              <li class="nav-item">
-                <router-link to="/listarConsultorias" class="nav-link">
-                  <i class="fa fa-briefcase mr-2"></i>Listado de Consultorías
-                  <p class="nav-description">Revise, gestione y realice seguimiento de todas las consultorías.</p>
-                  <i class="fas fa-chevron-right ml-auto"></i>
-                </router-link>
-              </li>
-            </ul>
-          </div>
+          <i class="fas fa-building text-4xl"></i>
         </div>
       </div>
-    </DashboardLayout>
-  </template>
-  
-  <script setup lang="ts">
-  import DashboardLayout from '@/modules/dashboard/layouts/DashboardLayout.vue';
-  </script>
-  
-  <style scoped lang="postcss">
-  .bienvenido-container {
-    padding: 2rem;
-    text-align: center;
-  }
-  
-  .welcome-message {
-    @apply p-6 rounded-lg shadow-sm border bg-white mx-auto max-w-3xl;
-  }
-  
-  .welcome-image {
-    @apply mx-auto mb-4;
-    width: 250px;
-  }
-  
-  .content-columns {
-    @apply flex justify-center;
-  }
-  
-  .left-column {
-    @apply mr-8 flex justify-center;
-  }
-  
-  .coming-soon-image {
-    @apply mx-auto mb-4;
-    width: 280px;
-  }
-  
-  .navigation-list {
-    @apply flex justify-center;
-  }
-  
-  .navigation-list ul {
-    @apply list-none p-0;
-  }
-  
-  .nav-item {
-    @apply mb-6 p-4 rounded-lg shadow-sm border bg-white flex items-center cursor-pointer hover:bg-gray-100 transition-colors duration-200;
-  }
-  
-  .nav-link {
-    @apply text-blue-500 text-xl font-semibold flex items-center w-full;
-  }
-  
-  .nav-description {
-    @apply text-gray-600 dark:text-gray-300 mt-1 ml-8 flex-grow text-sm;
-  }
-  </style>
-  
+
+      <!-- Header Actions -->
+      <div class="flex justify-between mb-4">
+        <input
+          type="text"
+          v-model="searchTerm"
+          placeholder="Buscar..."
+          class="p-2 border rounded w-64"
+        />
+        <button
+        v-if="mostrarBotones"
+          @click="toggleCreateModal(true)"
+          class="bg-blue-800 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded"
+        >
+          + Nuevo Cliente
+        </button>
+      </div>
+
+      <!-- Loading State -->
+      <div v-if="isLoading" class="flex justify-center py-8">
+        <span class="text-gray-500">Cargando clientes...</span>
+      </div>
+
+      <!-- Clients Table -->
+      <ClienteTable
+        v-else
+        :clientes="clientesFiltrados"
+        :current-page="currentPage"
+        :tiposEmpresa="tiposEmpresa"
+        :total-pages="totalPages"
+        :cabecerasTabla="cabecerasTabla"
+        @editar="editarCliente" 
+        @eliminar="deleteClient"
+        @cambiar-pagina="setPage"
+      />
+    </div>
+
+    <!-- Create Modal -->
+    <CrearCliente
+      v-if="mostrarModalCrear"
+      :mostrarModal="mostrarModalCrear"
+      :clienteARegistrar="clienteSeleccionado"
+      :tiposEmpresa="tiposEmpresa"
+      @cerrar-modal="toggleCreateModal(false)"
+      @cliente-creado="loadClients"
+    />
+
+    <EditarCliente
+      v-if="mostrarModalEditar"
+      :mostrarModal="mostrarModalEditar"
+      :clienteAEditar="clienteSeleccionado!"
+      :tiposEmpresa="tiposEmpresa"
+      @cerrar-modal="toggleEditModal(false)"
+      @cliente-actualizado="loadClients"
+    />
+  </DashboardLayout>
+</template>
+
+<script setup lang="ts">
+import { useClients } from '../composables/useClients';
+import DashboardLayout from '@/modules/dashboard/layouts/DashboardLayout.vue';
+import ClienteTable from '../components/ClienteTable.vue';
+import CrearCliente from '../components/CrearCliente.vue';
+import EditarCliente from '../components/EditarCliente.vue';
+import type { Cliente } from '../composables/useClients'; 
+import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
+import { onMounted, ref } from 'vue';
+
+const autenticacionStore = useAutenticacionStore();
+const mostrarBotones = ref(false);
+
+// Computed property para determinar si se deben mostrar los botones
+onMounted(() => {
+  console.log('privilegio:', autenticacionStore.privilegio);
+  mostrarBotones.value = autenticacionStore.privilegio === 1;
+});
+
+const {
+  mostrarModalEditar,
+  clienteSeleccionado,
+  toggleEditModal,
+
+  tiposEmpresa,
+  cabecerasTabla,
+  // Estado
+  searchTerm,
+  currentPage,
+  isLoading,
+  mostrarModalCrear,
+
+  // Computed
+  clientesFiltrados,
+  totalPages,
+
+  // Métodos
+  loadClients,
+  deleteClient,
+  setPage,
+  toggleCreateModal,
+
+  // Contadores de tipo de empresa
+  totalPublicas,
+  totalPrivadas,
+} = useClients();
+
+const editarCliente = (cliente: Cliente) => { 
+  clienteSeleccionado.value = cliente; 
+  toggleEditModal(true, cliente); 
+};
+
+onMounted(loadClients);
+</script>

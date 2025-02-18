@@ -2,58 +2,9 @@ import type { RouteRecordRaw } from 'vue-router';
 
 export const routes: Array<RouteRecordRaw> = [
     {
-        path: '/listar',
-        name: 'listadoCliente',
-        component: () => import('./pages/ListadoClientes.vue'),
-        meta: { requiresAuth: true }, 
-    },
-    {
-        path: '/consultoria-clientes',
-        name: 'consultoriaClientes',
-        component: () => import('./pages/ConsultoriaClienetesPage.vue'),
-        meta: { requiresAuth: true }, 
-    },
-    {
-        path: '/listarDependencias',
-        name: 'listadoDependencias',
-        component: () => import('./pages/ListadoDependencias.vue'),
-        meta: { requiresAuth: true }, 
-    },
-    {
-        path: '/listarConsultorias',
-        name: 'listadoConsultorias',
-        component: () => import('./pages/ListadoConsultorias.vue'),
-        meta: { requiresAuth: true }, 
-    },
-    {
-        path: '/bienvenidos',
-        name: 'bienvenidos',
-        component: () => import('./pages/BienvenidosPage.vue'),
-        meta: { requiresAuth: true },
-    },
-    {
-        /* rev */
-        path: '/faq',
-        name: 'faq',
-        component: () => import('./pages/FAQPage.vue'),
-        meta: { requiresAuth: true },
-    },
-    {
-        path: '/centro-actividades/:tramite',
-        name: 'centroActividades',
-        component: () => import('./pages/CentroActividades.vue'),
-        meta: { requiresAuth: true },
-    },
-    {
         path: '/consultoria',
         name: 'consultoria',
         component: () => import('./pages/ConsultoriaPage.vue'),
-        meta: { requiresAuth: true },
-    },
-    {
-        path: '/reporte-inventario',
-        name: 'reporte-inventario',
-        component: () => import('./pages/ReporteInventarioPage.vue'),
         meta: { requiresAuth: true },
     },
     {
@@ -72,6 +23,18 @@ export const routes: Array<RouteRecordRaw> = [
         path: '/consultoria-listado',
         name: 'consultoria-listado',
         component: () => import('./pages/ConsultoriaListadoPage.vue'),
+        meta: { requiresAuth: true },
+    },
+    {
+        path: '/bienvenidos',
+        name: 'bienvenidos',
+        component: () => import('./pages/BienvenidosPage.vue'),
+        meta: { requiresAuth: true },
+    },
+    {
+        path: '/faq',
+        name: 'faq',
+        component: () => import('./pages/FAQPage.vue'),
         meta: { requiresAuth: true },
     },
     {
@@ -96,6 +59,12 @@ export const routes: Array<RouteRecordRaw> = [
         path: '/administracion-catalogos',
         name: 'administracion-catalogos',
         component: () => import('./pages/AdministracionCatalogosPage.vue'),
+        meta: { requiresAuth: true },
+    },
+    {
+        path: '/reporte-inventario',
+        name: 'reporte-inventario',
+        component: () => import('./pages/ReporteInventarioPage.vue'),
         meta: { requiresAuth: true },
     },
 ];

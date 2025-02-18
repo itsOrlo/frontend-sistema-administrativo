@@ -1,107 +1,107 @@
 <template>
-    <DashboardLayout>
-      <div class="bienvenido-container">
-        <div class="welcome-message">
-          <img src="https://res.cloudinary.com/dw8oyuntj/image/upload/apusxpslr1qq9med9jaf" alt="Bienvenido"
-            class="welcome-image" />
-          <h1 class="text-3xl font-bold text-gray-800 dark:text-white">
-            Bienvenido al Sistema de Consultoría
-          </h1>
-          <p class="text-gray-600 dark:text-gray-300 mt-2">
-            Como usuario, podrá navegar por las siguientes secciones:
-          </p>
-        </div>
-        <div class="content-columns mt-8">
-          <div class="left-column">
-            <img src="https://res.cloudinary.com/dw8oyuntj/image/upload/vhgnv1vk3vu9n9acfdvk" alt="Próximamente" class="coming-soon-image" />
-          </div>
-          <div class="navigation-list">
-            <ul>
-              <li class="nav-item">
-                <router-link to="/listar" class="nav-link">
-                  <i class="fas fa-users mr-2"></i>Listado de Clientes
-                  <p class="nav-description">Visualice todos los clientes registrados.</p>
-                  <i class="fas fa-chevron-right ml-auto"></i>
-                </router-link>
-              </li>
-              <li class="nav-item">
-                <router-link to="/consultoria-clientes" class="nav-link">
-                  <i class="fas fa-user-tie mr-2"></i>Consultoría de Clientes
-                  <p class="nav-description">Acceda a las consultas e insights.</p>
-                  <i class="fas fa-chevron-right ml-auto"></i>
-                </router-link>
-              </li>
-              <li class="nav-item">
-                <router-link to="/listarDependencias" class="nav-link">
-                  <i class="fas fa-building mr-2"></i>Listado de Dependencias
-                  <p class="nav-description">Acceda a las dependencias y sus relaciones.</p>
-                  <i class="fas fa-chevron-right ml-auto"></i>
-                </router-link>
-              </li>
-              <li class="nav-item">
-                <router-link to="/listarConsultorias" class="nav-link">
-                  <i class="fa fa-briefcase mr-2"></i>Listado de Consultorías
-                  <p class="nav-description">Revise, gestione y realice seguimiento de todas las consultorías.</p>
-                  <i class="fas fa-chevron-right ml-auto"></i>
-                </router-link>
-              </li>
-            </ul>
-          </div>
-        </div>
+  <DashboardLayout>
+    <div class="p-6 dark:bg-gray-800">
+      <h2 class="text-2xl font-bold mb-4 dark:text-white">Dependencias</h2>
+
+      <!-- Header Actions -->
+      <div class="flex justify-between mb-4">
+        <input
+          type="text"
+          v-model="searchTerm"
+          placeholder="Buscar..."
+          class="p-2 border rounded w-64 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+        />
+        <button
+          v-if="mostrarBotones"
+          @click="toggleCreateModal(true)"
+          class="bg-blue-800 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded"
+        >
+          + Nueva Dependencia
+        </button>
       </div>
-    </DashboardLayout>
-  </template>
-  
-  <script setup lang="ts">
-  import DashboardLayout from '@/modules/dashboard/layouts/DashboardLayout.vue';
-  </script>
-  
-  <style scoped lang="postcss">
-  .bienvenido-container {
-    padding: 2rem;
-    text-align: center;
-  }
-  
-  .welcome-message {
-    @apply p-6 rounded-lg shadow-sm border bg-white mx-auto max-w-3xl;
-  }
-  
-  .welcome-image {
-    @apply mx-auto mb-4;
-    width: 250px;
-  }
-  
-  .content-columns {
-    @apply flex justify-center;
-  }
-  
-  .left-column {
-    @apply mr-8 flex justify-center;
-  }
-  
-  .coming-soon-image {
-    @apply mx-auto mb-4;
-    width: 280px;
-  }
-  
-  .navigation-list {
-    @apply flex justify-center;
-  }
-  
-  .navigation-list ul {
-    @apply list-none p-0;
-  }
-  
-  .nav-item {
-    @apply mb-6 p-4 rounded-lg shadow-sm border bg-white flex items-center cursor-pointer hover:bg-gray-100 transition-colors duration-200;
-  }
-  
-  .nav-link {
-    @apply text-blue-500 text-xl font-semibold flex items-center w-full;
-  }
-  
-  .nav-description {
-    @apply text-gray-600 dark:text-gray-300 mt-1 ml-8 flex-grow text-sm;
-  }
-  </style>
-  
+
+      <!-- Loading State -->
+      <div v-if="isLoading" class="flex justify-center py-8">
+        <span class="text-gray-500 dark:text-gray-400">Cargando dependencia...</span>
+      </div>
+
+      <!-- Clients Table -->
+      <DependenciasTable
+        v-else
+        :dependencias="dependenciasPaginados"
+        :current-page="currentPage"
+        :total-pages="totalPages"
+        :cabeceras-tabla="cabecerasTabla"
+        @editar="editarDependencia" 
+        @cambiar-pagina="setPage"
+      />
+
+      <!-- Create Modal -->
+      <CrearDependencia
+        v-if="mostrarModalCrear"
+        :mostrarModal="mostrarModalCrear"
+        :clienteARegistrar="dependenciaSeleccionado"
+        @cerrar-modal="toggleCreateModal(false)"
+        @dependencia-creada="loadDepends"
+      />
+
+      <EditarDependencia
+      v-if="mostrarModalEditar"
+      :mostrarModal="mostrarModalEditar"
+      :dependenciaAEditar="dependenciaSeleccionado!"
+      @cerrar-modal="toggleEditModal(false)"
+      @dependencia-actualizado="loadDepends"
+    />
+    </div>
+  </DashboardLayout>
+</template>
+
+<script setup lang="ts">
+import DashboardLayout from '@/modules/dashboard/layouts/DashboardLayout.vue';
+import type { Dependencia } from '../composables/useDependencias';
+import DependenciasTable from '../components/DependenciasTable.vue';
+import { useDependencia } from '../composables/useDependencias';
+import CrearDependencia from '../components/CrearDependencia.vue';
+import EditarDependencia from '../components/EditarDependencia.vue';
+import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
+import { onMounted, ref } from 'vue';
+
+const autenticacionStore = useAutenticacionStore();
+const mostrarBotones = ref(false);
+
+// Computed property para determinar si se deben mostrar los botones
+onMounted(() => {
+  console.log('privilegio:', autenticacionStore.privilegio);
+  mostrarBotones.value = autenticacionStore.privilegio === 1;
+});
+
+const {
+  mostrarModalEditar,
+  dependenciaSeleccionado,
+  toggleEditModal,
+
+  cabecerasTabla,
+  // Estado
+  searchTerm,
+  currentPage,
+  isLoading,
+  mostrarModalCrear,
+
+  // Computed
+  dependenciasPaginados,
+  totalPages,
+
+  // Métodos
+  loadDepends,
+  setPage,
+  toggleCreateModal,
+} = useDependencia();
+
+const editarDependencia = (dependencia: Dependencia) => {
+  // Agrega la interfaz Cliente aquí
+  dependenciaSeleccionado.value = dependencia;
+  toggleEditModal(true, dependencia);
+};
+
+onMounted(loadDepends);
+</script>
