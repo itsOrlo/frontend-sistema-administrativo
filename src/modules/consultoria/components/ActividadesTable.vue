@@ -161,7 +161,7 @@ const exportarExcel = () => {
   const ws = XLSX.utils.json_to_sheet(datosParaExportar);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Actividades');
-  XLSX.writeFile(wb, 'actividades.xlsx');
+  XLSX.writeFile(wb, `actividades_${props.tramite}.xlsx`);
 };
 
 onMounted(async () => {
