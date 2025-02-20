@@ -10,11 +10,11 @@ export interface Consultoria {
   'Fecha de registro': string;
   'Fecha de despacho': string | null;
   Asunto: string;
-  conr_adjunto: string | null;
+  Adjuntos: string[]; // Cambiado a un array de strings
   Estado: string;
   Observación: string | null;
   conr_id: number;
-  [key: string]: string | number | null;
+  [key: string]: string | number | null | string[];
 }
 
 export function useConsultoria(pageSize = 10) {
@@ -126,16 +126,15 @@ export function useConsultoria(pageSize = 10) {
   const loadConsultorias = async () => {
     try {
       isLoading.value = true;
-      await loadEstadosConsultoria(); // Cargar estados antes de cargar consultorías
+      await loadEstadosConsultoria();
       const response = await useApi.get('/api/v1/consultoria/consultoria-registro');
-      
-      const consultoriasData = response.data.registros; // Ajustar para acceder a la propiedad 'registros'
-      const dominio = response.data.dominio.trim(); // Obtener el dominio y eliminar espacios en blanco
+      const consultoriasData = response.data.registros;
+      const dominio = response.data.dominio.trim();
       
       if (Array.isArray(consultoriasData)) {
         consultorias.value = consultoriasData.map((consultoria: Consultoria) => {
-          if (consultoria.conr_adjunto) {
-            consultoria.conr_adjunto = `${dominio.replace(/\/$/, '')}/${consultoria.conr_adjunto.replace(/^\//, '')}`;
+          if (consultoria.Adjuntos && Array.isArray(consultoria.Adjuntos)) {
+            consultoria.Adjuntos = consultoria.Adjuntos.map((adjunto) => `${dominio.replace(/\/$/, '')}/${adjunto.replace(/^\//, '')}`);
           }
           return consultoria;
         }).sort((a: Consultoria, b: Consultoria) => 
@@ -221,7 +220,7 @@ export function useConsultoria(pageSize = 10) {
         'Fecha de registro': FechaRegistro,
         
         Asunto,
-        conr_adjunto,
+        Adjuntos,
         Estado,
       } = consultoria;
       return {
@@ -231,7 +230,7 @@ export function useConsultoria(pageSize = 10) {
         'Fecha de registro': FechaRegistro,
  
         Asunto,
-        Archivo: conr_adjunto ? 'Disponible' : 'No disponible',
+        Archivos: Adjuntos.length > 0 ? 'Disponible' : 'No disponible',
         Estado,
       };
     });

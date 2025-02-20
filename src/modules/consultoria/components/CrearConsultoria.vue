@@ -103,34 +103,27 @@
 
             <div class="form-group col-span-2">
               <label for="archivo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Subir Archivo
+                Subir Archivos
               </label>
-              <div v-if="formData.archivo"
-                class="flex items-center justify-between p-3 border border-gray-300 dark:border-gray-600 rounded-md mb-2">
-                <span class="text-gray-900 dark:text-gray-300">{{ formData.archivo.name }}</span>
-                <button @click="eliminarArchivo" class="text-red-500 hover:text-red-700">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                      d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                  </svg>
-                </button>
+              <div v-if="formData.archivos.length > 0" class="space-y-2">
+                <div v-for="(archivo, index) in formData.archivos" :key="index" class="flex items-center justify-between p-3 border border-gray-300 dark:border-gray-600 rounded-md">
+                  <span class="text-gray-900 dark:text-gray-300">{{ archivo.name }}</span>
+                  <button @click="eliminarArchivo(index)" class="text-red-500 hover:text-red-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                  </button>
+                </div>
               </div>
-              <div ref="dropArea"
-                class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-md"
-                @dragover="onDragOver" @dragleave="onDragLeave" @drop="onDrop">
+              <div ref="dropArea" class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-md" @dragover="onDragOver" @dragleave="onDragLeave" @drop="onDrop">
                 <div class="space-y-1 text-center">
-                  <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48"
-                    aria-hidden="true">
-                    <path
-                      d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 40"
-                      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                   </svg>
                   <div class="flex text-sm text-gray-600 dark:text-gray-400">
-                    <label for="archivo"
-                      class="relative cursor-pointer bg-white dark:bg-gray-700 rounded-md font-medium text-blue-600 dark:text-blue-500 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
-                      <span>Seleccionar un archivo</span>
-                      <input id="archivo" name="archivo" type="file" class="sr-only" @change="validarArchivo" />
+                    <label for="archivo" class="relative cursor-pointer bg-white dark:bg-gray-700 rounded-md font-medium text-blue-600 dark:text-blue-500 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                      <span>Seleccionar archivos</span>
+                      <input id="archivo" name="archivo" type="file" class="sr-only" @change="validarArchivos" multiple />
                     </label>
                     <p class="pl-1">o arrastrar y soltar</p>
                   </div>
@@ -183,7 +176,7 @@ interface FormData {
   dependenciaId: number | null;
   clienteId: number | null;
   asunto: string; // Nuevo campo
-  archivo?: File; // Nuevo campo para el archivo
+  archivos: File[]; // Cambiado a un array de archivos
 }
 
 const isSubmitting = ref(false);
@@ -191,7 +184,7 @@ const formData = ref<FormData>({
   dependenciaId: null,
   clienteId: null,
   asunto: '', // Inicializar nuevo campo
-  archivo: undefined // Inicializar nuevo campo
+  archivos: [] // Inicializar como un array vacío
 });
 
 const handleClose = () => {
@@ -200,7 +193,7 @@ const handleClose = () => {
     dependenciaId: null,
     clienteId: null,
     asunto: '',
-    archivo: undefined
+    archivos: []
   };
 };
 
@@ -246,9 +239,9 @@ const handleSubmit = async () => {
     formDataToSend.append('conr_fecha_registro', fechaRegistro);
     
     formDataToSend.append('conr_asunto', formData.value.asunto);
-    if (formData.value.archivo) {
-      formDataToSend.append('file', formData.value.archivo);
-    }
+    formData.value.archivos.forEach((archivo) => {
+      formDataToSend.append(`files`, archivo); // Cambiar a 'files' sin índice
+    });
 
     const response = await useApi.post('/api/v1/consultoria/consultoria-registro', formDataToSend, {
       headers: {
@@ -292,29 +285,32 @@ const onDrop = (event: DragEvent) => {
     event.stopPropagation()
     const files = event.dataTransfer?.files;
     if (files && files.length > 0) {
-        formData.value.archivo = files[0]; // Asignar el primer archivo
+      for (let i = 0; i < files.length; i++) {
+        if (files[i].size <= 5 * 1024 * 1024) {
+          formData.value.archivos.push(files[i]);
+        }
+      }
     }
 };
 
 
 //Función para eliminar el archivo seleccionado
-const eliminarArchivo = () => {
-    formData.value.archivo = undefined;
+const eliminarArchivo = (index: number) => {
+  formData.value.archivos.splice(index, 1);
 };
 
-const validarArchivo = async (event: Event) => {
+const validarArchivos = async (event: Event) => {
   const input = event.target as HTMLInputElement;
-  const file = input.files ? input.files[0] : null;
-  if (file && file.size > 5 * 1024 * 1024) { // 5MB en bytes
-    await Swal.fire({
-      icon: 'warning',
-      title: 'Archivo demasiado grande',
-      text: 'Solo se permiten archivos de hasta 5MB.',
-    });
-    input.value = ''; // Limpiar el input
-  } else {
-    if (file) {
-      formData.value.archivo = file; // Asignar el archivo si es válido
+  const files = input.files ? Array.from(input.files) : [];
+  for (const file of files) {
+    if (file.size > 5 * 1024 * 1024) {
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Archivo demasiado grande',
+        text: 'Solo se permiten archivos de hasta 5MB.',
+      });
+    } else {
+      formData.value.archivos.push(file);
     }
   }
 };
