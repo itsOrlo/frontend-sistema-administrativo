@@ -11,11 +11,11 @@ const obtenerRutasDesdeLocalStorage = (): RutaDto[] => {
 export const obtenerRutasConPadre7 = (): RutaDto[] => {
   const rutas = obtenerRutasDesdeLocalStorage();
   
-  console.log('🔍 Todas las rutas desde localStorage:', rutas);
+  
 
   const rutasFiltradas = rutas.filter((ruta) => ruta.ruta_padre === 7);
 
-  console.log('📌 Rutas con ruta_padre === 7:', rutasFiltradas);
+  
 
   return rutasFiltradas;
 };
@@ -34,7 +34,7 @@ const obtenerRutaValida = (ruta: string): string => {
     rutaCorregida = `@/${rutaCorregida}`;
   }
 
-  console.log(`🔹 Ruta corregida del componente: ${rutaCorregida}`);
+  /* console.log(`🔹 Ruta corregida del componente: ${rutaCorregida}`); */
   return rutaCorregida;
 };
 
@@ -46,7 +46,7 @@ export const parseObjectRutas = async (router: Router, rutas: RutaDto[] = []) =>
 
   // 🔸 Si no se pasan rutas, intentar obtenerlas desde localStorage
   if (rutas.length === 0) {
-    console.log('⚠️ No se pasaron rutas, obteniendo desde localStorage...');
+    /* console.log('⚠️ No se pasaron rutas, obteniendo desde localStorage...'); */
     rutas = obtenerRutasDesdeLocalStorage();
   }
 
@@ -55,26 +55,26 @@ export const parseObjectRutas = async (router: Router, rutas: RutaDto[] = []) =>
     return;
   }
 
-  console.log('✅ Rutas cargadas:', rutas);
+  /* console.log('✅ Rutas cargadas:', rutas); */
 
   // 🔹 Obtener rutas existentes en Vue Router
   const existingRoutes = router.getRoutes().map((route) => route.name);
-  console.log('📌 Rutas ya registradas en Vue Router:', existingRoutes);
+  /* console.log('📌 Rutas ya registradas en Vue Router:', existingRoutes); */
 
   // 🔹 Agregar rutas nuevas si no están registradas
   for (const ruta of rutas) {
     if (!existingRoutes.includes(ruta.ruta_ruta)) {
-      console.log(`🛠 Agregando ruta dinámica: ${ruta.ruta_nombre}`);
+      /* console.log(`🛠 Agregando ruta dinámica: ${ruta.ruta_nombre}`); */
 
       // 🔹 Obtener la ruta corregida del componente
       const sanitizedComponentPath = obtenerRutaValida(ruta.ruta_component);
 
-      console.log(`🔹 Ruta corregida del componente: ${sanitizedComponentPath}`);
+      /* console.log(`🔹 Ruta corregida del componente: ${sanitizedComponentPath}`); */
 
       try {
         // 🔍 PRUEBA IMPORTARLO MANUALMENTE ANTES PARA VER SI EXISTE
         await import(/* @vite-ignore */ sanitizedComponentPath);
-        console.log(`✅ Importación de prueba exitosa para ${sanitizedComponentPath}`);
+        /* console.log(`✅ Importación de prueba exitosa para ${sanitizedComponentPath}`); */
 
         // 📌 Agregar la ruta dinámica a Vue Router
         router.addRoute({
@@ -92,17 +92,18 @@ export const parseObjectRutas = async (router: Router, rutas: RutaDto[] = []) =>
           },
         });
       } catch (error) {
-        console.error(`❌ Error al probar la importación de ${sanitizedComponentPath}`, error);
+        /* IMPORTANTE */
+        /* console.error(`❌ Error al probar la importación de ${sanitizedComponentPath}`, error); */
       }
     }
   }
 
-  console.log('✅ Rutas dinámicas registradas correctamente.');
+  /* console.log('✅ Rutas dinámicas registradas correctamente.'); */
 };
 
 // 🔹 Función para registrar rutas dinámicas cuando se inicia la app
 export const setupDynamicRoutes = async (router: Router) => {
-  console.log('🔄 Configurando rutas dinámicas al iniciar la aplicación...');
+  /* console.log('🔄 Configurando rutas dinámicas al iniciar la aplicación...'); */
 
   const rutas = obtenerRutasDesdeLocalStorage();
   if (rutas.length === 0) {
@@ -111,11 +112,11 @@ export const setupDynamicRoutes = async (router: Router) => {
   }
 
   await parseObjectRutas(router, rutas);
-  console.log('✅ Rutas dinámicas configuradas correctamente.');
+  /* console.log('✅ Rutas dinámicas configuradas correctamente.'); */
 
   // 🔹 Obtener y mostrar rutas con padre 7 después de configurarlas
-  const rutasPadre7 = obtenerRutasConPadre7();
-  console.log('✅ Rutas con ruta_padre 7 después de configuración:', rutasPadre7);
+  /* const rutasPadre7 = obtenerRutasConPadre7(); */
+  /* console.log('✅ Rutas con ruta_padre 7 después de configuración:', rutasPadre7); */
 };
 
 // 🔹 Función mejorada para eliminar rutas dinámicas al cerrar sesión
@@ -146,5 +147,4 @@ export const removeRoutesOnLogout = (router: Router) => {
 };
 
 // 🔹 Ejecutar la función obtenerRutasConPadre7 inmediatamente después de definirla
-const rutasPadre7 = obtenerRutasConPadre7();
-console.log('✅ Rutas con ruta_padre 7 encontradas al inicio:', rutasPadre7);
+

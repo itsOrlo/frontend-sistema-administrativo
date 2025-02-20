@@ -14,7 +14,7 @@ const convertirRutaInterfaceARutaDto = (ruta: RutaInterface): RutaDto => ({
 
 // 🔹 Función para obtener y agregar rutas al enrutador
 export const fetchRoutes = async (router: Router, rutas: RutaInterface[] = []) => {
-    console.log('🔄 Llamando a fetchRoutes...');
+    
 
     if (rutas.length === 0) {
         console.log('⚠️ No hay rutas proporcionadas, intentando recuperar desde localStorage...');
@@ -26,7 +26,7 @@ export const fetchRoutes = async (router: Router, rutas: RutaInterface[] = []) =
         return;
     }
 
-    console.log('✅ Rutas a configurar:', rutas);
+    
 
     // 🔹 Convertir `RutaInterface[]` a `RutaDto[]` usando la función recursiva
     const rutasDto: RutaDto[] = rutas.map(convertirRutaInterfaceARutaDto);
@@ -34,7 +34,7 @@ export const fetchRoutes = async (router: Router, rutas: RutaInterface[] = []) =
     // 🔹 Llamar a `parseObjectRutas()` con las rutas corregidas
     await parseObjectRutas(router, rutasDto);
 
-    console.log('✅ Rutas configuradas correctamente');
+    
 };
 // 🔹 Función para eliminar rutas dinámicas al cerrar sesión
 export const removeRoutesOnLogout = (router: Router) => {

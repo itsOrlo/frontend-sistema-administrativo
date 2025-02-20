@@ -20,7 +20,7 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
   const route = useRoute(); // Obtiene la ruta actual
 
   onMounted(() => {
-    console.log('🔄 Restaurando autenticación desde localStorage...');
+    
 
     // 🔹 Restaurar el privilegio guardado
     const storedPrivilegio = localStorage.getItem('privilegio');
@@ -48,7 +48,7 @@ export const useAutenticacionStore = defineStore('autenticacion', () => {
     const storedRutas = localStorage.getItem('rutas');
     if (storedRutas) {
       rutas.value = JSON.parse(storedRutas);
-      console.log('✅ Rutas restauradas desde localStorage:', rutas.value);
+      
 
       // 🔹 Registrar rutas en Vue Router
       if (rutas.value.length > 0) {

@@ -9,6 +9,9 @@ export interface Cliente {
   Contacto: string;
   Correo: string;
   Teléfono: string;
+  Provincia: string;
+  Ciudad: string;
+  Dirección: string;
   Acción: number;
   'Tipo de empresa': number;
   [key: string]: string | number;
@@ -17,6 +20,16 @@ export interface Cliente {
 interface TipoEmpresa {
   cempt_id: number;
   cempt_nombre: string;
+}
+
+interface Provincia {
+  id: number;
+  provincia: string;
+}
+
+interface Canton {
+  id: number;
+  canton: string;
 }
 
 export function useClients(pageSize = 10) {
@@ -30,6 +43,9 @@ export function useClients(pageSize = 10) {
   const clienteSeleccionado = ref<Cliente | null>(null);
 
   const filtroTipoEmpresa = ref('');
+
+  const provincias = ref<Provincia[]>([]);
+  const cantones = ref<Canton[]>([]);
 
   const clientesFiltrados = computed(() => {
     let resultado = clientes.value;
@@ -79,6 +95,24 @@ export function useClients(pageSize = 10) {
       });
     } catch (error) {
       console.error('Error cargando tipos de empresa:', error);
+    }
+  };
+
+  const loadProvincias = async () => {
+    try {
+      const response = await useApi.get('/api/v1/global/global-provincias');
+      provincias.value = response.data;
+    } catch (error) {
+      console.error('Error cargando provincias:', error);
+    }
+  };
+
+  const loadCantones = async (provinciaId: number) => {
+    try {
+      const response = await useApi.get(`/api/v1/global/global-cantones?id_provincial=${provinciaId}`);
+      cantones.value = response.data;
+    } catch (error) {
+      console.error('Error cargando cantones:', error);
     }
   };
 
@@ -168,6 +202,7 @@ export function useClients(pageSize = 10) {
   onMounted(async () => {
     await loadClients();
     await loadTiposEmpresa();
+    await loadProvincias();
   });
 
   const totalClientes = computed(() => clientes.value.length);
@@ -199,5 +234,8 @@ export function useClients(pageSize = 10) {
     filtroTipoEmpresa,
     totalPublicas,
     totalPrivadas,
+    provincias,
+    cantones,
+    loadCantones,
   };
 }

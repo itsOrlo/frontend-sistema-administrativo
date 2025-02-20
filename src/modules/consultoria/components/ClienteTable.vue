@@ -42,6 +42,17 @@
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm text-gray-500 dark:text-gray-400">{{ cliente.Teléfono }}</div>
             </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-500 dark:text-gray-400">{{ cliente.Provincia }}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-500 dark:text-gray-400">{{ cliente.Ciudad }}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-500 dark:text-gray-400" :title="cliente.Dirección">
+                {{ cliente.Dirección.length > 5 ? cliente.Dirección.substring(0, 5) + '...' : cliente.Dirección }}
+              </div>
+            </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
               <div :class="{
                 'bg-purple-500 text-gray-100': tiposEmpresa[cliente['Tipo de empresa']] === 'Pública',
@@ -234,13 +245,16 @@ const exportarExcel = () => {
     }
     return true;
   }).map(cliente => {
-    const { Empresa, Ruc, Contacto, Correo, Teléfono, 'Tipo de empresa': tipoEmpresa } = cliente;
+    const { Empresa, Ruc, Contacto, Correo, Teléfono, Provincia, Ciudad, Dirección, 'Tipo de empresa': tipoEmpresa } = cliente;
     return {
       Empresa,
       Ruc,
       Contacto,
       Correo,
       Teléfono,
+      Provincia,
+      Ciudad,
+      Dirección,
       'Tipo de empresa': tipoEmpresa === 1 ? 'Pública' : tipoEmpresa === 2 ? 'Privada' : tipoEmpresa
     };
   });

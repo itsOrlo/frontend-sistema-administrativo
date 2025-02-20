@@ -93,7 +93,7 @@ const mostrarBotones = ref(false);
 
 // Computed property para determinar si se deben mostrar los botones
 onMounted(() => {
-  console.log('privilegio:', autenticacionStore.privilegio);
+  
   mostrarBotones.value = autenticacionStore.privilegio === 1;
 });
 
