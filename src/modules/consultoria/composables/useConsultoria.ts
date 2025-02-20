@@ -35,9 +35,9 @@ export function useConsultoria(pageSize = 10) {
     if (searchTerm.value) {
       const term = searchTerm.value.toLowerCase();
       resultado = resultado.filter((consultoria) =>
-        consultoria.Trámite.toLowerCase().includes(term) ||
-        consultoria.Dependencia.toLowerCase().includes(term) ||
-        consultoria['Empresa cliente'].toLowerCase().includes(term)
+        (consultoria.Trámite?.toLowerCase() || '').includes(term) ||
+        (consultoria.Dependencia?.toLowerCase() || '').includes(term) ||
+        (consultoria['Empresa cliente']?.toLowerCase() || '').includes(term)
       );
     }
     if (filtroEstadoConsultoria.value) {

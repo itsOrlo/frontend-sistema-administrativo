@@ -98,7 +98,7 @@ import ConsultoriaTable from '../components/ConsultoriaTable.vue';
 import CrearConsultoria from '../components/CrearConsultoria.vue';
 import EditarConsultoria from '../components/EditarConsultoria.vue';
 import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref, computed, watch } from 'vue';
 
 const autenticacionStore = useAutenticacionStore();
 const mostrarBotones = ref(false);
@@ -166,14 +166,18 @@ const endDate = ref('');
 const consultoriasFiltradas = computed(() => {
   return consultoriasPaginadas.value.filter(consultoria => {
     const matchesSearchTerm = 
-      consultoria.Trámite.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
-      consultoria.Dependencia.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
-      consultoria['Empresa cliente'].toLowerCase().includes(searchTerm.value.toLowerCase());
+      (consultoria.Trámite?.toLowerCase() || '').includes(searchTerm.value.toLowerCase()) ||
+      (consultoria.Dependencia?.toLowerCase() || '').includes(searchTerm.value.toLowerCase()) ||
+      (consultoria['Empresa cliente']?.toLowerCase() || '').includes(searchTerm.value.toLowerCase());
     const matchesEstado = filtroEstadoConsultoria.value === '' || consultoria.Estado === filtroEstadoConsultoria.value;
     const matchesDate = (!startDate.value || new Date(consultoria['Fecha de registro']) >= new Date(startDate.value)) &&
                         (!endDate.value || new Date(consultoria['Fecha de registro']) <= new Date(endDate.value));
     return matchesSearchTerm && matchesEstado && matchesDate;
   });
+});
+
+watch([searchTerm, startDate, endDate, filtroEstadoConsultoria], () => {
+  setPage(1);
 });
 
 onMounted(async () => {

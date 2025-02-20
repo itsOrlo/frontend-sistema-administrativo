@@ -188,7 +188,7 @@ const mostrarBotones = ref(false);
 const mostrarModalDetalles = ref(false);
 const consultoriaSeleccionada = ref<Consultoria | null>(null);
 
-const { exportarTodasConsultorias, filtroEstadoConsultoria, estadosConsultoria, startDate, endDate } = useConsultoria();
+const { exportarTodasConsultorias, filtroEstadoConsultoria, estadosConsultoria, startDate, endDate, searchTerm } = useConsultoria();
 
 const props = defineProps({
   currentPage: {
@@ -215,7 +215,10 @@ const consultoriasFiltradas = computed(() => {
     const matchesEstado = filtroEstadoConsultoria.value === '' || consultoria.Estado === filtroEstadoConsultoria.value;
     const matchesDate = (!startDate.value || new Date(consultoria['Fecha de registro']) >= new Date(startDate.value)) &&
                         (!endDate.value || new Date(consultoria['Fecha de registro']) <= new Date(endDate.value));
-    return matchesEstado && matchesDate;
+    const matchesSearchTerm = searchTerm.value === '' || consultoria.Trámite.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+                              consultoria.Dependencia.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+                              consultoria['Empresa cliente'].toLowerCase().includes(searchTerm.value.toLowerCase());
+    return matchesEstado && matchesDate && matchesSearchTerm;
   });
 });
 
