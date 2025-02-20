@@ -36,6 +36,17 @@
         </tbody>
       </table>
     </div>
+    <!-- Botón para exportar a Excel -->
+    <div class="mt-4 flex justify-end">
+      <button @click="exportarExcel"
+        class="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded flex items-center shadow-md">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+          <path
+            d="M3 3a2 2 0 012-2h10a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V3zm2 0v14h10V3H5zm3 4h4v2H8V7zm0 4h4v2H8v-2z" />
+        </svg>
+        Exportar a Excel
+      </button>
+    </div>
     <div class="mt-6 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-3 sm:px-6">
       <div class="flex flex-1 justify-between items-center">
         <div>
@@ -79,6 +90,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useActivities } from '../composables/useActivities';
+import * as XLSX from 'xlsx';
 
 const props = defineProps<{ tramite: string }>();
 interface Actividad {
@@ -128,6 +140,28 @@ const changePage = (page: number) => {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page;
   }
+};
+
+const exportarExcel = () => {
+  const datosParaExportar = actividades.value.map((actividad) => {
+    const {
+      conr_fecha_despacho,
+      conre_nombre,
+      conr_observacion,
+      conrd_adjunto,
+    } = actividad;
+    return {
+      'Fecha de Despacho': conr_fecha_despacho,
+      Estado: conre_nombre,
+      Observación: conr_observacion,
+      Adjunto: conrd_adjunto ? 'Disponible' : 'No disponible',
+    };
+  });
+
+  const ws = XLSX.utils.json_to_sheet(datosParaExportar);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Actividades');
+  XLSX.writeFile(wb, 'actividades.xlsx');
 };
 
 onMounted(async () => {

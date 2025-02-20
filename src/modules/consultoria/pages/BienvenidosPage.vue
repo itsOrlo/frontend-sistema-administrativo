@@ -18,28 +18,28 @@
         <div class="navigation-list">
           <ul>
             <li class="nav-item">
-              <router-link to="/listar" class="nav-link">
+              <router-link to="/empresas" class="nav-link">
                 <i class="fas fa-users mr-2"></i>Listado de Clientes
                 <p class="nav-description">Visualice todos los clientes registrados.</p>
                 <i class="fas fa-chevron-right ml-auto"></i>
               </router-link>
             </li>
             <li class="nav-item">
-              <router-link to="/consultoria-clientes" class="nav-link">
+              <router-link to="/consultoria" class="nav-link">
                 <i class="fas fa-user-tie mr-2"></i>Consultoría de Clientes
                 <p class="nav-description">Acceda a las consultas e insights.</p>
                 <i class="fas fa-chevron-right ml-auto"></i>
               </router-link>
             </li>
             <li class="nav-item">
-              <router-link to="/listarDependencias" class="nav-link">
+              <router-link to="/dependencias" class="nav-link">
                 <i class="fas fa-building mr-2"></i>Listado de Dependencias
                 <p class="nav-description">Acceda a las dependencias y sus relaciones.</p>
                 <i class="fas fa-chevron-right ml-auto"></i>
               </router-link>
             </li>
             <li class="nav-item">
-              <router-link to="/listarConsultorias" class="nav-link">
+              <router-link to="/consultoria-listado" class="nav-link">
                 <i class="fa fa-briefcase mr-2"></i>Listado de Consultorías
                 <p class="nav-description">Revise, gestione y realice seguimiento de todas las consultorías.</p>
                 <i class="fas fa-chevron-right ml-auto"></i>

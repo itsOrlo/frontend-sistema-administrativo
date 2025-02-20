@@ -37,9 +37,17 @@
                 <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Ubicación</h3>
                 <hr class="flex-grow border-gray-300 dark:border-gray-600">
               </div>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="flex items-center space-x-2">
+                <input type="checkbox" id="actualizarUbicacion" v-model="actualizarUbicacion" class="form-checkbox h-4 w-4 text-blue-600 transition duration-150 ease-in-out" />
+                <label for="actualizarUbicacion" class="text-sm font-medium text-gray-700 dark:text-gray-300">¿Actualizar Ubicación?</label>
+              </div>
+              <div v-if="actualizarUbicacion" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField v-for="field in ubicacionFields" :key="field.id" :modelValue="formData[field.name] ?? ''"
                   @update:modelValue="value => (formData[field.name as string] = value as never)" v-bind="field" />
+              </div>
+              <div v-else>
+                <p class="text-sm text-gray-700 dark:text-gray-300">Provincia: {{ formData.Provincia }}</p>
+                <p class="text-sm text-gray-700 dark:text-gray-300">Ciudad: {{ formData.Ciudad }}</p>
               </div>
               <FormField :modelValue="formData.Dirección" @update:modelValue="value => (formData.Dirección = value as never)"
                 id="direccion" name="Dirección" label="Dirección" type="textarea" required />
@@ -62,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { useApi } from '@/composables/use-api';
 import Swal from 'sweetalert2';
 import FormField from './FormField.vue';
@@ -83,6 +91,7 @@ const emit = defineEmits<{
 
 const isSubmitting = ref(false);
 const formData = ref<Cliente>({ ...props.clienteAEditar });
+const actualizarUbicacion = ref(false);
 
 const { provincias, cantones, loadCantones } = useClients();
 
@@ -169,11 +178,30 @@ const ubicacionFields = computed<FormFieldType[]>(() => [
   },
 ]);
 
-watch(() => formData.value.Provincia, async (newProvincia) => {
-  formData.value.Ciudad = '';
-  const provinciaSeleccionada = provincias.value.find(provincia => provincia.provincia === String(newProvincia));
+watch(actualizarUbicacion, (newValue) => {
+  if (newValue) {
+    formData.value.Provincia = '';
+    formData.value.Ciudad = '';
+  } else {
+    formData.value.Provincia = props.clienteAEditar.Provincia;
+    formData.value.Ciudad = props.clienteAEditar.Ciudad;
+  }
+});
+
+onMounted(async () => {
+  const provinciaSeleccionada = provincias.value.find(provincia => provincia.provincia === props.clienteAEditar.Provincia);
   if (provinciaSeleccionada) {
     await loadCantones(provinciaSeleccionada.id);
+  }
+});
+
+watch(() => formData.value.Provincia, async (newProvincia) => {
+  if (actualizarUbicacion.value) {
+    formData.value.Ciudad = '';
+    const provinciaSeleccionada = provincias.value.find(provincia => provincia.provincia === newProvincia);
+    if (provinciaSeleccionada) {
+      await loadCantones(provinciaSeleccionada.id);
+    }
   }
 });
 
@@ -194,8 +222,8 @@ const handleSubmit = async () => {
       ccli_contacto_nombre: formData.value.Contacto,
       ccli_contacto_correo: formData.value.Correo,
       ccli_contacto_telefono: formData.value.Teléfono,
-      ccli_provincia: formData.value.Provincia,
-      ccli_ciudad: formData.value.Ciudad,
+      ccli_provincia: actualizarUbicacion.value ? formData.value.Provincia : props.clienteAEditar.Provincia,
+      ccli_ciudad: actualizarUbicacion.value ? formData.value.Ciudad : props.clienteAEditar.Ciudad,
       ccli_direccion: formData.value.Dirección,
     };
 
