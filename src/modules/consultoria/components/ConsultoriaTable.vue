@@ -55,11 +55,15 @@
             </td>
 
             <td v-if="mostrarBotones" class="px-6 py-5">
-              <a v-if="consultoria.conr_adjunto" :href="consultoria.conr_adjunto" download target="_blank"
-                class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-1 px-7 rounded flex items-center justify-center shadow-md">
-                <i class="fa fa-eye mr-1"></i>
-                Ver
-              </a>
+              <div v-if="consultoria.Adjuntos && consultoria.Adjuntos.length > 0">
+                <div v-for="(adjunto, index) in consultoria.Adjuntos" :key="index" class="mb-2">
+                  <a :href="adjunto" download target="_blank"
+                    class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-1 px-7 rounded flex items-center justify-center shadow-md">
+                    <i class="fa fa-eye mr-1"></i>
+                    Ver {{ index + 1 }}
+                  </a>
+                </div>
+              </div>
               <span v-else class="text-gray-500 dark:text-gray-400">No disponible</span>
             </td>
 
