@@ -26,7 +26,7 @@
           </tr>
         </thead>
         <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-          <tr v-for="consultoria in consultoriasFiltradas" :key="consultoria.conr_id"
+          <tr v-for="consultoria in consultoriasPaginadas" :key="consultoria.conr_id"
             class="hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200">
             <td class="px-6 py-4 whitespace-nowrap">
               <div @click="mostrarDetalles(consultoria)"
@@ -179,7 +179,7 @@ import type { PropType } from 'vue';
 import type { Consultoria } from '../composables/useConsultoria';
 import { useConsultoria } from '../composables/useConsultoria';
 import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
-import { onMounted, ref, computed, onBeforeUnmount } from 'vue';
+import { onMounted, ref, computed, onBeforeUnmount, watch } from 'vue';
 import * as XLSX from 'xlsx';
 import DetallesConsultoria from './DetallesConsultoria.vue';
 
@@ -210,16 +210,38 @@ const props = defineProps({
 });
 const emit = defineEmits(['editar', 'eliminar', 'cambiar-pagina']);
 
+const itemsPerPage = 10; // Número de elementos por página
+
 const consultoriasFiltradas = computed(() => {
-  return props.consultorias.filter(consultoria => {
-    const matchesEstado = filtroEstadoConsultoria.value === '' || consultoria.Estado === filtroEstadoConsultoria.value;
-    const matchesDate = (!startDate.value || new Date(consultoria['Fecha de registro']) >= new Date(startDate.value)) &&
-                        (!endDate.value || new Date(consultoria['Fecha de registro']) <= new Date(endDate.value));
-    const matchesSearchTerm = searchTerm.value === '' || consultoria.Trámite.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
-                              consultoria.Dependencia.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
-                              consultoria['Empresa cliente'].toLowerCase().includes(searchTerm.value.toLowerCase());
-    return matchesEstado && matchesDate && matchesSearchTerm;
-  });
+  let resultado = props.consultorias;
+  if (searchTerm.value) {
+    resultado = resultado.filter(consultoria =>
+      consultoria.Trámite.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+      consultoria.Dependencia.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+      consultoria['Empresa cliente'].toLowerCase().includes(searchTerm.value.toLowerCase())
+    );
+  }
+  if (filtroEstadoConsultoria.value) {
+    resultado = resultado.filter(consultoria => consultoria.Estado === filtroEstadoConsultoria.value);
+  }
+  if (startDate.value || endDate.value) {
+    resultado = resultado.filter(consultoria => {
+      const fechaRegistro = new Date(consultoria['Fecha de registro']);
+      return (!startDate.value || fechaRegistro >= new Date(startDate.value)) &&
+             (!endDate.value || fechaRegistro <= new Date(endDate.value));
+    });
+  }
+  return resultado;
+});
+
+const consultoriasPaginadas = computed(() => {
+  const start = (props.currentPage - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  return consultoriasFiltradas.value.slice(start, end);
+});
+
+watch([searchTerm, filtroEstadoConsultoria, startDate, endDate], () => {
+  emit('cambiar-pagina', 1); // Reiniciar la paginación cuando se apliquen filtros
 });
 
 onMounted(() => {

@@ -33,6 +33,7 @@
         :total-pages="totalPages"
         :cabeceras-tabla="cabecerasTabla"
         @editar="editarDependencia" 
+        @eliminar="eliminarDependencia"
         @cambiar-pagina="setPage"
       />
 
@@ -60,7 +61,7 @@
 import DashboardLayout from '@/modules/dashboard/layouts/DashboardLayout.vue';
 import type { Dependencia } from '../composables/useDependencias';
 import DependenciasTable from '../components/DependenciasTable.vue';
-import { useDependencia } from '../composables/useDependencias';
+import { useDependencia, deleteDepend } from '../composables/useDependencias'; // Importar deleteDepend
 import CrearDependencia from '../components/CrearDependencia.vue';
 import EditarDependencia from '../components/EditarDependencia.vue';
 import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
@@ -76,6 +77,7 @@ onMounted(() => {
 });
 
 const {
+  dependencias, // Asegurarse de que dependencias esté definido
   mostrarModalEditar,
   dependenciaSeleccionado,
   toggleEditModal,
@@ -101,6 +103,10 @@ const editarDependencia = (dependencia: Dependencia) => {
   // Agrega la interfaz Cliente aquí
   dependenciaSeleccionado.value = dependencia;
   toggleEditModal(true, dependencia);
+};
+
+const eliminarDependencia = async (dependencia: Dependencia) => {
+  await deleteDepend(dependencia, dependencias, loadDepends);
 };
 
 onMounted(loadDepends);

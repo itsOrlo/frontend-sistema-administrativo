@@ -1,5 +1,6 @@
 // composables/useClients.ts
 import { ref, computed, watch, onMounted } from 'vue';
+import type { Ref } from 'vue';
 import { useApi } from '@/composables/use-api';
 import Swal from 'sweetalert2';
 
@@ -10,6 +11,53 @@ export interface Dependencia {
   cdep_estado: number;
   [key: string]: string | number;
 }
+
+export const deleteDepend = async (dependencia: Dependencia, dependencias: Ref<Dependencia[]>, loadDepends: () => Promise<void>) => {
+  const result = await Swal.fire({
+    title: '¿Estás seguro?',
+    html: `
+      <p>¿Deseas eliminar la dependencia <strong>${dependencia.cdep_dependencia}</strong>?</p>
+      <p class="mt-2 text-sm text-gray-500">Esta acción no se puede deshacer.</p>
+    `,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#EF4444',
+    cancelButtonColor: '#6B7280',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+    reverseButtons: true,
+  });
+
+  if (!result.isConfirmed) return;
+
+  try {
+    const dependenciaId = dependencia.cdep_id;
+    if (!dependenciaId) throw new Error('ID de dependencia no válido');
+
+    const response = await useApi.put('/api/v1/consultoria/consultoria-dependencia-eliminar', {
+      cdep_id: dependenciaId,
+    });
+
+    if (response.status === 200) {
+      dependencias.value = dependencias.value.filter((c) => c.cdep_id !== dependencia.cdep_id);
+      await Swal.fire({
+        title: '¡Eliminado!',
+        text: 'La dependencia ha sido eliminada correctamente.',
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false,
+      });
+      await loadDepends();
+    }
+  } catch (error) {
+    console.error('Error eliminando dependencia:', error);
+    await Swal.fire({
+      title: 'Error',
+      text: 'No se pudo eliminar la dependencia. Por favor, inténtalo de nuevo.',
+      icon: 'error',
+    });
+  }
+};
 
 export function useDependencia(pageSize = 10) {
   const dependencias = ref<Dependencia[]>([]);
@@ -78,53 +126,6 @@ export function useDependencia(pageSize = 10) {
       return acc;
     }, {} as Record<number, string>);
   });
-
-  const deleteDepend = async (dependencia: Dependencia) => {
-    const result = await Swal.fire({
-      title: '¿Estás seguro?',
-      html: `
-        <p>¿Deseas eliminar la dependencia <strong>${dependencia.cdep_dependencia}</strong>?</p>
-        <p class="mt-2 text-sm text-gray-500">Esta acción no se puede deshacer.</p>
-      `,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#EF4444',
-      cancelButtonColor: '#6B7280',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar',
-      reverseButtons: true,
-    });
-
-    if (!result.isConfirmed) return;
-
-    try {
-      const dependenciaId = dependencia.cdep_id;
-      if (!dependenciaId) throw new Error('ID de dependencia no válido');
-
-      const response = await useApi.put('/api/v1/consultoria/eliminar-consultoria', {
-        ccdep_id: dependenciaId,
-      });
-
-      if (response.status === 200) {
-        dependencias.value = dependencias.value.filter((c) => c.cdep_id !== dependencia.cdep_id);
-        await Swal.fire({
-          title: '¡Eliminado!',
-          text: 'La dependencia ha sido eliminada correctamente.',
-          icon: 'success',
-          timer: 2000,
-          showConfirmButton: false,
-        });
-        await loadDepends();
-      }
-    } catch (error) {
-      console.error('Error eliminando dependencia:', error);
-      await Swal.fire({
-        title: 'Error',
-        text: 'No se pudo eliminar la dependencia. Por favor, inténtalo de nuevo.',
-        icon: 'error',
-      });
-    }
-  };
 
   watch(searchTerm, () => {
     currentPage.value = 1;

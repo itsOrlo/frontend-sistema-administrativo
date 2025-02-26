@@ -74,7 +74,7 @@
       </div>
 
       <div v-else class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
-        <ConsultoriaTable :consultorias="consultoriasFiltradas" :current-page="currentPage" :total-pages="totalPages"
+        <ConsultoriaTable :consultorias="consultoriasPaginadas" :current-page="currentPage" :total-pages="totalPages"
           :cabecerasTabla="cabecerasTabla" @editar="editarConsultoria" @eliminar="deleteConsultoria"
           @cambiar-pagina="setPage" class="w-full" />
       </div>
@@ -105,6 +105,7 @@ const mostrarBotones = ref(false);
 const filtroEstadoConsultoria = ref('');
 
 const {
+  consultorias, // Asegurarse de incluir consultorias
   consultoriaSeleccionada,
   toggleEditModal,
   cabecerasTabla,
@@ -113,7 +114,6 @@ const {
   isLoading,
   mostrarModalCrear,
   mostrarModalEditar,
-  consultoriasPaginadas,
   totalPages,
   loadConsultorias,
   deleteConsultoria,
@@ -162,9 +162,10 @@ const handleConsultoriaActualizada = async () => {
 
 const startDate = ref('');
 const endDate = ref('');
+const itemsPerPage = 10; // Definir itemsPerPage
 
 const consultoriasFiltradas = computed(() => {
-  return consultoriasPaginadas.value.filter(consultoria => {
+  return consultorias.value.filter(consultoria => {
     const matchesSearchTerm = 
       (consultoria.Trámite?.toLowerCase() || '').includes(searchTerm.value.toLowerCase()) ||
       (consultoria.Dependencia?.toLowerCase() || '').includes(searchTerm.value.toLowerCase()) ||
@@ -176,8 +177,13 @@ const consultoriasFiltradas = computed(() => {
   });
 });
 
+const consultoriasPaginadas = computed(() => {
+  const startIndex = (currentPage.value - 1) * itemsPerPage;
+  return consultoriasFiltradas.value.slice(startIndex, startIndex + itemsPerPage);
+});
+
 watch([searchTerm, startDate, endDate, filtroEstadoConsultoria], () => {
-  setPage(1);
+  currentPage.value = 1; // Reiniciar la paginación cuando se apliquen filtros
 });
 
 onMounted(async () => {
