@@ -23,8 +23,6 @@ export const useLogin = () => {
           password: data.password,
         });
 
-        console.log("✅ Respuesta de la API:", response.data);
-
         const { usuario, rol, rutas, token, message } = response.data;
 
         // Si la API devuelve un mensaje de error, mostrar alerta

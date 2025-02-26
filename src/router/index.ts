@@ -46,7 +46,7 @@ router.beforeEach((to, from, next) => {
     if (userPrivilege === '0') {
       next({ name: 'bienvenidoUsuario' }); // Redirige a la ruta de bienvenida si el privilegio es "0"
     } else {
-      next({ name: 'consultoriaClientes' }); // Redirige al dashboard si ya está autenticado
+      next({ name: 'consultoria' }); // Redirige al dashboard si ya está autenticado
     }
   }
   // Para todas las demás rutas
