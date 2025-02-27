@@ -262,6 +262,10 @@ export function useConsultoria(pageSize = 10) {
     }
   };
 
+  const setPage = (page: number) => {
+    currentPage.value = page;
+  };
+
   watch(searchTerm, () => {
     currentPage.value = 1;
   });
@@ -286,7 +290,7 @@ export function useConsultoria(pageSize = 10) {
     totalPages,
     loadConsultorias,
     deleteConsultoria,
-    setPage: (page: number) => (currentPage.value = page),
+    setPage,
     toggleCreateModal: (show: boolean) => (mostrarModalCrear.value = show),
     filtroEstadoConsultoria,
     estadosConsultoria, // Añadir estadosConsultoria al return

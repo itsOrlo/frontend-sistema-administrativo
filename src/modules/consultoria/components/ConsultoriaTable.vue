@@ -231,7 +231,7 @@ const consultoriasFiltradas = computed(() => {
              (!endDate.value || fechaRegistro <= new Date(endDate.value));
     });
   }
-  return resultado;
+  return resultado.slice((props.currentPage - 1) * 10, props.currentPage * 10);
 });
 
 const consultoriasPaginadas = computed(() => {
