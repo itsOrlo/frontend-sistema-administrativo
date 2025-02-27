@@ -80,15 +80,7 @@
           </button>
         </div>
       </div>
-      <ConsultoriaTable
-        :current-page="currentPage"
-        :total-pages="totalPages"
-        :cabecerasTabla="cabecerasTabla"
-        :consultorias="consultoriasPaginadas"
-        @editar="editarConsultoria"
-        @eliminar="deleteConsultoria"
-        @cambiar-pagina="setPage"
-      />
+     
     </div>
 
     <!-- Create Modal -->
@@ -117,7 +109,6 @@ import { useRouter } from 'vue-router';
 import CrearCliente from '../components/CrearCliente.vue';
 import CrearConsultoria from '../components/CrearConsultoria.vue';
 import CrearDependencia from '../components/CrearDependencia.vue';
-import ConsultoriaTable from '../components/ConsultoriaTable.vue';
 import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
 
 const { totalClientes, tiposEmpresa, loadClients, clientes } = useClients();
@@ -126,13 +117,6 @@ const {
   totalProyectosEnMarcha,
   totalConsultoriasDelMes,
   handleConsultoriaCreada,
-  setPage,
-  totalPages,
-  cabecerasTabla,
-  consultoriasPaginadas,
-  editarConsultoria,
-  deleteConsultoria,
-  currentPage
 } = useConsultoria();
 const isDarkMode = inject('isDarkMode', ref(false));
 const mostrarModalCrear = ref(false);
