@@ -54,6 +54,17 @@
               </div>
             </td>
 
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+              <div :class="{
+                'bg-yellow-400 text-gray-100': consultoria.Estado === 'En marcha',
+                'bg-green-400 text-gray-100': consultoria.Estado === 'Finalizado',
+                'bg-red-500 text-gray-100': consultoria.Estado === 'No es factible',
+                'bg-gray-500 text-gray-100': consultoria.Estado === 'Por despachar',
+              }" class="inline-block px-3 py-1 rounded-full font-semibold">
+                {{ consultoria.Estado }}
+              </div>
+            </td>
+
             <td v-if="mostrarBotones" class="px-6 py-5">
               <div v-if="consultoria.Adjuntos && consultoria.Adjuntos.length > 0">
                 <div v-for="(adjunto, index) in consultoria.Adjuntos" :key="index" class="mb-2">
@@ -67,16 +78,7 @@
               <span v-else class="text-gray-500 dark:text-gray-400">No disponible</span>
             </td>
 
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-              <div :class="{
-                'bg-yellow-400 text-gray-100': consultoria.Estado === 'En marcha',
-                'bg-green-400 text-gray-100': consultoria.Estado === 'Finalizado',
-                'bg-red-500 text-gray-100': consultoria.Estado === 'No es factible',
-                'bg-gray-500 text-gray-100': consultoria.Estado === 'Por despachar',
-              }" class="inline-block px-3 py-1 rounded-full font-semibold">
-                {{ consultoria.Estado }}
-              </div>
-            </td>
+           
             <td v-if="mostrarBotones" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
               <div class="relative">
                 <button :id="`dropdown-button-${consultoria.conr_id}`" @click="toggleDropdown(consultoria.conr_id)"
@@ -129,46 +131,6 @@
       </button>
     </div>
 
-    <!-- Pagination with improved design -->
-    <div
-      class="mt-6 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-3 sm:px-6 shadow-md rounded-lg">
-      <div class="flex flex-1 justify-between items-center">
-        <div>
-          <p class="text-sm text-gray-700 dark:text-gray-300">
-            Mostrando página <span class="font-medium">{{ currentPage }}</span> de
-            <span class="font-medium">{{ totalPages }}</span>
-          </p>
-        </div>
-        <div class="flex gap-2">
-          <button @click="$emit('cambiar-pagina', currentPage - 1)" :disabled="currentPage === 1"
-            class="relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-300 shadow-sm"
-            :class="{
-              'hover:bg-gray-50 focus:z-20 focus:outline-offset-0': currentPage !== 1,
-              'opacity-50 cursor-not-allowed': currentPage === 1,
-            }">
-            <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-            </svg>
-            Anterior
-          </button>
-
-          <button @click="$emit('cambiar-pagina', currentPage + 1)" :disabled="currentPage === totalPages"
-            class="relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-300 shadow-sm"
-            :class="{
-              'hover:bg-gray-50 focus:z-20 focus:outline-offset-0': currentPage !== totalPages,
-              'opacity-50 cursor-not-allowed': currentPage === totalPages,
-            }">
-            Siguiente
-            <svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-
     <DetallesConsultoria v-if="mostrarModalDetalles" :mostrarModal="mostrarModalDetalles"
       :consultoria="consultoriaSeleccionada" @cerrar-modal="cerrarModalDetalles" @ver-actividades="verActividades" />
   </div>
@@ -210,8 +172,6 @@ const props = defineProps({
 });
 const emit = defineEmits(['editar', 'eliminar', 'cambiar-pagina']);
 
-const itemsPerPage = 10; // Número de elementos por página
-
 const consultoriasFiltradas = computed(() => {
   let resultado = props.consultorias;
   if (searchTerm.value) {
@@ -231,13 +191,12 @@ const consultoriasFiltradas = computed(() => {
              (!endDate.value || fechaRegistro <= new Date(endDate.value));
     });
   }
-  return resultado.slice((props.currentPage - 1) * 10, props.currentPage * 10);
+  console.log('Consultorias filtradas:', resultado); // Verificar que todos los elementos se están pasando
+  return resultado;
 });
 
 const consultoriasPaginadas = computed(() => {
-  const start = (props.currentPage - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
-  return consultoriasFiltradas.value.slice(start, end);
+  return consultoriasFiltradas.value; // Mostrar todos los elementos sin paginación
 });
 
 watch([searchTerm, filtroEstadoConsultoria, startDate, endDate], () => {

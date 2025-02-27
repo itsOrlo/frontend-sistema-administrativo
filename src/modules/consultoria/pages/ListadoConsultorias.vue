@@ -162,10 +162,9 @@ const handleConsultoriaActualizada = async () => {
 
 const startDate = ref('');
 const endDate = ref('');
-const itemsPerPage = 10; // Definir itemsPerPage
 
 const consultoriasFiltradas = computed(() => {
-  return consultorias.value.filter(consultoria => {
+  const resultado = consultorias.value.filter(consultoria => {
     const matchesSearchTerm = 
       (consultoria.Trámite?.toLowerCase() || '').includes(searchTerm.value.toLowerCase()) ||
       (consultoria.Dependencia?.toLowerCase() || '').includes(searchTerm.value.toLowerCase()) ||
@@ -175,11 +174,12 @@ const consultoriasFiltradas = computed(() => {
                         (!endDate.value || new Date(consultoria['Fecha de registro']) <= new Date(endDate.value));
     return matchesSearchTerm && matchesEstado && matchesDate;
   });
+  console.log('Consultorias filtradas:', resultado); // Verificar que todos los elementos se están pasando
+  return resultado;
 });
 
 const consultoriasPaginadas = computed(() => {
-  const startIndex = (currentPage.value - 1) * itemsPerPage;
-  return consultoriasFiltradas.value.slice(startIndex, startIndex + itemsPerPage);
+  return consultoriasFiltradas.value; // Mostrar todos los elementos sin paginación
 });
 
 watch([searchTerm, startDate, endDate, filtroEstadoConsultoria], () => {

@@ -50,7 +50,8 @@ export function useConsultoria(pageSize = 10) {
                (!endDate.value || fechaRegistro <= new Date(endDate.value));
       });
     }
-    return resultado;
+    console.log('Consultorias filtradas:', resultado); // Verificar que todos los elementos se están pasando
+    return resultado; // Asegurarse de que todos los elementos se muestren
   });
 
   const cabecerasTabla = ref<string[]>([]);
@@ -58,8 +59,7 @@ export function useConsultoria(pageSize = 10) {
   const totalPages = computed(() => Math.ceil(consultoriasFiltradas.value.length / pageSize));
 
   const consultoriasPaginadas = computed(() => {
-    const startIndex = (currentPage.value - 1) * pageSize;
-    return consultoriasFiltradas.value.slice(startIndex, startIndex + pageSize);
+    return consultoriasFiltradas.value; // Mostrar todos los elementos sin paginación
   });
 
   const totalProyectosEnMarcha = computed(() => {
