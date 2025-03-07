@@ -131,6 +131,21 @@
       </button>
     </div>
 
+    <div class="mt-4 flex justify-center">
+      <button @click="emit('cambiar-pagina', currentPage - 1)" :disabled="currentPage === 1"
+        class="px-4 py-2 mx-1 bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md disabled:opacity-50">
+        Anterior
+      </button>
+      <button v-for="page in totalPages" :key="page" @click="emit('cambiar-pagina', page)"
+        :class="['px-4 py-2 mx-1 rounded-md', { 'bg-blue-500 text-white': currentPage === page, 'bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300': currentPage !== page }]">
+        {{ page }}
+      </button>
+      <button @click="emit('cambiar-pagina', currentPage + 1)" :disabled="currentPage === totalPages"
+        class="px-4 py-2 mx-1 bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md disabled:opacity-50">
+        Siguiente
+      </button>
+    </div>
+
     <DetallesConsultoria v-if="mostrarModalDetalles" :mostrarModal="mostrarModalDetalles"
       :consultoria="consultoriaSeleccionada" @cerrar-modal="cerrarModalDetalles" @ver-actividades="verActividades" />
   </div>

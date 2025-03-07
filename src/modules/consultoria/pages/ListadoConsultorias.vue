@@ -78,6 +78,7 @@
           :cabecerasTabla="cabecerasTabla" @editar="editarConsultoria" @eliminar="deleteConsultoria"
           @cambiar-pagina="setPage" class="w-full" />
       </div>
+      
       <EditarConsultoria :mostrar-modal="mostrarModalEditar" :consultoria-a-editar="consultoriaSeleccionada"
         :estados-consultoria="estadosConsultoria" @cerrar-modal="toggleEditModal(false)"
         @consultoria-actualizada="handleConsultoriaActualizada" />
@@ -179,7 +180,9 @@ const consultoriasFiltradas = computed(() => {
 });
 
 const consultoriasPaginadas = computed(() => {
-  return consultoriasFiltradas.value; // Mostrar todos los elementos sin paginación
+  const start = (currentPage.value - 1) * 10;
+  const end = start + 10;
+  return consultoriasFiltradas.value.slice(start, end);
 });
 
 watch([searchTerm, startDate, endDate, filtroEstadoConsultoria], () => {

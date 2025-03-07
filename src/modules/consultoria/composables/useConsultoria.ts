@@ -59,7 +59,9 @@ export function useConsultoria(pageSize = 10) {
   const totalPages = computed(() => Math.ceil(consultoriasFiltradas.value.length / pageSize));
 
   const consultoriasPaginadas = computed(() => {
-    return consultoriasFiltradas.value; // Mostrar todos los elementos sin paginación
+    const start = (currentPage.value - 1) * pageSize;
+    const end = start + pageSize;
+    return consultoriasFiltradas.value.slice(start, end);
   });
 
   const totalProyectosEnMarcha = computed(() => {
