@@ -1,18 +1,5 @@
 <template>
   <div>
-    <!-- Dropdown para filtrar por estado -->
-    <div class="mb-4">
-      <label for="estado-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Filtrar por
-        estado:</label>
-      <select id="estado-filter" v-model="filtroEstadoConsultoria"
-        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md shadow-md">
-        <option value="">Todos</option>
-        <option v-for="estado in estadosConsultoria" :key="estado.conre_id" :value="estado.conre_nombre">
-          {{ estado.conre_nombre }}
-        </option>
-      </select>
-    </div>
-
     <!-- Start Table -->
     <div class="overflow-x-auto table-responsive">
       <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 shadow-lg rounded-lg">
@@ -165,7 +152,7 @@ const mostrarBotones = ref(false);
 const mostrarModalDetalles = ref(false);
 const consultoriaSeleccionada = ref<Consultoria | null>(null);
 
-const { exportarTodasConsultorias, filtroEstadoConsultoria, estadosConsultoria, startDate, endDate, searchTerm } = useConsultoria();
+const { exportarTodasConsultorias, startDate, endDate, searchTerm } = useConsultoria();
 
 const props = defineProps({
   currentPage: {
@@ -196,9 +183,6 @@ const consultoriasFiltradas = computed(() => {
       consultoria['Empresa cliente'].toLowerCase().includes(searchTerm.value.toLowerCase())
     );
   }
-  if (filtroEstadoConsultoria.value) {
-    resultado = resultado.filter(consultoria => consultoria.Estado === filtroEstadoConsultoria.value);
-  }
   if (startDate.value || endDate.value) {
     resultado = resultado.filter(consultoria => {
       const fechaRegistro = new Date(consultoria['Fecha de registro']);
@@ -214,7 +198,7 @@ const consultoriasPaginadas = computed(() => {
   return consultoriasFiltradas.value; // Mostrar todos los elementos sin paginación
 });
 
-watch([searchTerm, filtroEstadoConsultoria, startDate, endDate], () => {
+watch([searchTerm, startDate, endDate], () => {
   emit('cambiar-pagina', 1); // Reiniciar la paginación cuando se apliquen filtros
 });
 

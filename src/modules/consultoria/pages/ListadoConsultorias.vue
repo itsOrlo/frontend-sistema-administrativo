@@ -103,7 +103,6 @@ import { onMounted, ref, computed, watch } from 'vue';
 
 const autenticacionStore = useAutenticacionStore();
 const mostrarBotones = ref(false);
-const filtroEstadoConsultoria = ref('');
 
 const {
   consultorias, // Asegurarse de incluir consultorias
@@ -170,10 +169,9 @@ const consultoriasFiltradas = computed(() => {
       (consultoria.Trámite?.toLowerCase() || '').includes(searchTerm.value.toLowerCase()) ||
       (consultoria.Dependencia?.toLowerCase() || '').includes(searchTerm.value.toLowerCase()) ||
       (consultoria['Empresa cliente']?.toLowerCase() || '').includes(searchTerm.value.toLowerCase());
-    const matchesEstado = filtroEstadoConsultoria.value === '' || consultoria.Estado === filtroEstadoConsultoria.value;
     const matchesDate = (!startDate.value || new Date(consultoria['Fecha de registro']) >= new Date(startDate.value)) &&
                         (!endDate.value || new Date(consultoria['Fecha de registro']) <= new Date(endDate.value));
-    return matchesSearchTerm && matchesEstado && matchesDate;
+    return matchesSearchTerm && matchesDate;
   });
   console.log('Consultorias filtradas:', resultado); // Verificar que todos los elementos se están pasando
   return resultado;
@@ -185,7 +183,7 @@ const consultoriasPaginadas = computed(() => {
   return consultoriasFiltradas.value.slice(start, end);
 });
 
-watch([searchTerm, startDate, endDate, filtroEstadoConsultoria], () => {
+watch([searchTerm, startDate, endDate], () => {
   currentPage.value = 1; // Reiniciar la paginación cuando se apliquen filtros
 });
 

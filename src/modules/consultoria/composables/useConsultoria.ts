@@ -25,7 +25,6 @@ export function useConsultoria(pageSize = 10) {
   const mostrarModalCrear = ref(false);
   const mostrarModalEditar = ref(false);
   const consultoriaSeleccionada = ref<Consultoria | null>(null);
-  const filtroEstadoConsultoria = ref('');
   const estadosConsultoria = ref<{ conre_id: number; conre_nombre: string }[]>([]);
   const startDate = ref('');
   const endDate = ref('');
@@ -39,9 +38,6 @@ export function useConsultoria(pageSize = 10) {
         (consultoria.Dependencia?.toLowerCase() || '').includes(term) ||
         (consultoria['Empresa cliente']?.toLowerCase() || '').includes(term)
       );
-    }
-    if (filtroEstadoConsultoria.value) {
-      resultado = resultado.filter(consultoria => consultoria.Estado === filtroEstadoConsultoria.value);
     }
     if (startDate.value || endDate.value) {
       resultado = resultado.filter(consultoria => {
@@ -268,8 +264,8 @@ export function useConsultoria(pageSize = 10) {
     currentPage.value = page;
   };
 
-  watch(searchTerm, () => {
-    currentPage.value = 1;
+  watch([searchTerm, startDate, endDate], () => {
+    currentPage.value = 1; // Reiniciar la paginación cuando se apliquen filtros
   });
 
   onMounted(async () => {
@@ -294,7 +290,6 @@ export function useConsultoria(pageSize = 10) {
     deleteConsultoria,
     setPage,
     toggleCreateModal: (show: boolean) => (mostrarModalCrear.value = show),
-    filtroEstadoConsultoria,
     estadosConsultoria, // Añadir estadosConsultoria al return
     exportarTodasConsultorias,
     totalProyectosEnMarcha,
