@@ -3,7 +3,8 @@ import axios from 'axios';
 import { useAutenticacionStore } from '@/stores/use-autenticacion.store';
 
 const useApi = axios.create({
-  baseURL: "http://192.168.0.47:4000",
+  baseURL: "https://pucei.edu.ec:10006",
+  //baseURL: "http://192.168.0.47:4000",
 });
 
 // Interceptor para agregar el token a las peticiones

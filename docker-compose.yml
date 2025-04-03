@@ -1,0 +1,8 @@
+services:
+  qa-frontend-gestion-documental:
+    container_name: qa-frontend-gestion-documental
+    build: .
+    restart: on-failure
+    ports:
+      # - 10001:80
+      - 10003:443
